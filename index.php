@@ -1,0 +1,106 @@
+<?php
+    require_once __DIR__.'/init.php';  
+    
+    use Maradik\Testing\CategoryRepository;
+    use Maradik\Testing\QuestionRepository;
+    use Maradik\Testing\AnswerRepository;
+    use Maradik\HinterApi\MainQuestionDocument;
+    use Maradik\HinterApi\MainQuestionCollection;
+    use Maradik\HinterApi\MainAnswerDocument;
+    use Maradik\HinterApi\MainAnswerCollection;    
+    use Maradik\HinterApi\MainAnswerMQCollection;
+    use Maradik\HinterApi\MainAnswerSACollection;
+    use Maradik\HinterApi\SecondQuestionDocument;
+    use Maradik\HinterApi\SecondQuestionCollection;
+    use Maradik\HinterApi\SecondQuestionMQCollection;
+    use Maradik\HinterApi\SecondAnswerDocument;
+    use Maradik\HinterApi\SecondAnswerCollection;
+    use Maradik\HinterApi\SecondAnswerSQCollection;    
+    use Maradik\HinterApi\SecondAnswerLinkController;
+    use Maradik\HinterApi\SecondAnswerUnlinkController;      
+    use Maradik\HinterApi\CategoryDocument;
+    use Maradik\HinterApi\CategoryCollection;
+    use Maradik\HinterApi\HinterApi;                            
+    
+    $hinterApi = new HinterApi($repositoryFactory, $user);
+    
+    if ($hinterApi->isApiRequest()) {
+        // Collections
+        $hinterApi->registerResource('mainquestion', 'MainQuestionCollection');
+        $hinterApi->registerResource('mainanswer', 'MainAnswerCollection');
+        $hinterApi->registerResource('secondaryquestion', 'SecondQuestionCollection');
+        $hinterApi->registerResource('secondaryquestion/{id}/secondaryanswer', 'SecondAnswerSQCollection');
+        $hinterApi->registerResource('secondaryanswer', 'SecondAnswerCollection');       
+        $hinterApi->registerResource('secondaryanswer/{id}/mainanswer', 'MainAnswerSACollection');
+        $hinterApi->registerResource('mainquestion/{id}/mainanswer', 'MainAnswerMQCollection');
+        $hinterApi->registerResource('mainquestion/{id}/secondaryquestion', 'SecondQuestionMQCollection');
+        $hinterApi->registerResource('category', 'CategoryCollection');
+        
+        // Documents
+        $hinterApi->registerResource('mainquestion/{id}', 'MainQuestionDocument');
+        $hinterApi->registerResource('mainanswer/{id}', 'MainAnswerDocument');
+        $hinterApi->registerResource('secondaryquestion/{id}', 'SecondQuestionDocument');
+        $hinterApi->registerResource('secondaryanswer/{id}', 'SecondAnswerDocument');
+        $hinterApi->registerResource('category/{id}', 'CategoryDocument');
+        
+        // Controllers
+        $hinterApi->registerResource('secondaryanswer/{id}/link', 'SecondAnswerLinkController');
+        $hinterApi->registerResource('secondaryanswer/{id}/unlink', 'SecondAnswerUnlinkController');
+       
+        $hinterApi->requestResource();
+    } else {        
+        $vars = array();
+        
+        $clearUri = current(explode('#', current(explode('?', $_SERVER['REQUEST_URI'], 2)), 2));
+        $vars['clearUri'] = $clearUri;
+        
+        $categoryList = $repositoryFactory->getCategoryRepository()->getCollection();        
+        $vars['categoryList'] = $categoryList;                
+        
+        switch (true) {
+            case $clearUri == "/":
+                $template = "page_main.tpl";
+                break;
+            case preg_match('{^/category/(\d+)$}', $clearUri, $matches):
+                $categoryId = (int) $matches[1];
+                $categoryCurrent = $repositoryFactory
+                    ->getCategoryRepository()
+                    ->getById($categoryId);                           
+                if ($categoryCurrent) {
+                    $vars['categoryCurrent'] = $categoryCurrent;
+                    $questionList = $repositoryFactory
+                        ->getMainQuestionRepository()
+                        ->getCollection(array('categoryId' => $categoryId));
+                    $vars['questionList'] = $questionList;
+                    $template = "page_category.tpl";                    
+                } else {
+                    $template = "page_404.tpl";
+                    header("HTTP/1.1 404 Not Found");                     
+                }                          
+                break;     
+            case preg_match('{^/question/(\d+)$}', $clearUri, $matches):
+                    $questionId = (int) $matches[1];
+                    $mainQuestion = $repositoryFactory
+                        ->getMainQuestionRepository()
+                        ->getById($questionId);                           
+                    if ($mainQuestion) {
+                        $vars['mainQuestion'] = $mainQuestion;
+                        $template = "page_question.tpl";   
+                    }                
+                break;
+            case preg_match('{^/question/create$}', $clearUri, $matches):
+                    $template = "page_question_edit.tpl";   
+                break;                
+        }
+        
+        if (!isset($template)) {
+            $template = "page_404.tpl";
+            header("HTTP/1.1 404 Not Found");             
+        }
+        
+        $fenom = Fenom::factory(__DIR__.'/templates', __DIR__.'/templates/compiled');
+        $fenom->setOptions(Fenom::FORCE_COMPILE); //TODO перекомпиляция шаблонов только на период разработки   
+        $fenom->display($template, $vars);                            
+    }
+
+    

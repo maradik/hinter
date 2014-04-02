@@ -1,0 +1,18 @@
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/maradik/user"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/maradik/testing"
+        }        
+	],    
+	
+	"require": {
+        "fenom/fenom": "1.*",
+        "maradik/user": "@dev",
+        "maradik/testing": "@dev"
+    }
+}

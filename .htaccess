@@ -1,0 +1,52 @@
+#################################################
+## PHP Link Directory - Apache Server Settings ##
+#################################################
+
+# Protect files
+#<Files ~ "^(.*)\.(inc|inc\.php|tpl|sql)$">
+#  Order deny,allow
+#  Deny from all
+#</Files>
+
+# Protect directories
+<Files ~ "^(backup|files|images|include|lang|libs(/.+)?|temp(/.+)?|templates(/.+)?|javascripts(/.+)?)$">
+  Order deny,allow
+  Deny from all
+</Files>
+
+# Disable directory browsing
+Options -Indexes
+
+# Follow symbolic links in this directory
+Options +FollowSymLinks
+
+# Override PHP settings that cannot be changed at runtime
+# (If your server supports PHP settings via htaccess you can comment following two lines off)
+# php_value register_globals   0
+# php_value session.auto_start 0
+
+# Customized error messages
+# ( If you are running in a subfolder please add it, example: "directory/index.php?httpstatus=404" )
+ErrorDocument 404 index.php?httpstatus=404
+
+# Set the default handler
+DirectoryIndex index.php
+
+# URL rewrite rules
+<IfModule mod_rewrite.c>
+   RewriteEngine On
+
+   #RewriteCond %{HTTP_HOST} ^www.hinter\.ru$ [NC]
+   #RewriteRule ^(.*)$ http://hinter.ru/$1 [R=301,L]
+
+   #RewriteCond %{HTTP_HOST} ^www.hinter\.an$ [NC]
+   #RewriteRule ^(.*)$ http://hinter.an/$1 [R=301,L]
+
+   ## Category redirect
+   RewriteCond %{REQUEST_FILENAME} !-f
+   RewriteCond %{REQUEST_FILENAME} !-d
+   RewriteCond %{REQUEST_FILENAME} !-l
+   RewriteRule ^(.*)$ index.php [QSA,L]
+
+</IfModule>
+
