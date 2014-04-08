@@ -94,7 +94,9 @@
 
 {block 'scripts'}
 <script type="text/javascript">
-	PassTestVM = new Hinter.PassTestVM({$mainQuestion->id});
-	PassTestVM.bind();
+	$(document).ready(function () {
+		PassTestVM = new Hinter.PassTestVM({$mainQuestion->id});
+		PassTestVM.bind();
+	});
 </script>
 {/block}
