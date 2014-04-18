@@ -4,6 +4,8 @@
     use Maradik\Testing\CategoryRepository;
     use Maradik\Testing\QuestionRepository;
     use Maradik\Testing\AnswerRepository;
+    use Maradik\Testing\Query;
+    /*
     use Maradik\HinterApi\MainQuestionDocument;
     use Maradik\HinterApi\MainQuestionCollection;
     use Maradik\HinterApi\MainAnswerDocument;
@@ -20,6 +22,7 @@
     use Maradik\HinterApi\SecondAnswerUnlinkController;      
     use Maradik\HinterApi\CategoryDocument;
     use Maradik\HinterApi\CategoryCollection;
+    */
     use Maradik\HinterApi\HinterApi;                            
     
     $hinterApi = new HinterApi($repositoryFactory, $user);
@@ -46,6 +49,9 @@
         // Controllers
         $hinterApi->registerResource('secondaryanswer/{id}/link', 'SecondAnswerLinkController');
         $hinterApi->registerResource('secondaryanswer/{id}/unlink', 'SecondAnswerUnlinkController');
+        //$hinterApi->registerResource('user/current/register', 'UserRegisterController');
+        //$hinterApi->registerResource('user/current/login', 'UserLoginController');
+        //$hinterApi->registerResource('user/current/logout', 'UserLogoutController');
        
         $hinterApi->requestResource();
     } else {        
@@ -59,7 +65,22 @@
         
         switch (true) {
             case $clearUri == "/":
+                $mainQuestionList = array_map(
+                    'array_shift',
+                    $repositoryFactory
+                        ->getMainQuestionRepository()
+                        ->query()
+                        ->addSortField('id', Query::SORT_DESC)
+                        ->addFilterField('active', true)
+                        ->get(10)
+                );
+                $vars['mainQuestionList'] = $mainQuestionList;
                 $template = "page_main.tpl";
+                break;
+            case $clearUri == "/admin/question":
+                if ($user->isAdmin()) {
+                    $template = "admin_mainquestionlist.tpl";
+                }
                 break;
             case preg_match('{^/category/(\d+)$}', $clearUri, $matches):
                 $categoryId = (int) $matches[1];
@@ -68,10 +89,22 @@
                     ->getById($categoryId);                           
                 if ($categoryCurrent) {
                     $vars['categoryCurrent'] = $categoryCurrent;
-                    $questionList = $repositoryFactory
+                    /*
+                    $mainQuestionList = $repositoryFactory
                         ->getMainQuestionRepository()
                         ->getCollection(array('categoryId' => $categoryId));
-                    $vars['questionList'] = $questionList;
+                    */
+                    $mainQuestionList = array_map(
+                        'array_shift',
+                        $repositoryFactory
+                            ->getMainQuestionRepository()
+                            ->query()
+                            ->addFilterField('categoryId', $categoryId)
+                            ->addSortField('id', Query::SORT_DESC)
+                            ->addFilterField('active', true)                            
+                            ->get(10)
+                    );                    
+                    $vars['mainQuestionList'] = $mainQuestionList;
                     $template = "page_category.tpl";                    
                 } else {
                     $template = "page_404.tpl";
@@ -79,17 +112,17 @@
                 }                          
                 break;     
             case preg_match('{^/question/(\d+)$}', $clearUri, $matches):
-                    $questionId = (int) $matches[1];
-                    $mainQuestion = $repositoryFactory
-                        ->getMainQuestionRepository()
-                        ->getById($questionId);                           
-                    if ($mainQuestion) {
-                        $vars['mainQuestion'] = $mainQuestion;
-                        $template = "page_question.tpl";   
-                    }                
+                $questionId = (int) $matches[1];
+                $mainQuestion = $repositoryFactory
+                    ->getMainQuestionRepository()
+                    ->getById($questionId);                           
+                if ($mainQuestion) {
+                    $vars['mainQuestion'] = $mainQuestion;
+                    $template = "page_question.tpl";   
+                }                
                 break;
             case preg_match('{^/question/create$}', $clearUri, $matches):
-                    $template = "page_question_edit.tpl";   
+                $template = "page_question_edit.tpl";   
                 break;                
         }
         
@@ -97,7 +130,13 @@
             $template = "page_404.tpl";
             header("HTTP/1.1 404 Not Found");             
         }
-        
+
+        $vars['userData'] = array(
+            'id'    => $user->data()->id,
+            'login' => $user->data()->login,
+            'email' => $user->data()->email,
+            'role'  => $user->data()->role
+        );
         $fenom = Fenom::factory(__DIR__.'/templates', __DIR__.'/templates/compiled');
         $fenom->setOptions(Fenom::FORCE_COMPILE); //TODO перекомпиляция шаблонов только на период разработки   
         $fenom->display($template, $vars);                            

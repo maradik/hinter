@@ -5,6 +5,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		
 		<link rel="stylesheet" href="/styles/bootstrap/3.1.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/styles/styles.css">
 		
 		<script src="/scripts/jquery-1.11.0.min.js"></script>
 		<script src="/styles/bootstrap/3.1.1/js/bootstrap.min.js"></script>
@@ -15,22 +16,31 @@
 		<title>Hinter</title>
 	</head>
 	<body>
-		<div class="container">		
-		
-			{include 'navbar.tpl'}
+		{block 'page'}
+			<div class="container">		
+			
+				{include 'navbar.tpl'}
+						
+				<div class="row" id="page-content-block">
+					<div class="col-md-9">
+						{block 'content'}{/block}
+					</div>
 					
-			<div class="row">
-				<div class="col-md-9">
-					{block 'content'}{/block}
+					<div class="col-md-3">
+						{include 'sidebar.tpl'}	
+					</div>				
 				</div>
-				
-				<div class="col-md-3">
-					{include 'sidebar.tpl'}	
-				</div>				
-			</div>
-		</div>		
+			</div>		
+			
+			{include 'footer.tpl'}		
+		{/block}
 		
-		{block 'scripts'}{/block}			
+		{block 'scripts'}{/block}	
+		<script type="text/javascript">
+			$(document).ready(function () {
+				CurrentUserVM = new Hinter.CurrentUserVM();
+				CurrentUserVM.bind();
+			});	
+		</script>				
 	</body>
 </html>
-

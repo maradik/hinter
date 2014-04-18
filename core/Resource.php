@@ -11,12 +11,12 @@
         /**
          * @var array $responseData
          */
-        private $responseData;       
+        private $responseData = array();       
         
         /**
          * @var array $responseMessages
          */
-        private $responseMessages;           
+        private $responseMessages = array();           
         
         /**
          * @var array $supportedMethods
@@ -89,7 +89,7 @@
             $data = $this->getResponseData();
             $message = $this->getResponseMessages();
             
-            if (isset($data) || !empty($message)) {                       
+            if (isset($data) || isset($message)) {
                 $response = array(
                     'url'       => $this->getFullUrl(),
                     'methods'   => $this->getSupportedMethods(),
@@ -99,7 +99,7 @@
                 );       
                 
                 echo json_encode($response);
-            }     
+            }
         }        
         
         protected function headers()

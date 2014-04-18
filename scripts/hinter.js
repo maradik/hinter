@@ -1,5 +1,6 @@
 ﻿var Hinter = function () {
     // наследование смотри http://habrahabr.ru/post/131714/
+    // Синхронизация http://habrahabr.ru/post/108542/
     
     var MessageType = {NOTIFICATION: 0, SUCCESS: 1, WARNING: 2, ERROR: 3};
     
@@ -10,6 +11,8 @@
         self.type = type;
     }    
     
+    var NoYesAll = {No: 0, Yes: 1, All: 2};
+    
     //-------------------------------------------------------
     // Модели
     
@@ -18,15 +21,16 @@
         self.Editing    = ko.observable(false);
         self.Edited     = ko.observable(false);
         self.Locked     = ko.observable(false);
+        self.Visible    = ko.observable(true);
     }
     
-    BaseModel.save = function(model, callbackSuccess, callbackError) {
+    BaseModel.send = function(model, method, callbackSuccess, callbackError) {
         //var model = observableModel();
         model.Edited(model.Editing());
         model.Locked(true);
         model.Editing(false);        
         requestAjaxJson(
-            model.Id() ? 'PUT' : 'POST', 
+            method,  
             apiUrlBase + model.getUri() + (model.Id() ? '/' + model.Id() : ''), 
             model.pack(), 
             function (data, textStatus, jqXHR) { 
@@ -54,7 +58,15 @@
                 }
             }
         );
-    }
+    };
+    
+    BaseModel.save = function(model, callbackSuccess, callbackError) {
+        BaseModel.send(model, model.Id() ? 'PUT' : 'POST', callbackSuccess, callbackError);    
+    }; 
+    
+    BaseModel.remove = function(model, callbackSuccess, callbackError) {
+        BaseModel.send(model, 'DELETE', callbackSuccess, callbackError);    
+    }; 
     
     function Category(
         id, 
@@ -97,7 +109,7 @@
             json.parentId,
             json.order
         );
-    } 
+    }; 
 
     function MainQuestion(
         id, 
@@ -106,7 +118,8 @@
         categoryId,
         createDate,
         order,
-        isOwner
+        userId,
+        active
     ) {
         var self = this;
         ko.utils.extend(self, new BaseModel());
@@ -117,11 +130,12 @@
         self.CategoryId     = ko.observable(categoryId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
-        self.IsOwner        = ko.observable(isOwner);     
+        self.UserId         = ko.observable(userId);   
+        self.Active         = ko.observable(active);  
         
         self.getUri = function() {
             return 'mainquestion';
-        }        
+        };        
         
         self.unpack = MainQuestion.unpack;
         
@@ -131,10 +145,12 @@
                 title:      self.Title(),
                 description:self.Description(), 
                 categoryId: self.CategoryId(),
-                order:      self.Order()                      
-            }
-        }        
-    }
+                order:      self.Order(),
+                userId:     0,
+                active:     self.Active()                    
+            };
+        };        
+    };
     
     MainQuestion.unpack = function(json) {
         return new MainQuestion(
@@ -144,9 +160,10 @@
             json.categoryId,
             json.createDate,
             json.order,
-            json.isOwner
+            json.userId,
+            json.active
         );
-    }     
+    };
     
     function MainAnswer(
         id, 
@@ -155,7 +172,7 @@
         questionId,
         createDate,
         order,
-        isOwner
+        userId
     ) {
         var self = this;
         ko.utils.extend(self, new BaseModel());
@@ -166,7 +183,7 @@
         self.QuestionId     = ko.observable(questionId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
-        self.IsOwner        = ko.observable(isOwner);
+        self.UserId         = ko.observable(userId);
         
         self.getUri = function() {
             return 'mainanswer';
@@ -180,7 +197,8 @@
                 title:      self.Title(),
                 description:self.Description(), 
                 questionId: self.QuestionId(),
-                order:      self.Order()                      
+                order:      self.Order(),    
+                userId:     0                 
             }
         }         
     }    
@@ -193,10 +211,9 @@
             json.questionId,
             json.createDate,
             json.order,
-            json.isOwner
+            json.userId
         );             
-    } 
-    
+    };
     
     function SecondQuestion(
         id, 
@@ -205,7 +222,7 @@
         parentId,
         createDate,
         order,
-        isOwner
+        userId
     ) {
         var self = this;
         ko.utils.extend(self, new BaseModel());
@@ -216,13 +233,13 @@
         self.ParentId       = ko.observable(parentId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
-        self.IsOwner        = ko.observable(isOwner);
+        self.UserId         = ko.observable(userId);
         
         self.SecondAnswers  = ko.observableArray(); 
         
         self.getUri = function() {
             return 'secondaryquestion';
-        }             
+        };            
         
         self.unpack = SecondQuestion.unpack;
         
@@ -232,10 +249,11 @@
                 title:      self.Title(),
                 description:self.Description(), 
                 parentId:   self.ParentId(),
-                order:      self.Order()                      
-            }
-        }         
-    }     
+                order:      self.Order(),
+                userId:     0                      
+            };
+        };         
+    };    
     
     SecondQuestion.unpack = function(json) {
         return new SecondQuestion(
@@ -245,9 +263,9 @@
             json.parentId,
             json.createDate,
             json.order,
-            json.isOwner
+            json.userId
         );
-    }        
+    };       
     
     function SecondAnswer(
         id, 
@@ -256,7 +274,7 @@
         questionId,
         createDate,
         order,
-        isOwner
+        userId
     ) {
         var self = this;
         ko.utils.extend(self, new BaseModel());
@@ -267,13 +285,13 @@
         self.QuestionId     = ko.observable(questionId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
-        self.IsOwner        = ko.observable(isOwner);
+        self.UserId         = ko.observable(userId);
 
         self.MainAnswers    = ko.observableArray();
         
         self.getUri = function() {
             return 'secondaryanswer';
-        }          
+        };          
         
         self.unpack = SecondAnswer.unpack;
         
@@ -283,9 +301,10 @@
                 title:      self.Title(),
                 description:self.Description(), 
                 questionId: self.QuestionId(),
-                order:      self.Order()                     
-            }
-        }        
+                order:      self.Order(),
+                userId:     0                     
+            };
+        };       
     }     
     
     SecondAnswer.unpack = function(json) {
@@ -296,9 +315,46 @@
             json.questionId,
             json.createDate,
             json.order,
-            json.isOwner
+            json.userId
         );
-    }              
+    };
+    
+    function UserData(
+        id, 
+        login, 
+        password,
+        email,
+        role
+    ) {
+        var self = this;
+        ko.utils.extend(self, new BaseModel());
+        
+        self.Id       = ko.observable(id);
+        self.Login    = ko.observable(login);
+        self.Password = ko.observable(password);
+        self.Email    = ko.observable(email);
+        self.Role     = ko.observable(role);
+        
+        self.pack = function() {
+            return {
+                id:         self.Id(),
+                login:      self.Login(),
+                password:   self.Password(),
+                email:      self.Email(),
+                role:       self.Role()
+            };
+        };        
+    };    
+    
+    UserData.unpack = function(json) {
+        return new UserData(
+            json.id,
+            json.login,
+            json.password,
+            json.email,
+            json.role    
+        );             
+    };   
     
     //-------------------------------------------------------
     // Модели представления
@@ -321,7 +377,7 @@
         self.RelMainAnswerList  = ko.observableArray([]);
         
         self.bind = function() {
-            ko.applyBindings(self);
+            ko.applyBindings(self, document.getElementById("page-content-block"));
             
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/mainanswer", null, function (json) {                
                 self.MainAnswerList(
@@ -340,7 +396,7 @@
                 );
             });            
             //ko.mapping.fromJS(json, mappingOptions(), model);
-        }      
+        };      
         
         self.start = function() {
             self.CurrentSecQuestion(0);
@@ -350,7 +406,7 @@
             self.RelMainAnswerList([]);
             self.MainAnswerList().forEach(function(elMa, indMa, arrMa) { elMa.Order(0); });
             self.nextQuestion();            
-        }
+        };
         
         self.nextQuestion = function(selectedSecondAnswer) {
             if (selectedSecondAnswer instanceof SecondAnswer) {
@@ -374,7 +430,7 @@
                     self.MainAnswerList.sort(sortQuestionAnswerArray);                         
                     //---       
                 });                
-            }
+            };
             
             if (self.CurrentSecQuestion() + 1 <= self.SecondQuestionList().length) {
                 self.CurrentSecQuestion(self.CurrentSecQuestion() + 1);
@@ -391,11 +447,11 @@
             } else {
                 self.Finish(true);
             }      
-        }    
+        };    
         
-        self.getProgress = function() {
-            return !self.MainAnswerList().length || !self.CurrentSecQuestion() ? 0 : Math.round((self.CurrentSecQuestion()-1)*100/self.MainAnswerList().length);
-        }  
+        self.getProgress = ko.computed(function() {
+            return !self.SecondQuestionList().length || !self.CurrentSecQuestion() ? 0 : Math.round((self.CurrentSecQuestion()-1)*100/self.SecondQuestionList().length);
+        });
     }
     
     /***************************************************************************
@@ -417,17 +473,17 @@
         
         self.MainAnswerList.Locked = function() {
             return this().some(function(item) { return item.Locked() });
-        }       
+        };       
         
         self.SecondQuestionList.Locked = function() {
             return this().some(function(item) { 
                 return item.Locked() 
                     || item.SecondAnswers().some(function(saItem){ return saItem.Locked(); });  
             });
-        }  
+        };  
         
         self.bind = function() {
-            ko.applyBindings(self);
+            ko.applyBindings(self, document.getElementById("page-content-block"));
             
             requestAjaxJson('GET', apiUrlBase + "/category", null, function (json) {                
                 self.CategoryList(
@@ -437,10 +493,10 @@
                 );
                 self.CategoryList.sort(sortQuestionAnswerArray);
             }); 
-        }      
+        };      
         
-        self.nextStep = function() {
-            self.Step(self.Step() + 1);
+        self.nextStep = function(step) {
+            self.Step(step || self.Step() + 1);
             
             if (self.Step() == 1) { // создание главного вопроса
                 self.MainQuestion(new MainQuestion());
@@ -463,17 +519,17 @@
             if (self.Step() == 4) { // финиш
                 self.SecondQuestionIdx(-1);
             }                       
-        }
+        };
         
         self.saveMainQuestion = function(mainQuestion) {
             BaseModel.save(
                 mainQuestion, 
                 function(data) {
                     self.MainQuestion(MainQuestion.unpack(data.data));
-                    self.nextStep();  
+                    self.nextStep(2);  
                 }
             );
-        }      
+        };      
         
         self.addMainAnswer = function() {
             var newMainAnswer = new MainAnswer();
@@ -481,7 +537,7 @@
             newMainAnswer.Editing(true);
             self.MainAnswerList.push(newMainAnswer);
             newMainAnswer.Order(self.MainAnswerList().length - 1);
-        }      
+        };      
         
         self.saveMainAnswer = function(mainAnswer) {
             BaseModel.save(
@@ -491,7 +547,7 @@
                     self.MainAnswerList.replace(mainAnswer, mainAnswerSaved);
                 }
             );
-        }
+        };
         
         self.applyMainAnswers = function() {
             function tryNextStep() {
@@ -499,9 +555,9 @@
                     if (item.Editing() || item.Edited()) {return false;}
                     return true;
                 })) {
-                    self.nextStep();
+                    self.nextStep(3);
                 }                
-            }
+            };
             
             self.MainAnswerList().forEach(function(mainAnswer) { 
                 if (mainAnswer.Editing()) {               
@@ -515,8 +571,7 @@
                     );                
                 } 
             });
-            tryNextStep();
-        }        
+        };        
         
         self.addSecondQuestion = function() {
             var newSecondQuestion = new SecondQuestion();
@@ -526,7 +581,7 @@
             self.SecondQuestionIdx(self.SecondQuestionList().length - 1);
             newSecondQuestion.Order(self.SecondQuestionIdx());
             self.addSecondAnswer(newSecondQuestion);
-        }
+        };
         
         self.addSecondAnswer = function(secondQuestion) {
             var newSecondAnswer = new SecondAnswer();
@@ -534,26 +589,26 @@
             newSecondAnswer.Editing(true);
             secondQuestion.SecondAnswers.push(newSecondAnswer);
             newSecondAnswer.Order(secondQuestion.SecondAnswers().length - 1);            
-        }
+        };
 
         self.applySecondQuestion = function(secondQuestion, addSecondQuestion) {
             addSecondQuestion = addSecondQuestion || false;
             var tryNextStep = function() {
-                if (secondAnswerList().every(function(item) {
-                    if (item.Editing() || item.Edited()) {return false;}
+                if (secondQuestion.SecondAnswers().every(function(item) {
+                    if (item.Editing() || item.Edited() || item.Locked()) {return false;}
                     return true;
                 })) {
-                    self.nextStep();
+                    self.nextStep(4);
                 }                
-            }    
+            };    
             var tryAddSecondQuestion= function() {
-                if (secondAnswerList().every(function(item) {
-                    if (item.Editing() || item.Edited()) {return false;}
+                if (secondQuestion.SecondAnswers().every(function(item) {
+                    if (item.Editing() || item.Edited() || item.Locked()) {return false;}
                     return true;
                 })) {
                     self.addSecondQuestion();
                 }                
-            }                     
+            };                     
             
             BaseModel.save(
                 secondQuestion,
@@ -567,7 +622,7 @@
                     self.saveSecondAnswers(secondQuestionSaved.SecondAnswers, addSecondQuestion ? tryAddSecondQuestion : tryNextStep);
                 }
             );           
-        }
+        };
         
         self.saveSecondAnswers = function(secondAnswerList, callbackOnSuccess) {
             secondAnswerList().forEach(function(secondAnswer) {
@@ -576,27 +631,226 @@
                         secondAnswer,
                         function(data) {
                             var secondAnswerSaved = SecondAnswer.unpack(data.data);
-                            secondAnswerList.replace(secondAnswer, secondAnswerSaved);
-                            self.saveSecondAnswerRel(secondAnswer, callbackOnSuccess)
+                            secondAnswerSaved.Locked(true);
+                            secondAnswerSaved.MainAnswers(secondAnswer.MainAnswers());
+                            secondAnswerList.replace(secondAnswer, secondAnswerSaved);                            
+                            self.saveSecondAnswerRel(secondAnswerSaved, callbackOnSuccess);
                         }
                     );     
-                }           
+                };           
             });              
-        }
+        };
         
-        self.saveSecondAnswerRel = function(secondAnswer, callbackOnSuccess) {            
-            secondAnswer.MainAnswers().forEach(function(mainAnswer) {
-                requestAjaxJson(
-                    'POST',
-                    apiUrlBase + '/secondaryanswer/' + secondAnswer.Id() + '/link',
-                    mainAnswer,
+        self.saveSecondAnswerRel = function(secondAnswer, callbackOnSuccess) {    
+            var sendMainAnswers = [];
+            secondAnswer.MainAnswers().forEach(function(mainAnswer) { sendMainAnswers.push(mainAnswer.pack()); });        
+            requestAjaxJson(
+                'POST',
+                apiUrlBase + '/secondaryanswer/' + secondAnswer.Id() + '/link',
+                sendMainAnswers,
+                function(data) {
+                    var mainAnswers = [];
+                    data.data.forEach(function(item) {
+                        mainAnswers.push(MainAnswer.unpack(item));
+                    });  
+                    secondAnswer.MainAnswers(self.MainAnswerList().filter(function(item) {
+                        return mainAnswers.some(function(item2) { return item.Id() == item2.Id(); });
+                    }));    
+                    secondAnswer.Locked(false);             
+                    callbackOnSuccess();
+                }
+            );
+        };
+    };
+    
+    /**********************************************************
+     * 
+     * Подгружаемый список основных вопросов
+     * 
+     * ********************************************************/
+    function MainQuestionListVM(categoryId, admin) {
+        var self = this;
+        
+        self.MainQuestionList   = ko.observableArray();                
+        self.IsEndOfList        = ko.observable(false);
+        self.Loading            = ko.observable(false);  
+        self.CategoryId         = ko.observable(categoryId);
+        self.FilterActive       = ko.observable(admin ? NoYesAll.All : NoYesAll.Yes);
+        self.LastMainQuestionId = ko.computed(function() {
+            var mq = self.MainQuestionList()[self.MainQuestionList().length - 1];
+            return mq ? mq.Id() : 2147483647;
+        });      
+        
+        self.bind = function(mainQuestionList, collectionDocumentElement) {
+            if (mainQuestionList) {
+                mainQuestionList.forEach(function(item) {
+                    self.MainQuestionList.push(MainQuestion.unpack(item));
+                });  
+            }
+                      
+            $(window).scroll(onWindowScroll);
+            $(".list-item-static").hide();
+            ko.applyBindings(self, document.getElementById("page-content-block"));
+            
+            if (needLoadOlderList()) {
+                asyncLoadOlderList();
+            } 
+        };
+        
+        self.activateMainQuestion = function(mainQuestion) {
+            mainQuestion.Active(mainQuestion.Active() == true ? false : true);
+            BaseModel.save(
+                mainQuestion, 
+                function(data) {
+                    if (data.data) {
+                        self.MainQuestionList.replace(mainQuestion, MainQuestion.unpack(data.data));                        
+                    }
+                }
+            );
+        };        
+        
+        self.removeMainQuestion = function(mainQuestion) {
+            if (confirm("Действительно желаете удалить?")) {
+                BaseModel.remove(
+                    mainQuestion, 
                     function() {
-                        callbackOnSuccess();
+                        self.MainQuestionList.remove(mainQuestion);
                     }
                 );
-            });
+            }    
+        };
+        
+        function onWindowScroll(){
+            if (needLoadOlderList())
+                asyncLoadOlderList();
         }
+        
+        function needLoadOlderList() {
+            return !self.IsEndOfList() && (!self.MainQuestionList().length || ($(document).height() - $(window).height() - 100 <= $(window).scrollTop()));
+        }        
+        
+        function asyncLoadOlderList() {
+            if (!self.Loading()) {
+                self.Loading(true);
+                var filterCount = 0;
+                var params = {
+                    sortField:      [],
+                    sortOrder:      [],
+                    filterField:    [],
+                    filterType:     [],
+                    filterValue:    []
+                };
+                params.sortField[0] = 'id';
+                params.sortOrder[0] = 'desc';
+                params.filterField[filterCount] = 'id';
+                params.filterType[filterCount]  = '<';
+                params.filterValue[filterCount++] = self.LastMainQuestionId();
+                if (self.FilterActive() == NoYesAll.Yes) {
+                    params.filterField[filterCount] = 'active';
+                    params.filterValue[filterCount++] = 1;   
+                } else if (self.FilterActive() == NoYesAll.No) {
+                    params.filterField[filterCount] = 'active';
+                    params.filterValue[filterCount++] = 0;                       
+                }
+                if (self.CategoryId()) {
+                    params.filterField[filterCount] = 'categoryId';
+                    params.filterValue[filterCount++] = self.CategoryId();     
+                }               
+                var url = apiUrlBase + '/mainquestion?limit=10&' + $.param(params);
+                
+                requestAjaxJson(
+                    'GET',
+                    url,
+                    null,
+                    function(data) {
+                        if (data.data) {
+                            data.data.forEach(function(item){
+                                self.MainQuestionList.push(MainQuestion.unpack(item));
+                            });
+                        } 
+                        if (!data.data || !data.data.length) {
+                            self.IsEndOfList(true);
+                        }
+                        self.Loading(false);
+                    }   
+                );
+            }
+        }        
     }
+    
+    /**********************************************************
+     * 
+     * Текущий пользователь
+     * 
+     * ********************************************************/
+    function CurrentUserVM() {
+        var self = this;
+        
+        self.UserData = ko.observable(new UserData); 
+        self.Messages = ko.observableArray();
+        
+        self.bind = function(userData) {
+            if (typeof userData != 'undefined') {
+                ko.UserData(UserData.unpack(userData));    
+            }
+            
+            ko.applyBindings(self, document.getElementById("page-navbar-user-block"));
+        };
+        
+        self.register = function() {
+            if (self.isRegisteredUser()) {
+                self.Messages.push(new Message('Вы уже вошли под пользователем ' + self.UserData().login(), MessageType.ERROR));
+                return;
+            } 
+            requestAjaxJson(
+                'POST',
+                apiUrlBase + '/user/current/register',
+                self.UserData().pack(),
+                function (data) {
+                    if (data.data) {
+                        self.UserData(UserData.unpack(data.data));
+                    }
+                }
+            );
+        };
+        
+        self.login = function() {
+            if (self.isRegisteredUser()) {
+                self.Messages.push(new Message('Вы уже вошли под пользователем ' + self.UserData().login(), MessageType.ERROR));
+                return;
+            }
+            requestAjaxJson(
+                'POST',
+                apiUrlBase + '/user/current/login',
+                self.UserData().pack(),
+                function (data) {
+                    if (data.data) {
+                        self.UserData(UserData.unpack(data.data));
+                    }
+                }
+            );
+        };   
+        
+        self.logout = function() {
+            if (!self.isRegisteredUser()) {
+                return;
+            }
+            requestAjaxJson(
+                'POST',
+                apiUrlBase + '/user/current/logout',
+                self.UserData().pack(),
+                function (data) {
+                    if (data.data) {
+                        self.UserData(UserData.unpack(data.data));
+                    }
+                }
+            );
+        };              
+        
+        self.isRegisteredUser = ko.computed(function() {
+            return self.UserData().Id() != 0;
+        });            
+    }    
     
     var apiUrlBase = '/api';
     
@@ -607,9 +861,10 @@
         return left.Order() == right.Order() 
             ? (left.Title() == right.Title() ? 0 : (left.Title() < right.Title() ? -1*kf : 1*kf))
             : (left.Order() < right.Order() ? -1*kf : 1*kf);
-    }  
+    };  
     
     var requestAjaxJson = function (requestType, serviceUrl, sendData, callback, callbackError) {
+        console.log(serviceUrl);        
         callbackError = callbackError 
             || function (jqXHR, textStatus) {
                 if (confirm(jqXHR.status 
@@ -619,7 +874,7 @@
                     + jqXHR.statusText)) {
                     alert(jqXHR.responseText);
                 }
-            }
+            };
         $.ajax({
             url: serviceUrl,
             data: JSON.stringify(sendData),
@@ -635,6 +890,8 @@
     return {
         PassTestVM: PassTestVM,
         CreateTestVM: CreateTestVM,
+        MainQuestionListVM: MainQuestionListVM,
+        CurrentUserVM: CurrentUserVM,
         requestAjaxJson: requestAjaxJson
-    }    
+    };    
 }();

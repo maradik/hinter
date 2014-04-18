@@ -1,4 +1,4 @@
-{extends 'base.tpl'}
+{extends 'page.tpl'}
 
 {block 'content'}
 	<!--
@@ -25,7 +25,7 @@
 					<li>Определение ответов на вспомогательные вопросы</li>
 					<li>Настройка связей между вспомогательными и основными ответами</li>
 				</ul>	
-				<button class="btn btn-primary" data-bind="click: nextStep">
+				<button class="btn btn-primary" data-bind="click: function() { nextStep(); }">
 					Далее <span class="glyphicon glyphicon-chevron-right"></span>
 				</button>								
 			</div>		
@@ -63,8 +63,8 @@
 						</div>	
 					</form>		
 					<div>
-						<button class="btn btn-primary" data-bind="click: $root.saveMainQuestion, disable: Locked">
-							Далее
+						<button class="btn btn-primary" data-bind="click: $root.saveMainQuestion, disable: Locked() || !Title() || !CategoryId()">
+							Далее <span class="glyphicon glyphicon-chevron-right"></span>
 						</button>
 					</div>					
 				</div>		
@@ -126,11 +126,11 @@
 				</table>
 				<div data-bind="visible: Step() == 2">
 					<button class="btn btn-default" data-bind="click: addMainAnswer, disable: MainAnswerList.Locked()">
-						Добавить ответ
+						<span class="glyphicon glyphicon-plus"></span> Добавить ответ  
 					</button>		
 
 					<button class="btn btn-primary" data-bind="click: applyMainAnswers, disable: MainAnswerList.Locked()">
-						Далее
+						Далее <span class="glyphicon glyphicon-chevron-right"></span>
 					</button>								
 				</div>
 			</div>		
@@ -218,7 +218,7 @@
 										<tr>
 											<td colspan="3">
 												<button class="btn btn-default" data-bind="click: $root.addSecondAnswer">
-													Добавить ответ
+													<span class="glyphicon glyphicon-plus"></span> Добавить ответ 
 												</button>		
 											</td>
 										</tr>
@@ -231,11 +231,11 @@
 						<p>Всего наводящих вопросов: <span data-bind="text: $root.SecondQuestionList().length"></span></p>
 					</div>
 					<div data-bind="visible: $root.Step() == 3">
-						<button class="btn btn-primary" data-bind="click: function(model) { $root.applySecondQuestion(model, true); }">
-							Ещё наводящий вопрос
+						<button class="btn btn-primary" data-bind="enable: Title(), click: function(model) { $root.applySecondQuestion(model, true); }">
+							<span class="glyphicon glyphicon-plus"></span> Ещё наводящий вопрос 
 						</button>
-						<button class="btn btn-success" data-bind="click: function(model) { $root.applySecondQuestion(model); }">
-							Готово!
+						<button class="btn btn-success" data-bind="enable: Title(), click: function(model) { $root.applySecondQuestion(model); }">
+							<span class="glyphicon glyphicon-ok"></span> Готово!
 						</button>						
 					</div>	
 				<!-- /ko -->									

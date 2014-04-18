@@ -72,7 +72,15 @@
          */        
         protected function unpackEntity(array $data)
         {                          
-            return QuestionData::createFromJson($data); //TODO Переделать из JSON!                       
+            $ret = QuestionData::createFromJson($data); //TODO Переделать из JSON!  
+            $ret->userId     = $this->user->data()->id;
+            $ret->createDate = time();
+
+            if (!$this->user->isAdmin()) {
+                $ret->active = false;    
+            }            
+            
+            return $ret;                        
         }        
         
         /**
@@ -100,7 +108,12 @@
             $toEntity->categoryId   = $fromEntity->categoryId;
             $toEntity->parentId     = $fromEntity->parentId;
             $toEntity->order        = $fromEntity->order;
+            
+            if ($this->user->isAdmin()) {
+                $toEntity->active = $fromEntity->active;    
+            }             
             //$toEntity->createDate 
-            //$toEntity->userId         
+            //$toEntity->userId    
+            //$toEntity->active      
         }
     }    

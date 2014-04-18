@@ -19,9 +19,9 @@
                 $rel = new RelData();
                 $rel->parentId = $secondAnswer->id;
                 $rel->childId = $mainAnswer->id;
-                if (!$this->repositoryFactory->getRelAnswerRepository()->insert($rel)) {
-                    $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);    
-                }
-            }            
+                return $this->repositoryFactory->getRelAnswerRepository()->insert($rel);
+            }     
+            
+            return true;       
         }       
     }    

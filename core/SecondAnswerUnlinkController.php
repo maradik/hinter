@@ -16,9 +16,9 @@
                 ->getRelAnswerRepository()
                 ->getOne(array('parentId' => $secondAnswer->id, 'childId' => $mainAnswer->id));
             if ($rel) {
-                if (!$this->repositoryFactory->getRelAnswerRepository()->delete($rel->id)) {
-                    $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);    
-                }
+                return $this->repositoryFactory->getRelAnswerRepository()->delete($rel->id);
             }            
+            
+            return true;
         }
     }    

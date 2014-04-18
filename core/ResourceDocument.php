@@ -48,7 +48,7 @@
                         $this->mergeEntities($origData, $newData); 
                                      
                         if ($this->repository->update($origData)) {
-                            $data = $this->repository->getById($data->id);
+                            $data = $this->repository->getById($origData->id);
                             $this->setResponseData($this->packEntity($data));                            
                         } else {
                             $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
@@ -71,7 +71,7 @@
                 $origData = $this->repository->getById($id);  
                 
                 if (!empty($origData)) {
-                    if ($this->checkPermissionDelete($origData)) {                                                             
+                    if ($this->checkPermissionDelete($origData)) {
                         if ($this->repository->delete($id)) {
                             $this->setResponseCode(HttpResponseCode::NO_CONTENT);    
                         } else {

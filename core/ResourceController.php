@@ -18,17 +18,5 @@
             $this->addSupportedMethod('POST', 'api_post');                   
         }            
 
-        abstract protected function api_post(array $args = array());         
-        
-        /**
-         * @param BaseData $entity         
-         * @return boolean
-         */        
-        abstract protected function checkPermission(BaseData $entity);                                                
-        
-        /**
-         * @param array $data         
-         * @return BaseData
-         */        
-        abstract protected function unpackEntity(array $data);          
+        abstract protected function api_post(array $args = array());                        
     }

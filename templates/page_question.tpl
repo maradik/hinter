@@ -1,34 +1,35 @@
-{extends 'base.tpl'}
+{extends 'page.tpl'}
 
 {block 'content'}
 	
 	<div>
 		<div class="panel" data-bind="css: CurrentSecQuestion() == 0 ? 'panel-primary' : 'panel-default'">
 			<div class="panel-heading">
-				<h3 class="panel-title">Решается вопрос</h3>
+				<h3 class="panel-title"><span class="glyphicon glyphicon-question-sign"></span> Решается вопрос</h3>
 			</div>
 			<div class="panel-body">
 				<div>		
 					<h1>{$mainQuestion->title|e:'HTML'}</h1>
 					<p>{$mainQuestion->description|e:'HTML'}</p>	
 				</div>
-				
-				<div data-bind="visible: CurrentSecQuestion() == 0">
+			</div>
+			<div class="panel-footer" data-bind="visible: CurrentSecQuestion() == 0">				
+				<div>
 					<div class="row">
 						<div class="col-md-12">
-							<p>Чтобы узнать ответ, придется ответить на несколько наводящих вопросов.</p>
-							<button class="btn btn-primary btn-lg" data-bind="click: $root.start, enable: MainAnswerList().length != 0">
-								Далее <span class="glyphicon glyphicon-chevron-right"></span>
+							<p><small>Чтобы узнать ответ, придется ответить на несколько наводящих вопросов.</small></p>
+							<button class="btn btn-primary" data-bind="click: $root.start, enable: MainAnswerList().length != 0">
+								Узнать ответ прямо сейчас!
 							</button>							
 						</div>
 					</div>					
-				</div>	
+				</div>					
 			</div>
 		</div>				
 		
 		<div class="panel panel-success" data-bind="visible: Finish">
 			<div class="panel-heading">
-				<h3 class="panel-title">Подходящий вариант</h3>
+				<h3 class="panel-title"><span class="glyphicon glyphicon-ok-sign"></span> Оптимальный вариант</h3>
 			</div>
 			<div class="panel-body" data-bind="with: MainAnswerList()[0]">	
 				<h3 data-bind="text: Title"></h3>
@@ -38,6 +39,13 @@
 				</button>
 			</div>
 		</div>	
+
+		<div data-bind="visible: CurrentSecQuestion() && !Finish()">
+			<div class="progress" data-bind="visible: CurrentSecQuestion() && !Finish()">
+				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="" data-bind="text: getProgress() + '%', style: { width: getProgress() + '%' }">				
+				</div>
+			</div>		
+		</div>	
 		
 		<div class="alert alert-info" data-bind="visible: CurrentSecQuestion() && !Finish()">
 			<div class="row" data-bind="if: SecondQuestion">
@@ -46,12 +54,17 @@
 						<h3><span data-bind="text: $parent.CurrentSecQuestion"></span>. <span data-bind="text: Title"></span></h3>
 						<p data-bind="text: Description"></p>		
 					</div>
-					<div class="progress" data-bind="visible: CurrentSecQuestion() && !Finish()">
-						<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="" data-bind="text: getProgress() + '%', style: { width: getProgress() + '%' }">				
-						</div>
-					</div>									
 				</div>
 				<div class="col-md-5">
+					<p>Выберите ответ:</p>
+					<div class="list-group" data-bind="foreach: SecondAnswerList">
+						<a href="#" class="list-group-item" data-bind="click: $root.nextQuestion">
+							<h4 class="list-group-item-heading" data-bind="text: Title"></h4>
+							<p class="list-group-item-text" data-bind="text: Description"></p>
+						</a>
+					</div>
+
+					<!--
 					<div class="panel panel-primary">
 						<div class="panel-heading">
 							<h3 class="panel-title">Выберите ответ:</h3>
@@ -69,13 +82,14 @@
 							</div>			
 						</div>
 					</div>	
+					-->
 				</div>				
 			</div>		
 		</div>					
 		
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h3 class="panel-title">Возможные варианты</h3>
+				<h3 class="panel-title"><span class="glyphicon glyphicon-info-sign"></span> Возможные варианты</h3>
 			</div>
 			<div class="panel-body">		
 				<div data-bind="if: MainAnswerList().length > 0">

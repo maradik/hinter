@@ -52,7 +52,7 @@
                     $this->db,
                     $this->tableCategory,
                     $this->dbPrefix
-                );                
+                );      
             }
             return $this->categoryRepository;                    
         }
@@ -65,6 +65,28 @@
                     $this->tableMainQuestion,
                     $this->dbPrefix
                 );
+                $self = $this;
+                $this->mainQuestionRepository->setOnDelete(function($id) use ($self) {
+                    $mainAnswers = $self->getMainAnswerRepository()
+                        ->query()
+                        ->addFilterField('questionId', $id)
+                        ->getEntity();
+                    foreach ($mainAnswers as $mainAnswer) {
+                        if (!$self->getMainAnswerRepository()->delete($mainAnswer->id)) {
+                            return false;    
+                        }
+                    }  
+                    $secondQuestions = $self->getSecondQuestionRepository()
+                        ->query()
+                        ->addFilterField('parentId', $id)
+                        ->getEntity();
+                    foreach ($secondQuestions as $secondQuestion) {
+                        if (!$self->getSecondQuestionRepository()->delete($secondQuestion->id)) {
+                            return false;    
+                        }
+                    }                         
+                    return true;
+                });                 
             }
             return $this->mainQuestionRepository;                    
         }
@@ -77,6 +99,19 @@
                     $this->tableMainAnswer,
                     $this->dbPrefix                
                 );
+                $self = $this;                
+                $this->mainAnswerRepository->setOnDelete(function($id) use ($self) {
+                    $rels = $self->getRelAnswerRepository()
+                        ->query()
+                        ->addFilterField('childId', $id)
+                        ->getEntity();
+                    foreach ($rels as $rel) {
+                        if (!$self->getRelAnswerRepository()->delete($rel->id)) {
+                            return false;    
+                        }
+                    }    
+                    return true;
+                });                 
             }
             return $this->mainAnswerRepository;                    
         }
@@ -89,6 +124,19 @@
                     $this->tableSecondQuestion,
                     $this->dbPrefix
                 );
+                $self = $this;
+                $this->secondQuestionRepository->setOnDelete(function($id) use ($self) {
+                    $secondAnswers = $self->getSecondAnswerRepository()
+                        ->query()
+                        ->addFilterField('questionId', $id)
+                        ->getEntity();
+                    foreach ($secondAnswers as $secondAnswer) {
+                        if (!$self->getSecondAnswerRepository()->delete($secondAnswer->id)) {
+                            return false;    
+                        }
+                    }    
+                    return true;
+                });                 
             }
             return $this->secondQuestionRepository;                    
         }
@@ -101,6 +149,19 @@
                     $this->tableSecondAnswer,
                     $this->dbPrefix                
                 );
+                $self = $this;                
+                $this->secondAnswerRepository->setOnDelete(function($id) use ($self) {
+                    $rels = $self->getRelAnswerRepository()
+                        ->query()
+                        ->addFilterField('parentId', $id)
+                        ->getEntity();
+                    foreach ($rels as $rel) {
+                        if (!$self->getRelAnswerRepository()->delete($rel->id)) {
+                            return false;    
+                        }
+                    }    
+                    return true;
+                });                  
             }
             return $this->secondAnswerRepository;                    
         }

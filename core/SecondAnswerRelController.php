@@ -21,22 +21,48 @@
                                             
             if ($secondAnswer) {                
                 if ($this->checkPermission($secondAnswer)) {
-                    $mainAnswer = $this->unpackEntity($args);
-                    if ($mainAnswer) {
-                      $mainAnswer = $this->repositoryFactory->getMainAnswerRepository()->getById($mainAnswer->id);  
-                    }    
-                    $secondQuestion = $this
-                        ->repositoryFactory
-                        ->getSecondQuestionRepository()
-                        ->getById($secondAnswer->questionId);                                            
-                    
-                    if ($mainAnswer && $secondQuestion && $secondQuestion->parentId == $mainAnswer->questionId) {
-                        if ($this->checkPermission($mainAnswer)) {
-                            $this->updateRel($secondAnswer, $mainAnswer);
+                    if (!empty($args)) {
+                        $this->repository->transactionBegin();
+                        foreach ($args as $mainAnswerArgs) {
+                            $mainAnswer = $this->unpackEntity($mainAnswerArgs);
+                            if ($mainAnswer) {
+                              $mainAnswer = $this->repositoryFactory->getMainAnswerRepository()->getById($mainAnswer->id);  
+                            }    
+                            $secondQuestion = $this
+                                ->repositoryFactory
+                                ->getSecondQuestionRepository()
+                                ->getById($secondAnswer->questionId);                                            
+                            
+                            if ($mainAnswer && $secondQuestion && $secondQuestion->parentId == $mainAnswer->questionId) {
+                                if ($this->checkPermission($mainAnswer)) {
+                                    if (!$this->updateRel($secondAnswer, $mainAnswer)) {
+                                        $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
+                                        $this->repository->transactionRollBack();
+                                        return;
+                                    }
+                                } else {
+                                    $this->repository->transactionRollBack();                                    
+                                    return;
+                                }
+                            } else {
+                                $this->setResponseCode(HttpResponseCode::BAD_REQUEST);
+                                $this->repository->transactionRollBack();
+                                return;
+                            } 
                         }
+                        $this->repository->transactionCommit();
+                        $collection = $this
+                            ->repository
+                            ->query()
+                            ->setHidden()
+                            ->addFilterField('parentId', $secondAnswerId)
+                            ->join($this->repositoryFactory->getMainAnswerRepository())
+                            ->addLinkFields('childId', 'id')
+                            ->get();
+                        $this->setResponseData($this->packCollection(array_map('array_shift', $collection)));
                     } else {
-                        $this->setResponseCode(HttpResponseCode::BAD_REQUEST);
-                    } 
+                        $this->setResponseCode(HttpResponseCode::BAD_REQUEST);   
+                    }
                 }
             } else {
                 $this->responseNotFound();
@@ -68,7 +94,31 @@
             } 
             
             return true;
-        }                                                
+        }          
+        
+        /**
+         * @param BaseData[] $entity         
+         * @return array
+         */        
+        protected function packCollection(array $collection)
+        {
+            $ret = array();         
+            foreach ($collection as $key => $val) {
+                $ret[$key] = $this->packEntity($val);  
+            }            
+            
+            return $ret;
+        }      
+        
+         
+        /*
+         * @param AnswerData $entity         
+         * @return array
+         */        
+        protected function packEntity(AnswerData $entity)
+        {
+            return $entity->jsonSerialize(); //TODO Переделать в JSON!
+        }                                                      
         
         /**
          * @param array $data         
@@ -81,5 +131,10 @@
             return $ret;
         }            
         
+        /**
+         * @param AnswerData $secondAnswer
+         * @param AnswerData $mainAnswer
+         * @return boolean
+         */
         abstract protected function updateRel(AnswerData $secondAnswer, AnswerData $mainAnswer); 
     }    

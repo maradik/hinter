@@ -72,7 +72,10 @@
          */        
         protected function unpackEntity(array $data)
         {                          
-            return AnswerData::createFromJson($data); //TODO Переделать из JSON!                       
+            $ret = AnswerData::createFromJson($data); //TODO Переделать из JSON!
+            $ret->userId     = $this->user->data()->id;
+            $ret->createDate = time();
+            return $ret;                                        
         }        
         
         /**

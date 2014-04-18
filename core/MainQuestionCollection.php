@@ -61,6 +61,10 @@
             $ret->userId     = $this->user->data()->id;
             $ret->createDate = time();
             
+            if (!$this->user->isAdmin()) {
+                $ret->active = false;    
+            }            
+            
             return $ret;
         }          
     }    

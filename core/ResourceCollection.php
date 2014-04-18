@@ -3,6 +3,7 @@
     
     use Maradik\Testing\BaseData;
     use Maradik\Testing\BaseRepository; 
+    use Maradik\Testing\Query;
     use Maradik\User\UserCurrent; 
     use Maradik\HinterApi\RepositoryFactory;           
     
@@ -20,8 +21,40 @@
         }
         
         protected function api_get(array $args = array())
-        {                                             
-            $collection = $this->repository->getCollection();   
+        {
+            $args = array_change_key_case($args, CASE_LOWER); 
+            
+            $q = $this->repository->query();
+            
+            if (!empty($args['filterfield']) && is_array($args['filterfield'])) {
+                foreach ($args['filterfield'] as $key => $field) {
+                    if (!empty($field)) {
+                        $q->addFilterField(
+                            $field,
+                            !empty($args['filtervalue'][$key]) ? $args['filtervalue'][$key] : '',
+                            !empty($args['filtertype'][$key])  ? $args['filtertype'][$key]  : '='
+                        );
+                    }
+                }
+            }
+            
+            if (!empty($args['sortfield']) && is_array($args['sortfield'])) {
+                foreach ($args['sortfield'] as $key => $field) {
+                    if (!empty($field)) {
+                        $q->addSortField(
+                            $field,
+                            !empty($args['sortorder'][$key]) && strtoupper($args['sortorder'][$key]) == 'DESC'
+                                ? Query::SORT_DESC
+                                : Query::SORT_ASC
+                        );
+                    }
+                }
+            }          
+    
+            $limit  = !empty($args['limit']) && (int) $args['limit'] < 100 ? (int) $args['limit'] : 100; 
+            $offset = !empty($args['offset']) ? (int) $args['offset'] : 0;
+                                    
+            $collection = $q->getEntity($limit, $offset);   
             $this->setResponseData($this->packCollection($collection));                     
         }        
 

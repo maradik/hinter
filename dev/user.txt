@@ -12,4 +12,6 @@ curl -X POST -o - -d '{"title":"Ответ 1 на вопрос 1","description":
 
 curl -X DELETE -o - -H 'Content-Type: application/json; charset=utf-8' -v http://hinter.an/api/mainquestion/7 -H "Cookie: ATUID=PG%2FttMuRwXnD3B0vUHvKggxMZXaj"
 
-curl -X POST -o - -H 'Content-Type: application/json; charset=utf-8' -H "Cookie: ATUID=PG%2FttMuRwXnD3B0vUHvKggxMZXaj" -d '{"id":4}' -v http://hinter.an/api/secondaryanswer/4/link
+curl -X POST -o - -H 'Content-Type: application/json; charset=utf-8' -H "Cookie: ATUID=PG%2FttMuRwXnD3B0vUHvKggxMZXaj" -d '{"id":4}' -v http://hinter.an/api/secondaryanswer/10/link
+
+XDEBUG_SESSION=ECLIPSE_DBGP_13977864254701

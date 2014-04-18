@@ -1,0 +1,47 @@
+.panel-default .panel-heading {
+	background-color: #63abae;	/*#4D8588*/
+	color: #FFFFFF;	
+}
+
+.panel-default .panel-heading .panel-title {
+	
+}
+
+.panel-default {
+	border-color: #63abae;
+}
+
+.navbar-default {
+	background-color: #63abae;	/*#4D8588*/
+}
+
+.navbar-default .navbar-header a.navbar-brand {
+	color: #00f0ff;
+}
+
+.navbar-default .navbar-header .navbar-text {
+	color: #FFFFFF;
+}
+
+.label-default {
+	background-color: #6dbbbf;
+}
+
+.btn-default {
+	background-color: #5a9b9d;
+	color: #FFFFFF;
+	border-color: #487d7e;
+}
+
+.btn-default:hover, .btn-default:focus, .btn-default:active {
+	background-color: #487d7e;
+	color: #FFFFFF;
+	border-color: #365c5e;
+}
+
+footer {
+	background-color: #2c4c4e;
+	color: #FFFFFF;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
