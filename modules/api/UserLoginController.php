@@ -13,7 +13,11 @@
             $userData = $this->unpackEntity($args);
             
             if (!$this->user->login($userData->login, $userData->password)) {
-                $this->addResponseMessage($this->user->errorInfo());
+                if ($this->user->errorInfo()) {
+                    $this->addResponseMessage($this->user->errorInfo(), Resource::MESS_ERROR);
+                } else {
+                    $this->addResponseMessage('Неверное имя пользователя или пароль!', Resource::MESS_WARNING);
+                }
                 $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
             }
             

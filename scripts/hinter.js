@@ -7,8 +7,8 @@
     function Message(text, type) {
         var self = this;
         
-        self.text = text;
-        self.type = type;
+        self.Text = text;
+        self.Type = type;
     }    
     
     var NoYesAll = {No: 0, Yes: 1, All: 2};
@@ -31,7 +31,7 @@
         model.Editing(false);        
         requestAjaxJson(
             method,  
-            apiUrlBase + model.getUri() + (model.Id() ? '/' + model.Id() : ''), 
+            apiUrlBase + '/' + model.getUri() + (model.Id() ? '/' + model.Id() : ''), 
             model.pack(), 
             function (data, textStatus, jqXHR) { 
                 //observableModel(model.unpack(data.data));
@@ -40,15 +40,6 @@
                 }
             },
             function (jqXHR, textStatus) {
-                //--------
-                if (confirm(jqXHR.status 
-                    + " "
-                    + textStatus
-                    + ":"
-                    + jqXHR.statusText)) {
-                    alert(jqXHR.responseText);
-                }           
-                //----------     
                 model.Editing(model.Edited());
                 model.Locked(false);
                 model.Edited(false);                
@@ -79,14 +70,14 @@
         ko.utils.extend(self, new BaseModel());        
         
         self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title);
-        self.Description    = ko.observable(description);
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 30, required: true} });
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000} });;
         self.ParentId       = ko.observable(parentId);
         self.Order          = ko.observable(order);
     
         self.getUri = function() {
             return 'category';
-        }
+        };
     
         self.unpack = Category.unpack;
     
@@ -97,8 +88,8 @@
                 description:self.Description(), 
                 parentId:   self.ParentId(),
                 order:      self.Order()
-            }
-        }
+            };
+        };
     }
     
     Category.unpack = function(json) {
@@ -125,9 +116,9 @@
         ko.utils.extend(self, new BaseModel());
         
         self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title);
-        self.Description    = ko.observable(description);
-        self.CategoryId     = ko.observable(categoryId);
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 10, maxLen: 150, required: true} });        
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000} });
+        self.CategoryId     = ko.observable(categoryId).extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
         self.UserId         = ko.observable(userId);   
@@ -178,8 +169,8 @@
         ko.utils.extend(self, new BaseModel());
         
         self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title);
-        self.Description    = ko.observable(description);
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 50, required: true} });
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 150} });;
         self.QuestionId     = ko.observable(questionId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
@@ -187,7 +178,7 @@
         
         self.getUri = function() {
             return 'mainanswer';
-        }          
+        };          
         
         self.unpack = MainAnswer.unpack;
 
@@ -199,8 +190,8 @@
                 questionId: self.QuestionId(),
                 order:      self.Order(),    
                 userId:     0                 
-            }
-        }         
+            };
+        };         
     }    
     
     MainAnswer.unpack = function(json) {
@@ -228,8 +219,8 @@
         ko.utils.extend(self, new BaseModel());
         
         self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title);
-        self.Description    = ko.observable(description);
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 10, maxLen: 150, required: true} });
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000} });;
         self.ParentId       = ko.observable(parentId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
@@ -280,14 +271,14 @@
         ko.utils.extend(self, new BaseModel());
         
         self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title);
-        self.Description    = ko.observable(description);
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 50, required: true} });
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 150} });;
         self.QuestionId     = ko.observable(questionId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
         self.UserId         = ko.observable(userId);
 
-        self.MainAnswers    = ko.observableArray();
+        self.MainAnswers    = ko.observableArray().extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
         
         self.getUri = function() {
             return 'secondaryanswer';
@@ -376,8 +367,8 @@
         self.MainAnswerList     = ko.observableArray([]);
         self.RelMainAnswerList  = ko.observableArray([]);
         
-        self.bind = function() {
-            ko.applyBindings(self, document.getElementById("page-content-block"));
+        self.bind = function(htmlElementId) {
+            ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));
             
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/mainanswer", null, function (json) {                
                 self.MainAnswerList(
@@ -482,8 +473,8 @@
             });
         };  
         
-        self.bind = function() {
-            ko.applyBindings(self, document.getElementById("page-content-block"));
+        self.bind = function(htmlElementId) {
+            ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));
             
             requestAjaxJson('GET', apiUrlBase + "/category", null, function (json) {                
                 self.CategoryList(
@@ -504,6 +495,7 @@
             }
             
             if (self.Step() == 2) { // добавление ответов
+                self.addMainAnswer();
                 self.addMainAnswer();
             }
             
@@ -580,6 +572,7 @@
             self.SecondQuestionList.push(newSecondQuestion);
             self.SecondQuestionIdx(self.SecondQuestionList().length - 1);
             newSecondQuestion.Order(self.SecondQuestionIdx());
+            self.addSecondAnswer(newSecondQuestion);
             self.addSecondAnswer(newSecondQuestion);
         };
         
@@ -658,6 +651,10 @@
                     }));    
                     secondAnswer.Locked(false);             
                     callbackOnSuccess();
+                },
+                function() {
+                    secondAnswer.Editing(true);
+                    secondAnswer.Locked(false); 
                 }
             );
         };
@@ -681,7 +678,7 @@
             return mq ? mq.Id() : 2147483647;
         });      
         
-        self.bind = function(mainQuestionList, collectionDocumentElement) {
+        self.bind = function(mainQuestionList, htmlElementId) {
             if (mainQuestionList) {
                 mainQuestionList.forEach(function(item) {
                     self.MainQuestionList.push(MainQuestion.unpack(item));
@@ -690,7 +687,7 @@
                       
             $(window).scroll(onWindowScroll);
             $(".list-item-static").hide();
-            ko.applyBindings(self, document.getElementById("page-content-block"));
+            ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));
             
             if (needLoadOlderList()) {
                 asyncLoadOlderList();
@@ -783,18 +780,25 @@
      * Текущий пользователь
      * 
      * ********************************************************/
-    function CurrentUserVM() {
+    function CurrentUserVM(userData) {
         var self = this;
         
-        self.UserData = ko.observable(new UserData); 
+        self.UserData = ko.observable(typeof userData == 'undefined' ? new UserData : UserData.unpack(userData)); 
         self.Messages = ko.observableArray();
         
-        self.bind = function(userData) {
-            if (typeof userData != 'undefined') {
-                ko.UserData(UserData.unpack(userData));    
-            }
-            
-            ko.applyBindings(self, document.getElementById("page-navbar-user-block"));
+        self.bind = function(htmlElementId) {
+            ko.applyBindings(self, document.getElementById(htmlElementId || "bs-navbar-collapse-1"/* "page-navbar-user-block"*/));
+        };
+        
+        self.reloadPage = function() {
+            var pagesWithoutReload = [
+                /^https?:\/\/[^/]+\/$/,
+                /^https?:\/\/[^/]+\/category\/\d+$/,
+                /^https?:\/\/[^/]+\/question\/\d+$/
+            ];
+            if (!pagesWithoutReload.some(function(item) { return window.location.href.match(item); })){
+                window.location.reload();
+            } 
         };
         
         self.register = function() {
@@ -802,6 +806,7 @@
                 self.Messages.push(new Message('Вы уже вошли под пользователем ' + self.UserData().login(), MessageType.ERROR));
                 return;
             } 
+            self.UserData().Locked(true);
             requestAjaxJson(
                 'POST',
                 apiUrlBase + '/user/current/register',
@@ -809,8 +814,10 @@
                 function (data) {
                     if (data.data) {
                         self.UserData(UserData.unpack(data.data));
+                        self.reloadPage();
                     }
-                }
+                },
+                function() { self.UserData().Locked(false); }
             );
         };
         
@@ -819,6 +826,7 @@
                 self.Messages.push(new Message('Вы уже вошли под пользователем ' + self.UserData().login(), MessageType.ERROR));
                 return;
             }
+            self.UserData().Locked(true);
             requestAjaxJson(
                 'POST',
                 apiUrlBase + '/user/current/login',
@@ -826,8 +834,10 @@
                 function (data) {
                     if (data.data) {
                         self.UserData(UserData.unpack(data.data));
+                        self.reloadPage();                        
                     }
-                }
+                },
+                function() { self.UserData().Locked(false); }
             );
         };   
         
@@ -835,6 +845,7 @@
             if (!self.isRegisteredUser()) {
                 return;
             }
+            self.UserData().Locked(true);
             requestAjaxJson(
                 'POST',
                 apiUrlBase + '/user/current/logout',
@@ -842,15 +853,103 @@
                 function (data) {
                     if (data.data) {
                         self.UserData(UserData.unpack(data.data));
+                        self.reloadPage();                        
                     }
-                }
+                },
+                function() { self.UserData().Locked(false); }
             );
         };              
         
         self.isRegisteredUser = ko.computed(function() {
-            return self.UserData().Id() != 0;
+            return Boolean(self.UserData().Id());
         });            
     }    
+    
+    /**********************************************************
+     * 
+     * Сообщения для пользователя
+     * 
+     * ********************************************************/
+    function MessagesVM(msgList) {
+        var self = this;
+        var elementId = "message-modal-block";
+        
+        self.MessageList = userMessageList;
+        if (msgList) {
+            self.MessageList(msgList);  
+        }
+
+        self.maxType = ko.computed(function(){
+            var maxType = 0;
+            self.MessageList().forEach(function(item){maxType = maxType < item.Type ? item.Type : maxType;});
+            return maxType;
+        });
+
+        self.title = ko.computed(function(){
+            switch (self.maxType()) {
+                case MessageType.NOTIFICATION:  return 'Уведомление';
+                case MessageType.SUCCESS:       return 'Успех';
+                case MessageType.WARNING:       return 'Предупреждение';
+                case MessageType.ERROR:         return 'Ошибка';
+            }
+        }); 
+        
+        self.bind = function(htmlElementId) {
+            ko.applyBindings(self, document.getElementById(htmlElementId || elementId));
+        };   
+        
+        self.showModal = ko.computed(function(){
+            if (self.MessageList().length) {
+               $('#' + elementId + ' .modal').modal('show');
+            } else {
+               $('#' + elementId + ' .modal').modal('hide'); 
+            }
+        });
+       
+        self.clear = function() {
+            self.MessageList([]);
+        };
+
+        $('#' + elementId + ' .modal').on('hidden.bs.modal', self.clear);
+    } 
+    
+    var userMessageList = ko.observableArray();
+    userMessageList.addMessage = function(message) {
+        var eqMessages = userMessageList().filter(function(item) {
+            if (item.Text == message.Text && item.Type == message.Type) {return true;} else {return false;} 
+        });  
+        if (!eqMessages.length) {
+            userMessageList.push(message);
+        }
+    };
+    
+    ko.extenders.bounds = function(target, options) {
+        var required    = options.required || false;
+        var minLen      = options.minLen || 0;
+        var maxLen      = options.maxLen || 0;          
+        target.hasError = ko.observable();
+        target.validationMessage = ko.observable();
+
+        function validate(newValue) {
+            var condRequired = !required    || ((!Array.isArray(newValue) && newValue)  || (Array.isArray(newValue) && newValue.length));
+            var condMinLen   = !Boolean(minLen) || (newValue && newValue.length >= minLen);
+            var condMaxLen   = !Boolean(maxLen) || !newValue || (newValue && newValue.length <= maxLen);            
+            target.hasError(condRequired && condMinLen && condMaxLen ? false : true);
+            if (!condRequired) {
+                target.validationMessage(options.requiredMessage || "Обязательно для заполнения");
+            } else if (!condMinLen) {
+                target.validationMessage(options.minLenMessage || "Значение должно быть не короче " + minLen);                
+            } else if (!condMaxLen) {
+                target.validationMessage(options.maxLenMessage || "Значение должно быть не длиннее " + maxLen);                
+            } else {
+                target.validationMessage("");
+            }
+                        
+        }
+        validate(target());
+        target.subscribe(validate);
+        return target;
+    };    
     
     var apiUrlBase = '/api';
     
@@ -864,17 +963,37 @@
     };  
     
     var requestAjaxJson = function (requestType, serviceUrl, sendData, callback, callbackError) {
-        console.log(serviceUrl);        
-        callbackError = callbackError 
-            || function (jqXHR, textStatus) {
-                if (confirm(jqXHR.status 
-                    + " "
-                    + textStatus
-                    + ":"
-                    + jqXHR.statusText)) {
-                    alert(jqXHR.responseText);
+        //console.log(serviceUrl);        
+        cbError = function (jqXHR, textStatus) {
+                console.log("-->" + serviceUrl + "\n" + jqXHR.status + " " + textStatus + ":" + jqXHR.statusText + "\n" + jqXHR.responseText + "<--");
+                switch (textStatus) {
+                    case "timeout":
+                    case "abort":
+                        userMessageList.addMessage(new Message("Нет связи с сервером, проверьте подключение к Интернету.", MessageType.ERROR));
+                        break;                   
+                    case "error": 
+                        var parseMessage = false;
+                        try {
+                            data = JSON.parse(jqXHR.responseText);
+                            if (data.message && data.message.length) {
+                                data.message.forEach(function(item) {
+                                    userMessageList.addMessage(new Message(item.text, item.type));
+                                });    
+                                parseMessage = true;
+                            }
+                        }
+                        catch (e) {}
+                        if (parseMessage) {
+                            break;
+                        }
+                    default:
+                        userMessageList.addMessage(new Message("Неопознанная внутренняя ошибка!", MessageType.ERROR));
+                }
+                if (callbackError) {
+                    callbackError(jqXHR, textStatus);    
                 }
             };
+
         $.ajax({
             url: serviceUrl,
             data: JSON.stringify(sendData),
@@ -883,7 +1002,7 @@
             cache: false,
             contentType: 'application/json; charset=utf-8',
             success: callback,
-            error: callbackError
+            error: cbError
         });
     };
 
@@ -892,6 +1011,7 @@
         CreateTestVM: CreateTestVM,
         MainQuestionListVM: MainQuestionListVM,
         CurrentUserVM: CurrentUserVM,
-        requestAjaxJson: requestAjaxJson
+        MessageType: MessageType,
+        MessagesVM: MessagesVM
     };    
 }();

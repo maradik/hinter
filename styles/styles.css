@@ -13,6 +13,12 @@
 
 .navbar-default {
 	background-color: #63abae;	/*#4D8588*/
+	border-color: #457476;
+}
+
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+	border-color: #457476;
 }
 
 .navbar-default .navbar-header a.navbar-brand {
@@ -21,6 +27,12 @@
 
 .navbar-default .navbar-header .navbar-text {
 	color: #FFFFFF;
+}
+
+.navbar-default .navbar-nav li a,
+.navbar-default .navbar-nav li a:hover, 
+.navbar-default .navbar-nav li a:focus { 
+	background-color: #64c7cb;
 }
 
 .label-default {
@@ -37,6 +49,27 @@
 	background-color: #487d7e;
 	color: #FFFFFF;
 	border-color: #365c5e;
+}
+
+.nav li a:hover,
+.nav li a:focus {
+	background-color: #ecf9f9;
+}
+
+.nav li.active a,
+.nav li.active a:hover,
+.nav li.active a:focus {
+	background-color: #63abae;
+}
+
+.table-striped tbody tr:nth-child(2n+1) td,
+.table-striped tbody tr:nth-child(2n+1) th { 
+	background-color: #f2fcfc;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th { 
+	background-color: #ecf9f9;
 }
 
 footer {

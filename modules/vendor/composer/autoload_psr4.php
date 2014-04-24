@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'Maradik\\User\\' => array($vendorDir . '/maradik/user/src'),
     'Maradik\\Testing\\' => array($vendorDir . '/maradik/testing/src'),
+    'Maradik\\HinterApi\\' => array($baseDir . '/api'),
 );

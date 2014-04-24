@@ -4,25 +4,7 @@
     use Maradik\Testing\CategoryRepository;
     use Maradik\Testing\QuestionRepository;
     use Maradik\Testing\AnswerRepository;
-    use Maradik\Testing\Query;
-    /*
-    use Maradik\HinterApi\MainQuestionDocument;
-    use Maradik\HinterApi\MainQuestionCollection;
-    use Maradik\HinterApi\MainAnswerDocument;
-    use Maradik\HinterApi\MainAnswerCollection;    
-    use Maradik\HinterApi\MainAnswerMQCollection;
-    use Maradik\HinterApi\MainAnswerSACollection;
-    use Maradik\HinterApi\SecondQuestionDocument;
-    use Maradik\HinterApi\SecondQuestionCollection;
-    use Maradik\HinterApi\SecondQuestionMQCollection;
-    use Maradik\HinterApi\SecondAnswerDocument;
-    use Maradik\HinterApi\SecondAnswerCollection;
-    use Maradik\HinterApi\SecondAnswerSQCollection;    
-    use Maradik\HinterApi\SecondAnswerLinkController;
-    use Maradik\HinterApi\SecondAnswerUnlinkController;      
-    use Maradik\HinterApi\CategoryDocument;
-    use Maradik\HinterApi\CategoryCollection;
-    */
+    use Maradik\Testing\Query;   
     use Maradik\HinterApi\HinterApi;                            
     
     $hinterApi = new HinterApi($repositoryFactory, $user);
@@ -49,9 +31,9 @@
         // Controllers
         $hinterApi->registerResource('secondaryanswer/{id}/link', 'SecondAnswerLinkController');
         $hinterApi->registerResource('secondaryanswer/{id}/unlink', 'SecondAnswerUnlinkController');
-        //$hinterApi->registerResource('user/current/register', 'UserRegisterController');
-        //$hinterApi->registerResource('user/current/login', 'UserLoginController');
-        //$hinterApi->registerResource('user/current/logout', 'UserLogoutController');
+        $hinterApi->registerResource('user/current/register', 'UserRegisterController');
+        $hinterApi->registerResource('user/current/login', 'UserLoginController');
+        $hinterApi->registerResource('user/current/logout', 'UserLogoutController');
        
         $hinterApi->requestResource();
     } else {        
@@ -77,7 +59,7 @@
                 $vars['mainQuestionList'] = $mainQuestionList;
                 $template = "page_main.tpl";
                 break;
-            case $clearUri == "/admin/question":
+            case $clearUri == "/admin/question" && $user->isAdmin():
                 if ($user->isAdmin()) {
                     $template = "admin_mainquestionlist.tpl";
                 }
@@ -121,7 +103,7 @@
                     $template = "page_question.tpl";   
                 }                
                 break;
-            case preg_match('{^/question/create$}', $clearUri, $matches):
+            case preg_match('{^/question/create$}', $clearUri, $matches) && $user->isRegisteredUser():
                 $template = "page_question_edit.tpl";   
                 break;                
         }

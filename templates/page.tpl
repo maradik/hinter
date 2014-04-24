@@ -35,12 +35,8 @@
 			{include 'footer.tpl'}		
 		{/block}
 		
+		{include 'messages.tpl'}
+				
 		{block 'scripts'}{/block}	
-		<script type="text/javascript">
-			$(document).ready(function () {
-				CurrentUserVM = new Hinter.CurrentUserVM();
-				CurrentUserVM.bind();
-			});	
-		</script>				
 	</body>
 </html>

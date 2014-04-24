@@ -8,6 +8,11 @@
     
     abstract class UserController extends ResourceController
     {
+        public function __construct(RepositoryFactory $repositoryFactory, UserCurrent $user)
+        {
+            parent::__construct($repositoryFactory, $repositoryFactory->getCategoryRepository(), $user);
+        }          
+        
         /**
          * @param array $data         
          * @return UserData
@@ -15,8 +20,8 @@
         protected function unpackEntity(array $data)
         {
             $ret = new UserData();
-            $ret->login     = !empty($data['login']) ? $data['login'] : '';
-            $ret->password  = !empty($data['password']) ? $data['password'] : '';
+            $ret->login     = trim(!empty($data['login'])    ? (string) $data['login'] : '');
+            $ret->password  = trim(!empty($data['password']) ? (string) $data['password'] : '');
             $ret->email     = "{$ret->login}@{$ret->login}";
     
             return $ret;

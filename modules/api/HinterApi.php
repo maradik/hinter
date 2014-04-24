@@ -88,11 +88,11 @@
             $resId = array();             
                     
             foreach ($uriElements as $key => $val) {
-                if ($key % 2) { 
+                if ($key % 2 && ((int)$val)) { 
                     $resId[] = (int) $val;
                 }
                 
-                $resUri .= (!empty($resUri) ? "/" : "") . ($key % 2 ? '{id}' : (string) $val);                
+                $resUri .= (!empty($resUri) ? "/" : "") . ($key % 2 && ((int)$val) ? '{id}' : (string) $val);                
             }                                
                         
             if (!empty($this->resources[$resUri]) 

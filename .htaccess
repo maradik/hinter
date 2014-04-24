@@ -3,13 +3,7 @@
 #################################################
 
 # Protect files
-#<Files ~ "^(.*)\.(inc|inc\.php|tpl|sql)$">
-#  Order deny,allow
-#  Deny from all
-#</Files>
-
-# Protect directories
-<Files ~ "^(backup|files|images|include|lang|libs(/.+)?|temp(/.+)?|templates(/.+)?|javascripts(/.+)?)$">
+<Files ~ "^(.*)\.(inc|inc\.php|tpl|sql|project|md|gitignore)$">
   Order deny,allow
   Deny from all
 </Files>
@@ -41,6 +35,9 @@ DirectoryIndex index.php
 
    #RewriteCond %{HTTP_HOST} ^www.hinter\.an$ [NC]
    #RewriteRule ^(.*)$ http://hinter.an/$1 [R=301,L]
+
+   ## Resctrict access to directories
+   RewriteRule ^(.git|.settings|dev|modules|templates)\/ - [F,L,NC]
 
    ## Category redirect
    RewriteCond %{REQUEST_FILENAME} !-f

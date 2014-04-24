@@ -43,27 +43,32 @@
 				<div data-bind="visible: Editing()">
 					<p>Основной вопрос, на который пользователь ищет ответ.</p>
 					<form class="form-horizontal" role="form">
-						<div class="form-group">
-							<label for="inputMainQuestionTitle" class="col-sm-2 control-label">Вопрос</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inputMainQuestionTitle" placeholder="Текст вопроса" data-bind="value: Title, disable: Locked">
+						<fieldset data-bind="disable: Locked">						
+							<div class="form-group" data-bind="css: { 'has-error' : Title.hasError, 'has-success' : !Title.hasError() && Title() }">
+								<label for="inputMainQuestionTitle" class="col-sm-2 control-label">Вопрос</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="inputMainQuestionTitle" placeholder="Текст вопроса" data-bind="value: Title">
+									<span class="small text-danger" data-bind="text: Title.validationMessage(), visible: Title.validationMessage()"></span>
+								</div>
 							</div>
-						</div>
-						<div class="form-group">
-							<label for="inputMainQuestionDescription" class="col-sm-2 control-label">Описание</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inputMainQuestionDescription" placeholder="Поясняющий комментарий" data-bind="value: Description, disable: Locked">
-							</div>
-						</div>					
-						<div class="form-group">
-							<label for="selectMainQuestionCategory" class="col-sm-2 control-label">Категория</label>
-							<div class="col-sm-10">
-								<select class="form-control" id="selectMainQuestionCategory" data-bind="options: $root.CategoryList, value: CategoryId, disable: Locked, optionsText: 'Title', optionsValue: 'Id', optionsCaption: 'Выберите категорию'"></select>
-							</div>
-						</div>	
+							<div class="form-group" data-bind="css: { 'has-error' : Description.hasError, 'has-success' : !Description.hasError() && Description() }">
+								<label for="inputMainQuestionDescription" class="col-sm-2 control-label">Описание</label>
+								<div class="col-sm-10">
+									<textarea rows="5" class="form-control" id="inputMainQuestionDescription" placeholder="Поясняющий комментарий" data-bind="value: Description"></textarea>
+									<span class="small text-danger" data-bind="text: Description.validationMessage(), visible: Description.validationMessage()"></span>
+								</div>
+							</div>					
+							<div class="form-group" data-bind="css: { 'has-error' : CategoryId.hasError, 'has-success' : !CategoryId.hasError() }">
+								<label for="selectMainQuestionCategory" class="col-sm-2 control-label">Категория</label>
+								<div class="col-sm-10">
+									<select class="form-control" id="selectMainQuestionCategory" data-bind="options: $root.CategoryList, value: CategoryId, optionsText: 'Title', optionsValue: 'Id', optionsCaption: 'Выберите категорию'"></select>
+									<span class="small text-danger" data-bind="text: CategoryId.validationMessage(), visible: CategoryId.validationMessage()"></span>									
+								</div>
+							</div>	
+						</fieldset>
 					</form>		
 					<div>
-						<button class="btn btn-primary" data-bind="click: $root.saveMainQuestion, disable: Locked() || !Title() || !CategoryId()">
+						<button class="btn btn-primary" data-bind="click: $root.saveMainQuestion, disable: Locked() || Title.hasError() || CategoryId.hasError() || Description.hasError()">
 							Далее <span class="glyphicon glyphicon-chevron-right"></span>
 						</button>
 					</div>					
@@ -89,36 +94,35 @@
 				<table class="table table-striped">								
 					<tbody data-bind="foreach: MainAnswerList">
 						<tr>
-							<td>
+							<td class="col-xs-1">
 								<span class="label label-default" data-bind="text: ($index() + 1) + ')'"></span>
 							</td>
-							<td>
+							<td class="col-xs-11">
 								<div class="row">
-									<div class="col-md-8">									
+									<div class="col-md-12">									
 										<form class="form-horizontal" role="form" data-bind="visible: Editing()">
-											<div class="form-group">
-												<label class="col-sm-2 control-label">Ответ</label>
-												<div class="col-sm-10">
-													<input type="text" class="form-control" placeholder="Ответ кратко" data-bind="value: Title, disable: Locked">
+											<fieldset data-bind="disable: Locked">											
+												<div class="form-group" data-bind="css: { 'has-error' : Title.hasError, 'has-success' : !Title.hasError() && Title() }">
+													<label class="col-sm-2 control-label">Ответ</label>
+													<div class="col-sm-10">
+														<input type="text" class="form-control" placeholder="Ответ кратко" data-bind="value: Title">
+														<span class="small text-danger" data-bind="text: Title.validationMessage(), visible: Title.validationMessage()"></span>
+													</div>
 												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-sm-2 control-label">Описание</label>
-												<div class="col-sm-10">
-													<input type="text" class="form-control" placeholder="Поясняющий комментарий" data-bind="value: Description, disable: Locked">
-												</div>
-											</div>					
+												<div class="form-group" data-bind="css: { 'has-error' : Description.hasError, 'has-success' : !Description.hasError() && Description() }">
+													<label class="col-sm-2 control-label">Описание</label>
+													<div class="col-sm-10">
+														<textarea rows="2" class="form-control" placeholder="Поясняющий комментарий" data-bind="value: Description"></textarea>
+														<span class="small text-danger" data-bind="text: Description.validationMessage(), visible: Description.validationMessage()"></span>
+													</div>
+												</div>		
+											</fieldset>			
 										</form>	
 										<div data-bind="visible: !Editing()">
 											<h4 data-bind="text: Title"></h4>
 											<p data-bind="text: Description"></p>
 										</div>
 									</div>	
-									<div class="col-md-4">
-										<button class="btn btn-primary" data-bind="click: $root.saveMainAnswer, visible: false && Editing(), disable: Locked">
-											Сохранить
-										</button>
-									</div>
 								</div>
 							</td>
 						</tr>
@@ -129,7 +133,7 @@
 						<span class="glyphicon glyphicon-plus"></span> Добавить ответ  
 					</button>		
 
-					<button class="btn btn-primary" data-bind="click: applyMainAnswers, disable: MainAnswerList.Locked()">
+					<button class="btn btn-primary" data-bind="click: applyMainAnswers, disable: MainAnswerList.Locked() || MainAnswerList().some(function(item){ return item.Title.hasError() || item.Description.hasError(); })">
 						Далее <span class="glyphicon glyphicon-chevron-right"></span>
 					</button>								
 				</div>
@@ -164,52 +168,68 @@
 							</div>
 							<div class="col-sm-11">
 								<form class="form-horizontal" role="form" data-bind="visible: Editing()">
-									<div class="form-group">
-										<label class="col-sm-2 control-label">Вопрос</label>
-										<div class="col-sm-10">
-											<input type="text" class="form-control" placeholder="Наводящий вопрос кратко" data-bind="value: Title, disable: Locked">
+									<fieldset data-bind="disable: Locked">
+										<div class="form-group" data-bind="css: { 'has-error' : Title.hasError, 'has-success' : !Title.hasError() && Title() }">
+											<label class="col-sm-2 control-label">Вопрос</label>
+											<div class="col-sm-10">
+												<input type="text" class="form-control" placeholder="Наводящий вопрос кратко" data-bind="value: Title">
+												<span class="small text-danger" data-bind="text: Title.validationMessage(), visible: Title.validationMessage()"></span>
+											</div>
 										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-sm-2 control-label">Описание</label>
-										<div class="col-sm-10">
-											<input type="text" class="form-control" placeholder="Поясняющий комментарий" data-bind="value: Description, disable: Locked">
-										</div>
-									</div>								
+										<div class="form-group" data-bind="css: { 'has-error' : Description.hasError, 'has-success' : !Description.hasError() && Description() }">
+											<label class="col-sm-2 control-label">Описание</label>
+											<div class="col-sm-10">												
+												<textarea rows="5" class="form-control" placeholder="Поясняющий комментарий" data-bind="value: Description"></textarea>
+												<span class="small text-danger" data-bind="text: Description.validationMessage(), visible: Description.validationMessage()"></span>
+											</div>
+										</div>	
+									</fieldset>							
 								</form>									
 							
 								<table class="table table-striped table-bordered" data-bind="visible: Title()">				
 									<thead>
 										<tr>
-											<th>№</th>
-											<th>Ответ на наводящий вопрос</th>
-											<th>Приводит к ответу</th>
+											<th class="col-xs-1 text-center">№</th>
+											<th class="col-xs-6 text-center">Ответ на наводящий вопрос</th>
+											<th class="col-xs-5 text-center">Приводит к ответу</th>
 										</tr>
 									</thead>				
 									<tbody data-bind="foreach: SecondAnswers">
 										<tr>
-											<td>
+											<td class="text-center">
 												<span data-bind="text: $index() + 1"></span>
 											</td>
 											<td>
 												<form class="form-horizontal" role="form" data-bind="visible: Editing()">
-													<div class="form-group">
-														<div class="col-sm-12">
-															<input type="text" class="form-control" placeholder="Ответ на наводящий вопрос" data-bind="value: Title, disable: Locked">
+													<fieldset data-bind="disable: Locked">													
+														<div class="form-group">
+															<div class="col-sm-12" data-bind="css: { 'has-error' : Title.hasError, 'has-success' : !Title.hasError() && Title() }">
+																<input type="text" class="form-control" placeholder="Ответ на наводящий вопрос" data-bind="value: Title">
+																<span class="small text-danger" data-bind="text: Title.validationMessage(), visible: Title.validationMessage()"></span>
+															</div>
 														</div>
-													</div>
-													<div class="form-group">
-														<div class="col-sm-12">
-															<input type="text" class="form-control" placeholder="Поясняющий комментарий" data-bind="value: Description, disable: Locked">
-														</div>
-													</div>	
+														<div class="form-group" data-bind="css: { 'has-error' : Description.hasError, 'has-success' : !Description.hasError() && Description() }">
+															<div class="col-sm-12">
+																<textarea rows="2" class="form-control" placeholder="Поясняющий комментарий" data-bind="value: Description"></textarea>
+																<span class="small text-danger" data-bind="text: Description.validationMessage(), visible: Description.validationMessage()"></span>
+															</div>
+														</div>	
+													</fieldset>
 												</form>	
+												<div data-bind="visible: !Editing()">
+													<h4 data-bind="text: Title"></h4>
+													<p data-bind="text: Description"></p>
+												</div>
 											</td>
 											<td>
 												<form role="form">
-													<div class="form-group">
-														<select class="form-control" data-bind="options: $root.MainAnswerList, selectedOptions: MainAnswers, disable: Locked, optionsText: 'Title', attr: { size: $root.MainAnswerList().length } " multiple="true"></select>														
-													</div>
+													<fieldset data-bind="disable: Locked">		
+														<div class="form-group" data-bind="css: { 'has-error' : MainAnswers.hasError, 'has-success' : !MainAnswers.hasError() }">
+															<select class="form-control" data-bind="options: $root.MainAnswerList, selectedOptions: MainAnswers, optionsText: 'Title', attr: { size: $root.MainAnswerList().length } " multiple="true"></select>
+															<span class="small text-danger" data-bind="text: MainAnswers.validationMessage(), visible: MainAnswers.validationMessage()"></span>
+															<p class="text-muted small">Удерживайте <strong>Ctrl</strong> для множественного выделения</p>														
+														</div>
+													</fieldset>
 												</form>					
 											</td>
 										</tr>						
@@ -231,10 +251,10 @@
 						<p>Всего наводящих вопросов: <span data-bind="text: $root.SecondQuestionList().length"></span></p>
 					</div>
 					<div data-bind="visible: $root.Step() == 3">
-						<button class="btn btn-primary" data-bind="enable: Title(), click: function(model) { $root.applySecondQuestion(model, true); }">
+						<button class="btn btn-primary" data-bind="disable: Title.hasError() || SecondAnswers().some(function(item){ return item.Title.hasError() || item.Description.hasError() || item.MainAnswers.hasError(); }), click: function(model) { $root.applySecondQuestion(model, true); }">
 							<span class="glyphicon glyphicon-plus"></span> Ещё наводящий вопрос 
 						</button>
-						<button class="btn btn-success" data-bind="enable: Title(), click: function(model) { $root.applySecondQuestion(model); }">
+						<button class="btn btn-success" data-bind="disable: Title.hasError() || SecondAnswers().some(function(item){ return item.Title.hasError() || item.Description.hasError() || item.MainAnswers.hasError(); }), click: function(model) { $root.applySecondQuestion(model); }">
 							<span class="glyphicon glyphicon-ok"></span> Готово!
 						</button>						
 					</div>	

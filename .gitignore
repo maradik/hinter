@@ -1,3 +1,6 @@
 *.class
 *.pyc
 *.pyo
+dev/
+modules/vendor/
+settings.php

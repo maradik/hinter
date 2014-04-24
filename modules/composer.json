@@ -7,12 +7,21 @@
         {
             "type": "vcs",
             "url": "https://github.com/maradik/testing"
-        }        
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Respect/Validation"
+        }                   
 	],    
 	
 	"require": {
         "fenom/fenom": "1.*",
+		"respect/validation": "0.*",        
         "maradik/user": "@dev",
         "maradik/testing": "@dev"
-    }
+    },
+    
+    "autoload": {
+        "psr-4": { "Maradik\\HinterApi\\": "api/" }
+    }    
 }

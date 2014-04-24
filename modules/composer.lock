@@ -3,8 +3,126 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "b59c1539c71ff51bd2db78989f7bab2e",
+    "hash": "48fcdccf3b5dce35afb95b8021f5dfc4",
     "packages": [
+        {
+            "name": "Respect/Validation",
+            "version": "0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Respect/Validation.git",
+                "reference": "d2ca4b5d56176ed1a8c890e15b42281d118d93b2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Respect/Validation/zipball/d2ca4b5d56176ed1a8c890e15b42281d118d93b2",
+                "reference": "d2ca4b5d56176ed1a8c890e15b42281d118d93b2",
+                "shasum": ""
+            },
+            "require-dev": {
+                "symfony/validator": "2.*",
+                "zendframework/zend-validator": "2.*"
+            },
+            "suggest": {
+                "ext-bcmath": "*",
+                "ext-mbstring": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Respect\\Validation": "library/"
+                }
+            },
+            "license": [
+                "BSD Style"
+            ],
+            "authors": [
+                {
+                    "name": "Alexandre Gaigalas",
+                    "email": "alexandre@gaigalas.net"
+                },
+                {
+                    "name": "Augusto Pascutti",
+                    "email": "augusto@phpsp.org.br"
+                },
+                {
+                    "name": "Carlos André Ferrari",
+                    "email": "caferrari@gmail.com"
+                },
+                {
+                    "name": "Devin Torres",
+                    "email": "devin@devintorres.com"
+                },
+                {
+                    "name": "Emerson Carvalho",
+                    "email": "emerson.broga@gmail.com"
+                },
+                {
+                    "name": "Fábio da Silva Ribeiro",
+                    "email": "fabiorphp@gmail.com"
+                },
+                {
+                    "name": "Henrique Moody",
+                    "email": "henriquemoody@gmail.com"
+                },
+                {
+                    "name": "Jair Henrique",
+                    "email": "jair.henrique@gmail.com"
+                },
+                {
+                    "name": "Jayson Reis",
+                    "email": "santosdosreis@gmail.com"
+                },
+                {
+                    "name": "Jean Pimentel",
+                    "email": "jeanfap@gmail.com"
+                },
+                {
+                    "name": "Kinn Coelho Julião",
+                    "email": "kinncj@gmail.com"
+                },
+                {
+                    "name": "Kleber Hamada Sato",
+                    "email": "kleberhs007@yahoo.com"
+                },
+                {
+                    "name": "Leandro",
+                    "email": "lleitep3@gmail.com"
+                },
+                {
+                    "name": "Marcelo Araujo",
+                    "email": "msaraujo@php.net"
+                },
+                {
+                    "name": "Michael Klishin",
+                    "email": "michaelklishin@me.com"
+                },
+                {
+                    "name": "Morf",
+                    "email": "i@morfi.ru"
+                },
+                {
+                    "name": "Rogerio Prado de Jesus",
+                    "email": "rogeriopradoj@gmail.com"
+                },
+                {
+                    "name": "Torben Brodt",
+                    "email": "t.brodt@gmail.com"
+                }
+            ],
+            "description": "The most awesome validation engine ever created for PHP",
+            "homepage": "http://respect.li",
+            "keywords": [
+                "respect",
+                "validation",
+                "validator"
+            ],
+            "support": {
+                "source": "https://github.com/Respect/Validation/tree/0.5.0",
+                "issues": "https://github.com/Respect/Validation/issues"
+            },
+            "time": "2013-12-10 02:50:32"
+        },
         {
             "name": "fenom/fenom",
             "version": "1.4.9",
@@ -63,17 +181,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/maradik/testing.git",
-                "reference": "5167a33a5df22f7099578492e36bfe71060bdd1a"
+                "reference": "e0f49079eb65a414dcad36f97ab51651e55f422e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maradik/testing/zipball/5167a33a5df22f7099578492e36bfe71060bdd1a",
-                "reference": "5167a33a5df22f7099578492e36bfe71060bdd1a",
+                "url": "https://api.github.com/repos/maradik/testing/zipball/e0f49079eb65a414dcad36f97ab51651e55f422e",
+                "reference": "e0f49079eb65a414dcad36f97ab51651e55f422e",
                 "shasum": ""
             },
             "require": {
-                "ext-tokenizer": "*",
-                "php": ">=5.3.0"
+                "respect/validation": "0.*"
             },
             "require-dev": {
                 "phpunit/phpunit": "3.7.*"
@@ -105,7 +222,7 @@
                 "source": "https://github.com/maradik/testing/tree/master",
                 "issues": "https://github.com/maradik/testing/issues"
             },
-            "time": "2014-04-18 05:11:32"
+            "time": "2014-04-24 17:50:37"
         },
         {
             "name": "maradik/user",
@@ -113,17 +230,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/maradik/user.git",
-                "reference": "b1eac7705924ddc938d0cc60877df6364dedaf5d"
+                "reference": "9bbe2c5b4831102e5524532649c22f39e45c98bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maradik/user/zipball/b1eac7705924ddc938d0cc60877df6364dedaf5d",
-                "reference": "b1eac7705924ddc938d0cc60877df6364dedaf5d",
+                "url": "https://api.github.com/repos/maradik/user/zipball/9bbe2c5b4831102e5524532649c22f39e45c98bd",
+                "reference": "9bbe2c5b4831102e5524532649c22f39e45c98bd",
                 "shasum": ""
             },
             "require": {
-                "ext-tokenizer": "*",
-                "php": ">=5.3.0"
+                "respect/validation": "0.*"
             },
             "require-dev": {
                 "phpunit/phpunit": "3.7.*"
@@ -154,7 +270,7 @@
                 "source": "https://github.com/maradik/user/tree/master",
                 "issues": "https://github.com/maradik/user/issues"
             },
-            "time": "2014-03-26 08:12:37"
+            "time": "2014-04-24 17:54:38"
         }
     ],
     "packages-dev": [

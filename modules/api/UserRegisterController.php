@@ -13,7 +13,7 @@
             $userData = $this->unpackEntity($args);
             
             if (!$this->user->register($userData)) {
-                $this->addResponseMessage($this->user->errorInfo());
+                $this->addResponseMessage($this->user->errorInfo(), Resource::MESS_ERROR);
                 $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
             }
             
