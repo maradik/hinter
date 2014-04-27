@@ -1,5 +1,7 @@
 {extends 'page.tpl'}
 
+{block 'title'}Страница не найдена | HintOk{/block}
+
 {block 'content'}
 	<div class="row">
 		<div class="col-md-12">

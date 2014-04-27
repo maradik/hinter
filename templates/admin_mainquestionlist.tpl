@@ -1,5 +1,7 @@
 {extends 'page.tpl'}
 
+{block 'title'}Администрирование подсказок | HintOk{/block}
+
 {block 'content'}
 	
 	<div class="row">

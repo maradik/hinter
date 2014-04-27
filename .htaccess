@@ -37,7 +37,8 @@ DirectoryIndex index.php index.html index.htm
    #RewriteRule ^(.*)$ http://hinter.an/$1 [R=301,L]
 
    ## Resctrict access to directories
-   RewriteRule ^(.git|.settings|dev|modules|templates)\/ - [F,L,NC]
+   RewriteRule ^(.git|.settings|dev|templates|vendor|include)\/ - [F,L,NC]
+   #RewriteRule ^api\/.+\.php(\?.*)? - [F,L,NC]
 
    ## Category redirect
    RewriteCond %{REQUEST_FILENAME} !-f

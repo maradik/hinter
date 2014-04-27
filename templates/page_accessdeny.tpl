@@ -1,5 +1,7 @@
 {extends 'page.tpl'}
 
+{block 'title'}Нет доступа | HintOk{/block}
+
 {block 'content'}
 	<div class="row">
 		<div class="col-md-12">
