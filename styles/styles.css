@@ -52,8 +52,14 @@
 }
 
 .nav li a:hover,
-.nav li a:focus {
+.nav li a:focus,
+.list-group a.list-group-item:hover,
+.list-group a.list-group-item:focus {
 	background-color: #ecf9f9;
+}
+
+.list-group a.list-group-item h4 {
+	color: #2A6496;
 }
 
 .nav li.active a,

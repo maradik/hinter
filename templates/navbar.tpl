@@ -21,8 +21,15 @@
       </ul>
       -->
       <div class="navbar-form navbar-left">
-          <a href="/" class="btn btn-default" title="Перейти на главную">Главная</a>
-      	  <a href="/question/create" class="btn btn-primary" title="Помочь другим людям" data-bind="visible: isRegisteredUser()">Создать подсказку!</a>
+          	<a href="/" class="btn btn-default" title="Перейти на главную">
+          		<span class="glyphicon glyphicon-home"></span> Главная
+          	</a>
+      	  	<a href="/question/create" class="btn btn-primary" title="Помочь другим людям" data-bind="visible: isRegisteredUser()">
+      	  		<span class="glyphicon glyphicon-plus"></span> Создать подсказку!
+      	  	</a>
+		  	<a href="/admin/question" class="btn btn-danger" title="Список подсказок" data-bind="visible: isAdmin()">
+		  		<span class="glyphicon glyphicon-list-alt"></span> Список
+		  	</a>      	  
       </div>
       <form class="navbar-form navbar-right">
       	  <fieldset data-bind="disable: UserData().Locked()">

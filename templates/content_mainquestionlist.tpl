@@ -25,8 +25,8 @@
 							<td>
 								<div class="row">
 									<div class="col-md-9">
-										<h3 data-bind="text: Title"></h3>
-										<div class="multiline" data-bind="text: Description.truncatedText(300)"></div>
+										<h3 class="top10" data-bind="text: Title"></h3>
+										<div class="multiline" data-bind="text: Description.truncatedText(300), visible: Description"></div>
 										<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId()), visible: !$root.CategoryId()">
 											<div class="label label-info">
 												<span class="glyphicon glyphicon-folder-open"></span> <span data-bind="text: Title"></span>
@@ -34,7 +34,7 @@
 										</div>
 									</div>
 									<div class="col-md-3 text-right">
-										<a href="#" title="" class="btn btn-primary" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
+										<a href="#" title="" class="btn btn-primary top10" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
 											Узнать ответ!
 										</a>
 									</div>

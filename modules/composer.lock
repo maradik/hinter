@@ -181,12 +181,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/maradik/testing.git",
-                "reference": "df8bd69046ccfc4ffcb08ee39a3a3d855b5206fc"
+                "reference": "83a47c273b7823280304e5858be1df2ba54995e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maradik/testing/zipball/df8bd69046ccfc4ffcb08ee39a3a3d855b5206fc",
-                "reference": "df8bd69046ccfc4ffcb08ee39a3a3d855b5206fc",
+                "url": "https://api.github.com/repos/maradik/testing/zipball/83a47c273b7823280304e5858be1df2ba54995e5",
+                "reference": "83a47c273b7823280304e5858be1df2ba54995e5",
                 "shasum": ""
             },
             "require": {
@@ -222,7 +222,7 @@
                 "source": "https://github.com/maradik/testing/tree/master",
                 "issues": "https://github.com/maradik/testing/issues"
             },
-            "time": "2014-04-26 21:17:45"
+            "time": "2014-04-27 16:11:37"
         },
         {
             "name": "maradik/user",
@@ -230,12 +230,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/maradik/user.git",
-                "reference": "1ff7c002a62452ddd46a5841615cdadd7a39d756"
+                "reference": "5fbc00df8fe6662adf99889a65842f7eee6fbb45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maradik/user/zipball/1ff7c002a62452ddd46a5841615cdadd7a39d756",
-                "reference": "1ff7c002a62452ddd46a5841615cdadd7a39d756",
+                "url": "https://api.github.com/repos/maradik/user/zipball/5fbc00df8fe6662adf99889a65842f7eee6fbb45",
+                "reference": "5fbc00df8fe6662adf99889a65842f7eee6fbb45",
                 "shasum": ""
             },
             "require": {
@@ -270,7 +270,7 @@
                 "source": "https://github.com/maradik/user/tree/master",
                 "issues": "https://github.com/maradik/user/issues"
             },
-            "time": "2014-04-26 20:39:44"
+            "time": "2014-04-27 14:02:22"
         }
     ],
     "packages-dev": [

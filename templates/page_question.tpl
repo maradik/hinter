@@ -12,7 +12,9 @@
 			<div class="panel-body">
 				<div>		
 					<h1>{$mainQuestion->title|e:'HTML'}</h1>
-					<div class="multiline">{$mainQuestion->description|e:'HTML'}</div>	
+					{if !empty($mainQuestion->description)}
+						<div class="multiline">{$mainQuestion->description|e:'HTML'}</div>
+					{/if}	
 				</div>
 			</div>
 			<div class="panel-footer" data-bind="visible: CurrentSecQuestion() == 0">				
@@ -33,7 +35,7 @@
 			</div>
 			<div class="panel-body" data-bind="with: MainAnswerList()[0]">	
 				<h3 data-bind="text: Title"></h3>
-				<div class="multiline" data-bind="text: Description"></div>
+				<div class="multiline" data-bind="text: Description, visible: Description"></div>
 			</div>
 			<div class="panel-footer">				
 				<button class="btn btn-success btn-sm" data-bind="click: $root.start">
@@ -54,7 +56,7 @@
 				<div class="col-md-7">
 					<div data-bind="with: SecondQuestion">
 						<h3><span data-bind="text: $parent.CurrentSecQuestion"></span>. <span data-bind="text: Title"></span></h3>
-						<div class="multiline" data-bind="text: Description"></div>		
+						<div class="multiline" data-bind="text: Description, visible: Description"></div>		
 					</div>
 				</div>
 				<div class="col-md-5">
@@ -62,29 +64,9 @@
 					<div class="list-group" data-bind="foreach: SecondAnswerList">
 						<a href="#" class="list-group-item" data-bind="click: $root.nextQuestion">
 							<h4 class="list-group-item-heading" data-bind="text: Title"></h4>
-							<p class="list-group-item-text" data-bind="text: Description"></p>
+							<p class="list-group-item-text" data-bind="text: Description, visible: Description"></p>
 						</a>
 					</div>
-
-					<!--
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							<h3 class="panel-title">Выберите ответ:</h3>
-						</div>
-						<div class="panel-body">		
-							<div data-bind="visible: SecondAnswerList().length > 0">			
-								<ul class="nav nav-pills nav-stacked" data-bind="foreach: SecondAnswerList">
-									<li>
-										<a href="#" data-bind="text: Title, click: $root.nextQuestion"></a>
-									</li>
-								</ul>
-							</div>
-							<div data-bind="visible: SecondAnswerList().length == 0">	
-								Загрузка...
-							</div>			
-						</div>
-					</div>	
-					-->
 				</div>				
 			</div>		
 		</div>					

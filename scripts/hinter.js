@@ -820,7 +820,7 @@
                 self.Messages.push(new Message('Вы уже вошли под пользователем ' + self.UserData().login(), MessageType.ERROR));
                 return;
             } 
-            self.UserData().Email('dummy@dummy.com');
+            self.UserData().Email(new Date().getTime() + '@dummy.com');
             self.UserData().Locked(true);
             requestAjaxJson(
                 'POST',
@@ -877,7 +877,11 @@
         
         self.isRegisteredUser = ko.computed(function() {
             return Boolean(self.UserData().Id());
-        });            
+        });  
+        
+        self.isAdmin = ko.computed(function() {
+            return self.UserData().Role() == 2;
+        });                   
     }    
     
     /**********************************************************

@@ -36,7 +36,8 @@
         $hinterApi->registerResource('user/current/logout', 'UserLogoutController');
        
         $hinterApi->requestResource();
-    } else {        
+    } else {
+        header("Content-Type: text/html; charset=utf-8");
         $vars = array();
         
         $clearUri = current(explode('#', current(explode('?', $_SERVER['REQUEST_URI'], 2)), 2));

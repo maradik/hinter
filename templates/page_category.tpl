@@ -7,7 +7,9 @@
 		<div class="row">
 			<div class="col-md-12">
 				<h1><span class="glyphicon glyphicon-folder-open"></span> {$categoryCurrent->title|e:'HTML'}</h1>
-				<div class="multiline">{$categoryCurrent->description|e:'HTML'}</div>
+				{if !empty($categoryCurrent->description)}
+					<div class="multiline">{$categoryCurrent->description|e:'HTML'}</div>
+				{/if}
 			</div>			
 		</div>
 		

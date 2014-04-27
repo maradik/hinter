@@ -17,11 +17,11 @@
 							<td>
 								<div class="row">
 									<div class="col-md-9">
-										<h3>
+										<h3 class="top10">
 											<span class="glyphicon glyphicon-off" data-bind="css: ( Active() ? 'text-success' : 'text-muted' )"></span>
 											<span data-bind="text: Title"></span>
 										</h3>
-										<div class="multiline" data-bind="text: Description.truncatedText(300)"></div>
+										<div class="multiline" data-bind="text: Description.truncatedText(300), visible: Description"></div>
 										<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId()), visible: !$root.CategoryId()">
 											<div class="label label-info">
 												<span class="glyphicon glyphicon-folder-open"></span> <span data-bind="text: Title"></span>
