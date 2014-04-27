@@ -3,4 +3,5 @@
 *.pyo
 dev/
 modules/vendor/
+vendor/
 settings.php

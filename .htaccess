@@ -30,8 +30,8 @@ DirectoryIndex index.php index.html index.htm
 <IfModule mod_rewrite.c>
    RewriteEngine On
 
-   #RewriteCond %{HTTP_HOST} ^www.hinter\.ru$ [NC]
-   #RewriteRule ^(.*)$ http://hinter.ru/$1 [R=301,L]
+   #RewriteCond %{HTTP_HOST} ^www.hintok\.ru$ [NC]
+   #RewriteRule ^(.*)$ http://hintok.ru/$1 [R=301,L]
 
    #RewriteCond %{HTTP_HOST} ^www.hinter\.an$ [NC]
    #RewriteRule ^(.*)$ http://hinter.an/$1 [R=301,L]

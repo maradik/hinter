@@ -1,7 +1,7 @@
 <?php
 
     require_once __DIR__.'/settings.php';   
-    require_once __DIR__.'/modules/vendor/autoload.php';
+    require_once __DIR__.'/vendor/autoload.php';
 
     use Maradik\User\UserCurrent;
     use Maradik\User\UserRepository;    
