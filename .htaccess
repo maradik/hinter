@@ -24,7 +24,7 @@ Options +FollowSymLinks
 ErrorDocument 404 index.php?httpstatus=404
 
 # Set the default handler
-DirectoryIndex index.php
+DirectoryIndex index.php index.html index.htm
 
 # URL rewrite rules
 <IfModule mod_rewrite.c>
