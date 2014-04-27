@@ -8,7 +8,7 @@
     		<span class="icon-bar"></span>
     		<span class="icon-bar"></span>
     	</button>
-      	<a class="navbar-brand" href="/">Hinter.RU</a>
+      	<a class="navbar-brand" href="/">HintOk.RU</a>
       	<p class="navbar-text"><em>Поможет в любом вопросе!</em></p>
     </div>
 
@@ -22,7 +22,7 @@
       -->
       <div class="navbar-form navbar-left">
           <a href="/" class="btn btn-default" title="Перейти на главную">Главная</a>
-      	  <a href="/question/create" class="btn btn-primary" title="Помочь другим людям" data-bind="visible: isRegisteredUser()">Создать решение!</a>
+      	  <a href="/question/create" class="btn btn-primary" title="Помочь другим людям" data-bind="visible: isRegisteredUser()">Создать подсказку!</a>
       </div>
       <form class="navbar-form navbar-right">
       	  <fieldset data-bind="disable: UserData().Locked()">
@@ -33,14 +33,14 @@
 		        <div class="form-group">
 		          <input name="password" type="password" size="15" class="form-control" placeholder="Пароль" data-bind="value: UserData().Password">
 		        </div>
-		        <button class="btn btn-primary" data-bind="click: login">Войти</button>
-		        <button class="btn btn-danger" data-bind="click: register">Новый</button>
+		        <button class="btn btn-primary" title="Войти под своим именем" data-bind="click: login">Войти</button>
+		        <button class="btn btn-danger" title="Быстрая регистрация в один клик!" data-bind="click: register">Новый</button>
 		    </div>
 			<div data-bind="visible: isRegisteredUser()">	    
 		        <div class="form-group">
 					Здравствуйте, <strong><span class="text-danger" data-bind="text: UserData().Login"></span></strong>				
 		        </div>
-				<button class="btn btn-default" data-bind="click: logout">Выйти</button>
+				<button class="btn btn-default" title="Завершить работу под своим именем" data-bind="click: logout">Выйти</button>
 		    </div> 
 		  </fieldset>
 	  </form>	 

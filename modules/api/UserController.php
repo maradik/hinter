@@ -20,9 +20,9 @@
         protected function unpackEntity(array $data)
         {
             $ret = new UserData();
-            $ret->login     = trim(!empty($data['login'])    ? (string) $data['login'] : '');
+            $ret->login     = trim(!empty($data['login'])    ? (string) $data['login']    : '');
             $ret->password  = trim(!empty($data['password']) ? (string) $data['password'] : '');
-            $ret->email     = "{$ret->login}@{$ret->login}";
+            $ret->email     = trim(!empty($data['email'])    ? (string) $data['email']    : '');
     
             return $ret;
         }      

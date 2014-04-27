@@ -63,14 +63,19 @@
             if (!empty($args)) {                                                                                                                            
                 $data = $this->unpackEntity($args); 
                 
-                if ($this->checkPermissionAppend($data)) {    
-                    if ($this->repository->insert($data) && !empty($data->id)) {
-                        $this->responseCreated($this->getFullUrl()."/{$data->id}");
-                        $data = $this->repository->getById($data->id);
-                        $this->setResponseData($this->packEntity($data));
+                if ($this->checkPermissionAppend($data)) {
+                    if (($validateResult = $data->validate()) === true) {                        
+                        if ($this->repository->insert($data) && !empty($data->id)) {
+                            $this->responseCreated($this->getFullUrl()."/{$data->id}");
+                            $data = $this->repository->getById($data->id);
+                            $this->setResponseData($this->packEntity($data));
+                        } else {
+                            $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
+                        }     
                     } else {
-                        $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
-                    }      
+                        $this->addResponseMessage(implode("\n", $validateResult), Resource::MESS_ERROR);
+                        $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);                   
+                    }                         
                 }
             } else {
                 $this->setResponseCode(HttpResponseCode::BAD_REQUEST);

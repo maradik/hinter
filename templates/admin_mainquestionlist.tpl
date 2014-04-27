@@ -21,7 +21,12 @@
 											<span class="glyphicon glyphicon-off" data-bind="css: ( Active() ? 'text-success' : 'text-muted' )"></span>
 											<span data-bind="text: Title"></span>
 										</h3>
-										<p data-bind="text: Description"></p>
+										<div class="multiline" data-bind="text: Description.truncatedText(300)"></div>
+										<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId()), visible: !$root.CategoryId()">
+											<div class="label label-info">
+												<span class="glyphicon glyphicon-folder-open"></span> <span data-bind="text: Title"></span>
+											</div>
+										</div>
 									</div>
 									<div class="col-md-3 text-right">
 										<a href="#" target="_blank" class="btn btn-info btn-block" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
@@ -59,7 +64,7 @@
 	<script type="text/javascript">
 		$(document).ready(function () {
 			MainQuestionListVM = new Hinter.MainQuestionListVM(null, true);
-			MainQuestionListVM.bind();
+			MainQuestionListVM.bind(null, {if !empty($categoryList)}{json_encode($categoryList)}{/if});
 		});
 	</script>
 {/block}

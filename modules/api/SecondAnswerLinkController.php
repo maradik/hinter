@@ -19,7 +19,11 @@
                 $rel = new RelData();
                 $rel->parentId = $secondAnswer->id;
                 $rel->childId = $mainAnswer->id;
-                return $this->repositoryFactory->getRelAnswerRepository()->insert($rel);
+                if (($validateResult = $rel->validate()) === true) { 
+                    return $this->repositoryFactory->getRelAnswerRepository()->insert($rel);
+                } else {
+                    $this->addResponseMessage(implode("\n", $validateResult), Resource::MESS_ERROR);
+                }                    
             }     
             
             return true;       

@@ -72,9 +72,17 @@
 	background-color: #ecf9f9;
 }
 
+.multiline {
+	white-space:	pre-wrap;
+}
+
 footer {
 	background-color: #2c4c4e;
 	color: #FFFFFF;
 	padding-top: 10px;
 	padding-bottom: 10px;
+}
+
+.top10 {
+	margin-top: 10px;
 }

@@ -13,7 +13,7 @@
 		<script src="/scripts/knockout.mapping-latest.js"></script>
 		<script src="/scripts/hinter.js"></script>
 		
-		<title>Hinter</title>
+		<title>{block 'title'}HintOk{/block}</title>
 	</head>
 	<body>
 		{block 'page'}

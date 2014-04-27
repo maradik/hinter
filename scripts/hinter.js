@@ -13,11 +13,20 @@
     
     var NoYesAll = {No: 0, Yes: 1, All: 2};
     
+    function baseObservableArray(baseModelArray) {
+        var observableArray = ko.observableArray(baseModelArray);
+        observableArray.findById = function(searchId) {
+            return this().filter(function(item){ return item.Id() == searchId; }).pop();
+        };        
+        return observableArray;    
+    }     
+    
     //-------------------------------------------------------
     // Модели
     
-    function BaseModel() {
+    function BaseModel(id) {
         var self = this;
+        self.Id         = ko.observable(id);        
         self.Editing    = ko.observable(false);
         self.Edited     = ko.observable(false);
         self.Locked     = ko.observable(false);
@@ -67,11 +76,10 @@
         order
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel());        
+        ko.utils.extend(self, new BaseModel(id));        
         
-        self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 30, required: true} });
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000} });;
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 30, required: true}, truncatedText: true });
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000}, truncatedText: true });;
         self.ParentId       = ko.observable(parentId);
         self.Order          = ko.observable(order);
     
@@ -113,11 +121,10 @@
         active
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel());
+        ko.utils.extend(self, new BaseModel(id));
         
-        self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 10, maxLen: 150, required: true} });        
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000} });
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 10, maxLen: 150, required: true}, truncatedText: true });        
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000}, truncatedText: true });
         self.CategoryId     = ko.observable(categoryId).extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
@@ -166,11 +173,10 @@
         userId
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel());
+        ko.utils.extend(self, new BaseModel(id));
         
-        self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 50, required: true} });
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 150} });;
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 50, required: true}, truncatedText: true });
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 500}, truncatedText: true });
         self.QuestionId     = ko.observable(questionId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
@@ -216,17 +222,16 @@
         userId
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel());
+        ko.utils.extend(self, new BaseModel(id));
         
-        self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 10, maxLen: 150, required: true} });
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000} });;
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 10, maxLen: 150, required: true}, truncatedText: true });
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000}, truncatedText: true });
         self.ParentId       = ko.observable(parentId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
         self.UserId         = ko.observable(userId);
         
-        self.SecondAnswers  = ko.observableArray(); 
+        self.SecondAnswers  = baseObservableArray(); 
         
         self.getUri = function() {
             return 'secondaryquestion';
@@ -268,17 +273,16 @@
         userId
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel());
+        ko.utils.extend(self, new BaseModel(id));
         
-        self.Id             = ko.observable(id);
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 50, required: true} });
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 150} });;
+        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 50, required: true}, truncatedText: true });
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 150}, truncatedText: true });
         self.QuestionId     = ko.observable(questionId);
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
         self.UserId         = ko.observable(userId);
 
-        self.MainAnswers    = ko.observableArray().extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
+        self.MainAnswers    = baseObservableArray().extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
         
         self.getUri = function() {
             return 'secondaryanswer';
@@ -318,9 +322,8 @@
         role
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel());
+        ko.utils.extend(self, new BaseModel(id));
         
-        self.Id       = ko.observable(id);
         self.Login    = ko.observable(login);
         self.Password = ko.observable(password);
         self.Email    = ko.observable(email);
@@ -361,11 +364,11 @@
         self.CurrentSecQuestion = ko.observable(0);
         self.Finish             = ko.observable(false);
         
-        self.SecondQuestionList = ko.observableArray([]);
+        self.SecondQuestionList = baseObservableArray();
         self.SecondQuestion     = ko.observable(null);
-        self.SecondAnswerList   = ko.observableArray([]);
-        self.MainAnswerList     = ko.observableArray([]);
-        self.RelMainAnswerList  = ko.observableArray([]);
+        self.SecondAnswerList   = baseObservableArray();
+        self.MainAnswerList     = baseObservableArray();
+        self.RelMainAnswerList  = baseObservableArray();
         
         self.bind = function(htmlElementId) {
             ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));
@@ -457,11 +460,15 @@
         self.SecondQuestionIdx  = ko.observable(-1);
                 
         self.MainQuestion       = ko.observable(new MainQuestion());        
-        self.MainAnswerList     = ko.observableArray();
-        self.SecondQuestionList = ko.observableArray();
-        //self.SecondAnswerList   = ko.observableArray();
-        self.CategoryList       = ko.observableArray();
-        
+        self.MainAnswerList     = baseObservableArray();
+        self.SecondQuestionList = baseObservableArray();
+        //self.SecondAnswerList   = baseObservableArray();
+        self.CategoryList       = baseObservableArray();
+        /*
+        self.CategoryList.findById = function(searchId) {
+            return this().filter(function(item){ return item.Id() == searchId; }).pop();
+        };
+        */
         self.MainAnswerList.Locked = function() {
             return this().some(function(item) { return item.Locked() });
         };       
@@ -668,7 +675,8 @@
     function MainQuestionListVM(categoryId, admin) {
         var self = this;
         
-        self.MainQuestionList   = ko.observableArray();                
+        self.MainQuestionList   = baseObservableArray();     
+        self.CategoryList       = baseObservableArray();           
         self.IsEndOfList        = ko.observable(false);
         self.Loading            = ko.observable(false);  
         self.CategoryId         = ko.observable(categoryId);
@@ -678,11 +686,17 @@
             return mq ? mq.Id() : 2147483647;
         });      
         
-        self.bind = function(mainQuestionList, htmlElementId) {
+        self.bind = function(mainQuestionList, categoryList, htmlElementId) {
             if (mainQuestionList) {
                 mainQuestionList.forEach(function(item) {
                     self.MainQuestionList.push(MainQuestion.unpack(item));
                 });  
+            }
+            
+            if (categoryList) {
+                categoryList.forEach(function(item) {
+                   self.CategoryList.push(Category.unpack(item)); 
+                });
             }
                       
             $(window).scroll(onWindowScroll);
@@ -806,6 +820,7 @@
                 self.Messages.push(new Message('Вы уже вошли под пользователем ' + self.UserData().login(), MessageType.ERROR));
                 return;
             } 
+            self.UserData().Email('dummy@dummy.com');
             self.UserData().Locked(true);
             requestAjaxJson(
                 'POST',
@@ -948,6 +963,15 @@
         }
         validate(target());
         target.subscribe(validate);
+        return target;
+    };    
+    
+    ko.extenders.truncatedText = function(target) {
+        target.truncatedText = function(maxLen) {
+            maxLen = maxLen || 100;
+            var originalText = target();
+            return originalText.length > maxLen ? originalText.substring(0, maxLen) + "..." : originalText;
+        };
         return target;
     };    
     

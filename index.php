@@ -104,7 +104,7 @@
                 }                
                 break;
             case preg_match('{^/question/create$}', $clearUri, $matches) && $user->isRegisteredUser():
-                $template = "page_question_edit.tpl";   
+                $template = "page_question_create.tpl";   
                 break;                
         }
         

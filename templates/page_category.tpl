@@ -1,13 +1,13 @@
 {extends 'page.tpl'}
 
+{block 'title'}{$categoryCurrent->title|e:'HTML'} | HintOk{/block}
+
 {block 'content'}
 	<div>
 		<div class="row">
 			<div class="col-md-12">
 				<h1><span class="glyphicon glyphicon-folder-open"></span> {$categoryCurrent->title|e:'HTML'}</h1>
-				<p>
-					{$categoryCurrent->description|e:'HTML'}	
-				</p>
+				<div class="multiline">{$categoryCurrent->description|e:'HTML'}</div>
 			</div>			
 		</div>
 		

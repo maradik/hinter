@@ -174,18 +174,18 @@
         }
     },
     {
-        "name": "maradik/testing",
+        "name": "maradik/user",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
-            "url": "https://github.com/maradik/testing.git",
-            "reference": "e0f49079eb65a414dcad36f97ab51651e55f422e"
+            "url": "https://github.com/maradik/user.git",
+            "reference": "1ff7c002a62452ddd46a5841615cdadd7a39d756"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/maradik/testing/zipball/e0f49079eb65a414dcad36f97ab51651e55f422e",
-            "reference": "e0f49079eb65a414dcad36f97ab51651e55f422e",
+            "url": "https://api.github.com/repos/maradik/user/zipball/1ff7c002a62452ddd46a5841615cdadd7a39d756",
+            "reference": "1ff7c002a62452ddd46a5841615cdadd7a39d756",
             "shasum": ""
         },
         "require": {
@@ -194,7 +194,57 @@
         "require-dev": {
             "phpunit/phpunit": "3.7.*"
         },
-        "time": "2014-04-24 17:50:37",
+        "time": "2014-04-26 20:39:44",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "Maradik\\User\\": "src/"
+            },
+            "classmap": [
+                "src/"
+            ]
+        },
+        "authors": [
+            {
+                "name": "Maradik",
+                "email": "maradik@bk.ru"
+            }
+        ],
+        "description": "User-manager for sites under PHP",
+        "keywords": [
+            "login",
+            "manager",
+            "register",
+            "user"
+        ],
+        "support": {
+            "source": "https://github.com/maradik/user/tree/master",
+            "issues": "https://github.com/maradik/user/issues"
+        }
+    },
+    {
+        "name": "maradik/testing",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/maradik/testing.git",
+            "reference": "df8bd69046ccfc4ffcb08ee39a3a3d855b5206fc"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/maradik/testing/zipball/df8bd69046ccfc4ffcb08ee39a3a3d855b5206fc",
+            "reference": "df8bd69046ccfc4ffcb08ee39a3a3d855b5206fc",
+            "shasum": ""
+        },
+        "require": {
+            "respect/validation": "0.*"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "3.7.*"
+        },
+        "time": "2014-04-26 21:17:45",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -222,56 +272,6 @@
         "support": {
             "source": "https://github.com/maradik/testing/tree/master",
             "issues": "https://github.com/maradik/testing/issues"
-        }
-    },
-    {
-        "name": "maradik/user",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/maradik/user.git",
-            "reference": "9bbe2c5b4831102e5524532649c22f39e45c98bd"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/maradik/user/zipball/9bbe2c5b4831102e5524532649c22f39e45c98bd",
-            "reference": "9bbe2c5b4831102e5524532649c22f39e45c98bd",
-            "shasum": ""
-        },
-        "require": {
-            "respect/validation": "0.*"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "3.7.*"
-        },
-        "time": "2014-04-24 17:54:38",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "Maradik\\User\\": "src/"
-            },
-            "classmap": [
-                "src/"
-            ]
-        },
-        "authors": [
-            {
-                "name": "Maradik",
-                "email": "maradik@bk.ru"
-            }
-        ],
-        "description": "User-manager for sites under PHP",
-        "keywords": [
-            "login",
-            "manager",
-            "register",
-            "user"
-        ],
-        "support": {
-            "source": "https://github.com/maradik/user/tree/master",
-            "issues": "https://github.com/maradik/user/issues"
         }
     }
 ]

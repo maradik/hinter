@@ -54,7 +54,7 @@
                 case 'DELETE':                  
                     $requestheaders = getallheaders();  
                     if (empty($requestheaders["Content-Type"]) || //TODO некрасивая проверка заголовка Content-Type 
-                        $requestheaders["Content-Type"] != "application/json; charset=utf-8") {
+                        strtolower($requestheaders["Content-Type"]) != strtolower("application/json; charset=utf-8")) {
                         $this->setResponseCode(HttpResponseCode::UNSUPPORTED_MEDIA_TYPE); 
                         return false;                    
                     }           

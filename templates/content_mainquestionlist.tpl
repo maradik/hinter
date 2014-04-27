@@ -9,9 +9,7 @@
 							<div class="row">
 								<div class="col-md-9">
 									<h3>{$question->title|e:'HTML'}</h3>
-									<p>											
-										{$question->description|truncate:100:'...'|e:'HTML'}	
-									</p>
+									<div class="multiline">{$question->description|truncate:300:'...'|e:'HTML'}</div>
 								</div>
 								<div class="col-md-3 text-right">
 									<a href="/question/{$question->id}" title="{$question->title|e:'HTML'}" class="btn btn-primary">
@@ -28,7 +26,12 @@
 								<div class="row">
 									<div class="col-md-9">
 										<h3 data-bind="text: Title"></h3>
-										<p data-bind="text: Description"></p>
+										<div class="multiline" data-bind="text: Description.truncatedText(300)"></div>
+										<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId()), visible: !$root.CategoryId()">
+											<div class="label label-info">
+												<span class="glyphicon glyphicon-folder-open"></span> <span data-bind="text: Title"></span>
+											</div>
+										</div>
 									</div>
 									<div class="col-md-3 text-right">
 										<a href="#" title="" class="btn btn-primary" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
@@ -56,7 +59,7 @@
 	<script type="text/javascript">
 		$(document).ready(function () {
 			MainQuestionListVM = new Hinter.MainQuestionListVM({!empty($categoryCurrent) ? $categoryCurrent->id : null});
-			MainQuestionListVM.bind({json_encode($mainQuestionList)});
+			MainQuestionListVM.bind({json_encode($mainQuestionList)}, {if !empty($categoryList)}{json_encode($categoryList)}{/if});
 		});
 	</script>
 {/block}

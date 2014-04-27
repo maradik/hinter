@@ -9,7 +9,7 @@
 		      </div>
 		      <div class="modal-body" data-bind="foreach: MessageList">
 		        <div class="alert" data-bind="css: Type == Hinter.MessageType.ERROR ? 'alert-danger' : (Type == Hinter.MessageType.WARNING ? 'alert-warning' : (Type == Hinter.MessageType.SUCCESS ? 'alert-success' : 'alert-info'))">
-		        	<p data-bind="text: Text"></p>
+		        	<div class="multiline" data-bind="text: Text"></div>
 		        </div>
 		      </div> 
 		      <div class="modal-footer">

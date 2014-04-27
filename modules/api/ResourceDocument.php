@@ -46,13 +46,17 @@
                     if ($this->checkPermissionUpdate($origData)) {                    
                         $newData  = $this->unpackEntity($args);  
                         $this->mergeEntities($origData, $newData); 
-                                     
-                        if ($this->repository->update($origData)) {
-                            $data = $this->repository->getById($origData->id);
-                            $this->setResponseData($this->packEntity($data));                            
+                        if (($validateResult = $origData->validate()) === true) {             
+                            if ($this->repository->update($origData)) {
+                                $data = $this->repository->getById($origData->id);
+                                $this->setResponseData($this->packEntity($data));                            
+                            } else {
+                                $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
+                            }
                         } else {
-                            $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
-                        }
+                            $this->addResponseMessage(implode("\n", $validateResult), Resource::MESS_ERROR);
+                            $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);                   
+                        }                            
                     }
                 } else {
                     $this->responseNotFound();

@@ -1,5 +1,7 @@
 {extends 'page.tpl'}
 
+{block 'title'}{$mainQuestion->title|truncate:100:'...'|e:'HTML'} | HintOk{/block}
+
 {block 'content'}
 	
 	<div>
@@ -10,19 +12,17 @@
 			<div class="panel-body">
 				<div>		
 					<h1>{$mainQuestion->title|e:'HTML'}</h1>
-					<p>{$mainQuestion->description|e:'HTML'}</p>	
+					<div class="multiline">{$mainQuestion->description|e:'HTML'}</div>	
 				</div>
 			</div>
 			<div class="panel-footer" data-bind="visible: CurrentSecQuestion() == 0">				
-				<div>
-					<div class="row">
-						<div class="col-md-12">
-							<p><small>Чтобы узнать ответ, придется ответить на несколько наводящих вопросов.</small></p>
-							<button class="btn btn-primary" data-bind="click: $root.start, enable: MainAnswerList().length != 0">
-								Узнать ответ прямо сейчас!
-							</button>							
-						</div>
-					</div>					
+				<div class="row">
+					<div class="col-md-12">
+						<p><small>Чтобы узнать ответ, придется ответить на несколько наводящих вопросов.</small></p>
+						<button class="btn btn-primary" data-bind="click: $root.start, enable: MainAnswerList().length != 0">
+							Узнать ответ прямо сейчас!
+						</button>							
+					</div>
 				</div>					
 			</div>
 		</div>				
@@ -33,11 +33,13 @@
 			</div>
 			<div class="panel-body" data-bind="with: MainAnswerList()[0]">	
 				<h3 data-bind="text: Title"></h3>
-				<p data-bind="text: Description"></p>
+				<div class="multiline" data-bind="text: Description"></div>
+			</div>
+			<div class="panel-footer">				
 				<button class="btn btn-success btn-sm" data-bind="click: $root.start">
 					<span class="glyphicon glyphicon-repeat"></span> Повторить
-				</button>
-			</div>
+				</button>						
+			</div>			
 		</div>	
 
 		<div data-bind="visible: CurrentSecQuestion() && !Finish()">
@@ -52,7 +54,7 @@
 				<div class="col-md-7">
 					<div data-bind="with: SecondQuestion">
 						<h3><span data-bind="text: $parent.CurrentSecQuestion"></span>. <span data-bind="text: Title"></span></h3>
-						<p data-bind="text: Description"></p>		
+						<div class="multiline" data-bind="text: Description"></div>		
 					</div>
 				</div>
 				<div class="col-md-5">

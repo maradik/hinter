@@ -1,23 +1,25 @@
 {extends 'page.tpl'}
 
+{block 'title'}Создание новой подсказки | HintOk{/block}
+
 {block 'content'}
 	<!--
 	<div class="row">
 		<div class="col-md-12">
-			<h1>Новое решение</h1>
+			<h1>Новая подсказка</h1>
 		</div>		
 	</div>
 	-->
-	<h1>Создание решения</h1>
+	<h1>Создание подсказки</h1>
 
 	<!-- Первый экран -->		
 	<div class="panel panel-primary" data-bind="visible: Step() == 0">
 		<div class="panel-heading">
-			<h3 class="panel-title">Создание решения</h3>
+			<h3 class="panel-title">Создание подсказки</h3>
 		</div>
 		<div class="panel-body">
 			<div> 
-				<p>Процесс создания нового решения состоит из нескольких шагов:</p>
+				<p>Процесс создания новой подсказки состоит из нескольких шагов:</p>
 				<ul>
 					<li>Определение основного вопроса</li>
 					<li>Определение ответов на основной вопрос</li>
@@ -43,7 +45,7 @@
 				<div data-bind="visible: Editing()">
 					<p>Основной вопрос, на который пользователь ищет ответ.</p>
 					<form class="form-horizontal" role="form">
-						<fieldset data-bind="disable: Locked">						
+						<fieldset data-bind="disable: Locked">		
 							<div class="form-group" data-bind="css: { 'has-error' : Title.hasError, 'has-success' : !Title.hasError() && Title() }">
 								<label for="inputMainQuestionTitle" class="col-sm-2 control-label">Вопрос</label>
 								<div class="col-sm-10">
@@ -57,14 +59,14 @@
 									<textarea rows="5" class="form-control" id="inputMainQuestionDescription" placeholder="Поясняющий комментарий" data-bind="value: Description"></textarea>
 									<span class="small text-danger" data-bind="text: Description.validationMessage(), visible: Description.validationMessage()"></span>
 								</div>
-							</div>					
+							</div>	
 							<div class="form-group" data-bind="css: { 'has-error' : CategoryId.hasError, 'has-success' : !CategoryId.hasError() }">
 								<label for="selectMainQuestionCategory" class="col-sm-2 control-label">Категория</label>
 								<div class="col-sm-10">
 									<select class="form-control" id="selectMainQuestionCategory" data-bind="options: $root.CategoryList, value: CategoryId, optionsText: 'Title', optionsValue: 'Id', optionsCaption: 'Выберите категорию'"></select>
 									<span class="small text-danger" data-bind="text: CategoryId.validationMessage(), visible: CategoryId.validationMessage()"></span>									
 								</div>
-							</div>	
+							</div>												
 						</fieldset>
 					</form>		
 					<div>
@@ -75,8 +77,12 @@
 				</div>		
 				<div data-bind="visible: !Editing()">
 					<h2 data-bind="text: Title"></h2>
-					<p data-bind="text: Description"></p>	
-					<p>Категория: <u><em data-bind="text: CategoryId"></em></u></p>				
+					<div class="multiline" data-bind="text: Description"></div>
+					<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId())">
+						<div class="label label-info">
+							<span class="glyphicon glyphicon-folder-open"></span> <span data-bind="text: Title"></span>
+						</div>
+					</div>						
 				</div>														
 			</div>		
 		</div>
@@ -120,7 +126,7 @@
 										</form>	
 										<div data-bind="visible: !Editing()">
 											<h4 data-bind="text: Title"></h4>
-											<p data-bind="text: Description"></p>
+											<div class="multiline" data-bind="text: Description"></div>
 										</div>
 									</div>	
 								</div>
@@ -218,7 +224,7 @@
 												</form>	
 												<div data-bind="visible: !Editing()">
 													<h4 data-bind="text: Title"></h4>
-													<p data-bind="text: Description"></p>
+													<div class="multiline" data-bind="text: Description"></div>
 												</div>
 											</td>
 											<td>
@@ -267,13 +273,14 @@
 	<!-- Последний экран -->		
 	<div class="panel panel-success" data-bind="visible: Step() == 4">
 		<div class="panel-heading">
-			<h3 class="panel-title">Решение создано</h3>
+			<h3 class="panel-title">Подсказка создана</h3>
 		</div>
 		<div class="panel-body">
 			<div> 
-				<p>Поздравляем, решение успешно создано!</p>
+				<p>Поздравляем, подсказка успешно создана!</p>
+				<p>Она появится в общем списке после проверки администратором.</p>
 				<a href="#" class="btn btn-success" data-bind="attr: { href: '/question/' + MainQuestion().Id() }">
-					Проверить
+					Посмотреть!
 				</a>								
 			</div>		
 		</div>
