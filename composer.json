@@ -24,8 +24,8 @@
     
     "autoload": {
         "psr-4": { 
-        	"Maradik\\Hinter\\Api\\": "include/api/",
-        	"Maradik\\Hinter\\Core\\": "include/core/"
+        	"Maradik\\Hinter\\": "include/",
+        	"Maradik\\Hinter\\": "include/"
          }
     }    
 }

@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "ef43be73a6d86a984e8e59eb293fd410",
+    "hash": "2a8b4cbc1660759c07dda2a4599ff573",
     "packages": [
         {
             "name": "Respect/Validation",
