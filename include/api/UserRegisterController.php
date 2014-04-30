@@ -1,10 +1,12 @@
 <?php
-    namespace Maradik\HinterApi;    
+    namespace Maradik\Hinter\Api;    
     
     use Maradik\Testing\BaseData;
     use Maradik\Testing\BaseRepository; 
     use Maradik\User\UserCurrent; 
     use Maradik\User\UserData;
+    use Maradik\Hinter\Core\HttpResponseCode;
+    use Maradik\Hinter\Core\RepositoryFactory;     
     
     class UserRegisterController extends UserController
     {

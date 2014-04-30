@@ -5,7 +5,7 @@
     use Maradik\Testing\QuestionRepository;
     use Maradik\Testing\AnswerRepository;
     use Maradik\Testing\Query;   
-    use Maradik\HinterApi\HinterApi;                            
+    use Maradik\Hinter\Api\HinterApi;                            
     
     $hinterApi = new HinterApi($repositoryFactory, $user);
     

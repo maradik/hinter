@@ -1,11 +1,13 @@
 <?php
-    namespace Maradik\HinterApi;    
+    namespace Maradik\Hinter\Api;    
     
     use Maradik\Testing\BaseData;
     use Maradik\Testing\AnswerData;
     use Maradik\Testing\RelData;
     use Maradik\Testing\RelRepository;    
     use Maradik\User\UserCurrent;    
+    use Maradik\Hinter\Core\HttpResponseCode;
+    use Maradik\Hinter\Core\RepositoryFactory;     
     
     class SecondAnswerLinkController extends SecondAnswerRelController
     {

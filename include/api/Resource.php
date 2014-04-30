@@ -1,5 +1,7 @@
 <?php
-    namespace Maradik\HinterApi;    
+    namespace Maradik\Hinter\Api;    
+    
+    use Maradik\Hinter\Core\HttpResponseCode;
 
     abstract class Resource
     {

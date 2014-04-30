@@ -1,12 +1,13 @@
 <?php
-    namespace Maradik\HinterApi;    
+    namespace Maradik\Hinter\Api;    
     
     use Maradik\Testing\BaseData;
     use Maradik\Testing\AnswerData;
     use Maradik\Testing\AnswerRepository;    
     use Maradik\User\UserCurrent;
-    use Maradik\HinterApi\RepositoryFactory;
-    
+    use Maradik\Hinter\Core\HttpResponseCode;
+    use Maradik\Hinter\Core\RepositoryFactory; 
+        
     class MainAnswerCollection extends ResourceCollection
     {
         public function __construct(RepositoryFactory $repositoryFactory, UserCurrent $user)

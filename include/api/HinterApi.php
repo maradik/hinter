@@ -1,7 +1,9 @@
 <?php
-    namespace Maradik\HinterApi;
+    namespace Maradik\Hinter\Api;
     
     use Maradik\User\UserCurrent;
+    use Maradik\Hinter\Core\HttpResponseCode;
+    use Maradik\Hinter\Core\RepositoryFactory;    
     
     class HinterApi
     {
@@ -96,7 +98,7 @@
             }                                
                         
             if (!empty($this->resources[$resUri]) 
-                && in_array('Maradik\HinterApi\Resource', class_parents($this->resources[$resUri]))) {
+                && in_array('Maradik\Hinter\Api\Resource', class_parents($this->resources[$resUri]))) {
                 $res = new $this->resources[$resUri]($this->repositoryFactory, $this->user);
                 $res->request(array_reverse($resId));
             } else {

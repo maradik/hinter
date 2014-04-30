@@ -1,5 +1,5 @@
 <?php
-    namespace Maradik\HinterApi;
+    namespace Maradik\Hinter\Core;
 
     class HttpResponseCode
     {

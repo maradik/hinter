@@ -1,9 +1,10 @@
 <?php
-    namespace Maradik\HinterApi;
+    namespace Maradik\Hinter\Api;
     
     use Maradik\Testing\BaseRepository; 
     use Maradik\User\UserCurrent;   
-    use Maradik\HinterApi\RepositoryFactory;    
+    use Maradik\Hinter\Core\HttpResponseCode;
+    use Maradik\Hinter\Core\RepositoryFactory;     
     
     abstract class ResourceBase extends Resource
     {

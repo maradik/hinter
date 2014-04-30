@@ -6,7 +6,7 @@
     use Maradik\User\UserCurrent;
     use Maradik\User\UserRepository;    
     
-    use Maradik\HinterApi\RepositoryFactory;    
+    use Maradik\Hinter\Core\RepositoryFactory;   
     
     $db = new PDO(
         "{$database_s['driver']}:host={$database_s['host']};dbname={$database_s['database']};charset=UTF8", 

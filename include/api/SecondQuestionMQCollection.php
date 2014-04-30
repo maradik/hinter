@@ -1,11 +1,12 @@
 <?php
-    namespace Maradik\HinterApi;    
+    namespace Maradik\Hinter\Api;    
     
     use Maradik\Testing\BaseData;
     use Maradik\Testing\QuestionData;
     use Maradik\Testing\QuestionRepository;    
     use Maradik\User\UserCurrent;
-    use Maradik\HinterApi\RepositoryFactory;
+    use Maradik\Hinter\Core\HttpResponseCode;
+    use Maradik\Hinter\Core\RepositoryFactory; 
     
     class SecondQuestionMQCollection extends SecondQuestionCollection
     {

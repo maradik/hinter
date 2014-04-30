@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "82aa5c4f01f14ca2d3d6de03122f65ca",
+    "hash": "ef43be73a6d86a984e8e59eb293fd410",
     "packages": [
         {
             "name": "Respect/Validation",
@@ -181,12 +181,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/maradik/testing.git",
-                "reference": "83a47c273b7823280304e5858be1df2ba54995e5"
+                "reference": "a9496db0dad92ec32510e1f30b24abc0f1384230"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maradik/testing/zipball/83a47c273b7823280304e5858be1df2ba54995e5",
-                "reference": "83a47c273b7823280304e5858be1df2ba54995e5",
+                "url": "https://api.github.com/repos/maradik/testing/zipball/a9496db0dad92ec32510e1f30b24abc0f1384230",
+                "reference": "a9496db0dad92ec32510e1f30b24abc0f1384230",
                 "shasum": ""
             },
             "require": {
@@ -222,7 +222,7 @@
                 "source": "https://github.com/maradik/testing/tree/master",
                 "issues": "https://github.com/maradik/testing/issues"
             },
-            "time": "2014-04-27 16:11:37"
+            "time": "2014-04-30 07:27:32"
         },
         {
             "name": "maradik/user",

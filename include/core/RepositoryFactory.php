@@ -1,5 +1,5 @@
 <?php
-    namespace Maradik\HinterApi;
+    namespace Maradik\Hinter\Core;
 
     use Maradik\Testing\CategoryRepository;
     use Maradik\Testing\QuestionRepository;
