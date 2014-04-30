@@ -43,7 +43,11 @@
         $clearUri = current(explode('#', current(explode('?', $_SERVER['REQUEST_URI'], 2)), 2));
         $vars['clearUri'] = $clearUri;
         
-        $categoryList = $repositoryFactory->getCategoryRepository()->getCollection();        
+        $categoryList = $repositoryFactory->getCategoryRepository()
+            ->query()
+            ->addSortField('order')
+            ->addSortField('title')
+            ->getEntity();        
         $vars['categoryList'] = $categoryList;                
         
         switch (true) {
