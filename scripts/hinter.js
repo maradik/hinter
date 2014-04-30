@@ -437,6 +437,7 @@
                         : [];
                     //ko.mapping.fromJS(collection, null, self.SecondAnswerList);
                     self.SecondAnswerList(collection);
+                    self.SecondAnswerList.sort(sortQuestionAnswerArray);
                 });                      
             } else {
                 self.Finish(true);
