@@ -72,11 +72,6 @@
                 $vars['mainQuestionList'] = $mainQuestionList;
                 $template = "page_main.tpl";
                 break;
-            case $clearUri == "/admin/question" && $user->isAdmin():
-                if ($user->isAdmin()) {
-                    $template = "admin_mainquestionlist.tpl";
-                }
-                break;
             case preg_match('{^/category/(\d+)$}', $clearUri, $matches):
                 $categoryId = (int) $matches[1];
                 $categoryCurrent = $repositoryFactory
@@ -119,7 +114,12 @@
             case preg_match('{^/question/create$}', $clearUri, $matches) && $user->isRegisteredUser():
                 $template = "page_question_create.tpl";   
                 break;    
-            case $clearUri == "/flushcache" && $user->isAdmin():
+            case $clearUri == "/admin/question" && $user->isAdmin():
+                if ($user->isAdmin()) {
+                    $template = "admin_mainquestionlist.tpl";
+                }
+                break;                
+            case $clearUri == "/admin/flushcache" && $user->isAdmin():
                 Params::put(Params::KEY_CACHE_ID, time());
                 $fenom->clearAllCompiles();
                 header('Location: /');

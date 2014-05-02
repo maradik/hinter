@@ -29,7 +29,10 @@
       	  	</a>
 		  	<a href="/admin/question" class="btn btn-danger" title="Список подсказок" data-bind="visible: isAdmin()">
 		  		<span class="glyphicon glyphicon-list-alt"></span> Список
-		  	</a>      	  
+		  	</a>      
+  		  	<a href="/admin/flushcache" class="btn btn-danger" title="Сбросить системный кэш" data-bind="visible: isAdmin()">
+		  		<span class="glyphicon glyphicon-refresh"></span> Кэш
+		  	</a> 
       </div>
       <form class="navbar-form navbar-right">
       	  <fieldset data-bind="disable: UserData().Locked()">
