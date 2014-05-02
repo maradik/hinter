@@ -6,14 +6,14 @@
 		
 		<link rel="shortcut icon" href="/favicon.png" type="image/png" />
 		
-		<link rel="stylesheet" href="/styles/bootstrap/3.1.1/css/bootstrap.min.css">
-		<link rel="stylesheet" href="/styles/styles.css">
+		<link rel="stylesheet" href="/styles/bootstrap/3.1.1/css/bootstrap.min.css?cid={$cache_id}">
+		<link rel="stylesheet" href="/styles/styles.css?cid={$cache_id}">
 		
-		<script src="/scripts/jquery-1.11.0.min.js"></script>
-		<script src="/styles/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-		<script src="/scripts/knockout-3.1.0.js"></script>
-		<script src="/scripts/knockout.mapping-latest.js"></script>
-		<script src="/scripts/hinter.js"></script>
+		<script src="/scripts/jquery-1.11.0.min.js?cid={$cache_id}"></script>
+		<script src="/styles/bootstrap/3.1.1/js/bootstrap.min.js?cid={$cache_id}"></script>
+		<script src="/scripts/knockout-3.1.0.js?cid={$cache_id}"></script>
+		<script src="/scripts/knockout.mapping-latest.js?cid={$cache_id}"></script>
+		<script src="/scripts/hinter.js?cid={$cache_id}"></script>
 		
 		<title>{block 'title'}HintOk{/block}</title>
 	</head>

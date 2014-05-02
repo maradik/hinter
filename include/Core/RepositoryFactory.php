@@ -16,6 +16,7 @@
         protected $tableSecondQuestion;
         protected $tableSecondAnswer;
         protected $tableRelationAnswers;
+        protected $tableParam;
                            
         protected $categoryRepository;
         protected $mainQuestionRepository;
@@ -23,6 +24,7 @@
         protected $secondQuestionRepository;
         protected $secondAnswerRepository;
         protected $relAnswerRepository;
+        protected $paramRepository;
         
         public function __construct(
             \PDO $pdo,
@@ -32,7 +34,8 @@
             $tableMainAnswer            = 'mainanswer',
             $tableSecondQuestion        = 'secondaryquestion',
             $tableSecondAnswer          = 'secondaryanswer',
-            $tableRelationAnswers       = 'relationanswers'
+            $tableRelationAnswers       = 'relationanswers',
+            $tableParam                 = 'params'
         )
         {
             $this->db                   = $pdo;        
@@ -42,7 +45,8 @@
             $this->tableMainAnswer      = $tableMainAnswer;
             $this->tableSecondQuestion  = $tableSecondQuestion;
             $this->tableSecondAnswer    = $tableSecondAnswer;
-            $this->tableRelationAnswers = $tableRelationAnswers;               
+            $this->tableRelationAnswers = $tableRelationAnswers;  
+            $this->tableParam           = $tableParam;            
         }
         
         public function getCategoryRepository()
@@ -177,4 +181,16 @@
             }
             return $this->relAnswerRepository;                    
         } 
+        
+        public function getParamRepository()
+        {
+            if (!isset($this->paramRepository)) {
+                $this->paramRepository = new ParamRepository(
+                    $this->db,
+                    $this->tableParam,
+                    $this->dbPrefix
+                );      
+            }
+            return $this->paramRepository;                    
+        }        
     }

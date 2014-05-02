@@ -24,5 +24,6 @@
         'secondquestion'    => 'secondaryquestion',
         'mainanswer'        => 'mainanswer',
         'secondanswer'      => 'secondaryanswer',
-        'relationanswers'   => 'relationanswers'
+        'relationanswers'   => 'relationanswers',
+        'param'             => 'params'
     );

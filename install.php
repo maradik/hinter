@@ -9,7 +9,8 @@
         && $repositoryFactory->getMainQuestionRepository()->install()
         && $repositoryFactory->getRelAnswerRepository()->install()
         && $repositoryFactory->getSecondAnswerRepository()->install()
-        && $repositoryFactory->getSecondQuestionRepository()->install()) {   
+        && $repositoryFactory->getSecondQuestionRepository()->install()
+        && $repositoryFactory->getParamRepository()->install()) {   
         echo "Сайт успешно установлен!<br>Удалите файл " . __FILE__;
     } else {
         die("Ошибка инициализации БД!");

@@ -2,6 +2,7 @@
     namespace Maradik\Hinter\Core;
     
     use Maradik\Testing\BaseData;
+    use Respect\Validation\Validator;
     
     /**
      * Класс-контейнер для оперирования сущностями типа Параметр, хранящимися в БД

@@ -5,7 +5,8 @@
     use Maradik\Testing\QuestionRepository;
     use Maradik\Testing\AnswerRepository;
     use Maradik\Testing\Query;   
-    use Maradik\Hinter\Api\HinterApi;                            
+    use Maradik\Hinter\Api\HinterApi;            
+    use Maradik\Hinter\Core\Params;  
     
     $hinterApi = new HinterApi($repositoryFactory, $user);
     
@@ -48,7 +49,14 @@
             ->addSortField('order')
             ->addSortField('title')
             ->getEntity();        
-        $vars['categoryList'] = $categoryList;                
+        $vars['categoryList'] = $categoryList;  
+        
+        $vars['cache_id'] = Params::get(Params::KEY_CACHE_ID, '1');     
+        
+        $fenom = Fenom::factory($templates_s['templates_path'], $templates_s['compiled_path']);
+        if ($dev_server) {
+            $fenom->setOptions(Fenom::FORCE_COMPILE);
+        }                          
         
         switch (true) {
             case $clearUri == "/":
@@ -110,7 +118,13 @@
                 break;
             case preg_match('{^/question/create$}', $clearUri, $matches) && $user->isRegisteredUser():
                 $template = "page_question_create.tpl";   
-                break;                
+                break;    
+            case $clearUri == "/flushcache" && $user->isAdmin():
+                Params::put(Params::KEY_CACHE_ID, time());
+                $fenom->clearAllCompiles();
+                header('Location: /');
+                exit();     
+                break;                       
         }
         
         if (!isset($template)) {
@@ -124,8 +138,7 @@
             'email' => $user->data()->email,
             'role'  => $user->data()->role
         );
-        $fenom = Fenom::factory(__DIR__.'/templates', __DIR__.'/templates/compiled');
-        $fenom->setOptions(Fenom::FORCE_COMPILE); //TODO перекомпиляция шаблонов только на период разработки   
+    
         $fenom->display($template, $vars);                            
     }
 

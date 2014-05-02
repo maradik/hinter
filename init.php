@@ -6,7 +6,8 @@
     use Maradik\User\UserCurrent;
     use Maradik\User\UserRepository;    
     
-    use Maradik\Hinter\Core\RepositoryFactory;   
+    use Maradik\Hinter\Core\RepositoryFactory; 
+    use Maradik\Hinter\Core\Params;  
     
     $db = new PDO(
         "{$database_s['driver']}:host={$database_s['host']};dbname={$database_s['database']};charset=UTF8", 
@@ -25,7 +26,8 @@
         $table_s['mainanswer'],
         $table_s['secondquestion'],
         $table_s['secondanswer'],
-        $table_s['relationanswers']
+        $table_s['relationanswers'],
+        $table_s['param']
     );    
     
-
+    Params::setRepository($repositoryFactory->getParamRepository());
