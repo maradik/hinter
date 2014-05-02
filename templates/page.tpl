@@ -2,18 +2,18 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		
-		<link rel="shortcut icon" href="/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="/favicon.png" type="image/png">
 		
 		<link rel="stylesheet" href="/styles/bootstrap/3.1.1/css/bootstrap.min.css?cid={$cache_id}">
 		<link rel="stylesheet" href="/styles/styles.css?cid={$cache_id}">
 		
-		<script src="/scripts/jquery-1.11.0.min.js?cid={$cache_id}"></script>
-		<script src="/styles/bootstrap/3.1.1/js/bootstrap.min.js?cid={$cache_id}"></script>
-		<script src="/scripts/knockout-3.1.0.js?cid={$cache_id}"></script>
-		<script src="/scripts/knockout.mapping-latest.js?cid={$cache_id}"></script>
-		<script src="/scripts/hinter.js?cid={$cache_id}"></script>
+		<script type="text/javascript" src="/scripts/jquery-1.11.0.min.js?cid={$cache_id}"></script>
+		<script type="text/javascript" src="/styles/bootstrap/3.1.1/js/bootstrap.min.js?cid={$cache_id}"></script>
+		<script type="text/javascript" src="/scripts/knockout-3.1.0.js?cid={$cache_id}"></script>
+		<script type="text/javascript" src="/scripts/knockout.mapping-latest.js?cid={$cache_id}"></script>
+		<script type="text/javascript" src="/scripts/hinter.js?cid={$cache_id}"></script>
 		
 		<title>{block 'title'}HintOk{/block}</title>
 	</head>

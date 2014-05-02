@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default" role="navigation">
+<div class="navbar navbar-default" role="navigation">
   <div id="navbar-block" class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -56,7 +56,7 @@
 	  </form>	 
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
-</nav>	
+</div>	
 
 <script type="text/javascript">
 	$(document).ready(function () {
