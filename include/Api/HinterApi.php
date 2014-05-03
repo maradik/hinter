@@ -78,13 +78,6 @@
             $requestUri = current(explode('?', $requestUri, 2));
             $requestUri = current(explode('#', $requestUri, 2));
             $uriElements = explode('/', $requestUri, HinterApi::MAX_RESOURCE_DEPTH);
-            /*
-            $ret = (boolean) preg_match(
-                '{^/api/(\w+)(?:/(\d+)(?:/(\w+))?)*(?:\?.*)?(?:\#.*)?$}', //TODO будет неверный разбор регулярного выражения, если вложенность ресурсов > 1
-                rtrim($_SERVER['REQUEST_URI'], '/'),
-                $uri_elements
-            );            
-            */
                                            
             $resUri = "";
             $resId = array();             

@@ -8,9 +8,9 @@
     use Maradik\Hinter\Api\HinterApi;            
     use Maradik\Hinter\Core\Params;  
     
-    $hinterApi = new HinterApi($repositoryFactory, $user);
-    
-    if ($hinterApi->isApiRequest()) {
+    if (strpos($_SERVER['REQUEST_URI'], $system_s['api_base_uri']) === 0) {
+        $hinterApi = new HinterApi($repositoryFactory, $user, $system_s['api_base_uri']);
+
         // Collections
         $hinterApi->registerResource('mainquestion', 'MainQuestionCollection');
         $hinterApi->registerResource('mainanswer', 'MainAnswerCollection');
@@ -54,7 +54,7 @@
         $vars['cache_id'] = Params::get(Params::KEY_CACHE_ID, '1');     
         
         $fenom = Fenom::factory($templates_s['templates_path'], $templates_s['compiled_path']);
-        if ($dev_server) {
+        if ($system_s['dev_server']) {
             $fenom->setOptions(Fenom::FORCE_COMPILE);
         }                          
         

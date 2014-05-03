@@ -15,7 +15,7 @@
         $database_s['password']
     );
     
-    $user = new UserCurrent(new UserRepository($db, $user_s['table'], $database_s['prefix']), $user_s['enctryptsalt']);
+    $user = new UserCurrent(new UserRepository($db, $table_s['user'], $database_s['prefix']), $general_s['enctryptsalt']);
     $user->init(); 
 
     $repositoryFactory = new RepositoryFactory(

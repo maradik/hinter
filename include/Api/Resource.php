@@ -106,7 +106,7 @@
         
         protected function headers()
         {
-            header("Content-Type: application/json; charset=utf-8"); //TODO а может другой?           
+            header("Content-Type: application/json; charset=utf-8");            
         }         
         
         protected function getResponseType()
