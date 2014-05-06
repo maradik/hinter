@@ -72,7 +72,7 @@
          * @param string $text Текст сообщения
          * @param int $type Тип сообщения
          */
-        final protected function addResponseMessage($text, $type = Resource::MESS_NOTIFICATION)
+        final protected function addResponseMessage($text, $type = self::MESS_NOTIFICATION)
         {
             $this->responseMessages[] = array('text' => $text, 'type' => $type);
         }

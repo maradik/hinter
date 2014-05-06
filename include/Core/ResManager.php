@@ -2,8 +2,6 @@
     namespace Maradik\Hinter\Core;
     
     use Maradik\User\UserCurrent;
-    use Maradik\Hinter\Core\HttpResponseCode;
-    use Maradik\Hinter\Core\RepositoryFactory;    
     
     class ResManager
     {

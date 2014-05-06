@@ -230,12 +230,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/maradik/user.git",
-                "reference": "5fbc00df8fe6662adf99889a65842f7eee6fbb45"
+                "reference": "99f57e798baed765b0256ea326ba8c425b9eccff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maradik/user/zipball/5fbc00df8fe6662adf99889a65842f7eee6fbb45",
-                "reference": "5fbc00df8fe6662adf99889a65842f7eee6fbb45",
+                "url": "https://api.github.com/repos/maradik/user/zipball/99f57e798baed765b0256ea326ba8c425b9eccff",
+                "reference": "99f57e798baed765b0256ea326ba8c425b9eccff",
                 "shasum": ""
             },
             "require": {
@@ -270,7 +270,7 @@
                 "source": "https://github.com/maradik/user/tree/master",
                 "issues": "https://github.com/maradik/user/issues"
             },
-            "time": "2014-04-27 14:02:22"
+            "time": "2014-05-06 05:03:02"
         }
     ],
     "packages-dev": [

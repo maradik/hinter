@@ -24,7 +24,7 @@
                 if (($validateResult = $rel->validate()) === true) { 
                     return $this->repositoryFactory->getRelAnswerRepository()->insert($rel);
                 } else {
-                    $this->addResponseMessage(implode("\n", $validateResult), Resource::MESS_ERROR);
+                    $this->addResponseMessage(implode("\n", $validateResult), self::MESS_ERROR);
                 }                    
             }     
             

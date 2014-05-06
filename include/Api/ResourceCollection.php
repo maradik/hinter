@@ -74,7 +74,7 @@
                             $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
                         }     
                     } else {
-                        $this->addResponseMessage(implode("\n", $validateResult), Resource::MESS_ERROR);
+                        $this->addResponseMessage(implode("\n", $validateResult), self::MESS_ERROR);
                         $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);                   
                     }                         
                 }
