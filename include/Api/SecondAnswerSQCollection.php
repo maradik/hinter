@@ -9,8 +9,9 @@
     use Maradik\User\UserCurrent;
     use Maradik\Hinter\Core\HttpResponseCode;
     use Maradik\Hinter\Core\RepositoryFactory; 
+    use Maradik\Hinter\Core\IResource; 
     
-    class SecondAnswerSQCollection extends SecondAnswerCollection
+    class SecondAnswerSQCollection extends SecondAnswerCollection implements IResource
     {                           
         public function __construct(
             RepositoryFactory $repositoryFactory, 

@@ -6,7 +6,7 @@
     use Maradik\User\UserCurrent; 
     use Maradik\User\UserData;
     use Maradik\Hinter\Core\HttpResponseCode;
-    use Maradik\Hinter\Core\RepositoryFactory;     
+    use Maradik\Hinter\Core\RepositoryFactory;    
     
     class UserLogoutController extends UserController
     {

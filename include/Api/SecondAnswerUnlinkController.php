@@ -7,7 +7,7 @@
     use Maradik\Testing\RelRepository;    
     use Maradik\User\UserCurrent;
     use Maradik\Hinter\Core\HttpResponseCode;
-    use Maradik\Hinter\Core\RepositoryFactory;         
+    use Maradik\Hinter\Core\RepositoryFactory;  
     
     class SecondAnswerUnlinkController extends SecondAnswerRelController
     {         

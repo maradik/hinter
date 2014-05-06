@@ -7,8 +7,9 @@
     use Maradik\User\UserCurrent;
     use Maradik\Hinter\Core\HttpResponseCode;
     use Maradik\Hinter\Core\RepositoryFactory; 
+    use Maradik\Hinter\Core\IResource;
     
-    class SecondQuestionDocument extends MainQuestionDocument
+    class SecondQuestionDocument extends MainQuestionDocument implements IResource
     {
         public function __construct(RepositoryFactory $repositoryFactory, UserCurrent $user)
         {

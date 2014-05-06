@@ -8,7 +8,7 @@
     use Maradik\Hinter\Core\HttpResponseCode;
     use Maradik\Hinter\Core\RepositoryFactory;            
     
-    abstract class ResourceCollection extends ResourceBase
+    abstract class ResourceCollection extends ResourceApi
     {              
         protected function __construct(
             RepositoryFactory   $repositoryFactory,
@@ -104,7 +104,7 @@
         }      
         
          
-        /*
+        /**
          * @param BaseData $entity         
          * @return array
          */        

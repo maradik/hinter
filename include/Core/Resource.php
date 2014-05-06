@@ -1,8 +1,6 @@
 <?php
-    namespace Maradik\Hinter\Api;    
+    namespace Maradik\Hinter\Core;    
     
-    use Maradik\Hinter\Core\HttpResponseCode;
-
     abstract class Resource
     {
         const MESS_NOTIFICATION = 0;
@@ -35,37 +33,21 @@
          */
         protected $resId = array();
            
-        public function request(array $resId)
+        final public function request(array $resId)
         {
             $this->resId = $resId;
             
             //TODO написать свой хэндлер ошибок, чтобы выдавать не 200 ОК в случае любой ошибки            
             $this->headers();                                                                                                  
             
-            $args = array();
+            if (!in_array($_SERVER['REQUEST_METHOD'], $this->getServerSupportedMethods())) {
+                $this->responseNotImplemented();
+                return false;                 
+            }
             
-            switch ($_SERVER['REQUEST_METHOD']) {
-                case 'GET':
-                case 'HEAD':                     
-                    $args = $_GET;
-                    break;
-                case 'POST':
-                    //$args = $_POST;
-                    //break;
-                case 'PUT':      
-                case 'DELETE':                  
-                    $requestheaders = getallheaders();  
-                    if (empty($requestheaders["Content-Type"]) || //TODO некрасивая проверка заголовка Content-Type 
-                        strtolower($requestheaders["Content-Type"]) != strtolower("application/json; charset=utf-8")) {
-                        $this->setResponseCode(HttpResponseCode::UNSUPPORTED_MEDIA_TYPE); 
-                        return false;                    
-                    }           
-                    $args = json_decode(file_get_contents('php://input'), true);
-                    break;                        
-                default:
-                    $this->responseNotImplemented();
-                    return false;                                  
-            }                                  
+            if (($args = $this->getRequestArgs()) === false) {
+                return false;
+            }                                 
             
             if (in_array($_SERVER['REQUEST_METHOD'], $this->getSupportedMethods()) &&
                 method_exists($this, $this->supportedMethods[$_SERVER['REQUEST_METHOD']])) {                
@@ -86,34 +68,6 @@
             return true;
         }
 
-        protected function sendResponse()
-        {
-            $data = $this->getResponseData();
-            $message = $this->getResponseMessages();
-            
-            if (isset($data) || isset($message)) {
-                $response = array(
-                    'url'       => $this->getFullUrl(),
-                    'methods'   => $this->getSupportedMethods(),
-                    'type'      => $this->getResponseType(),
-                    'message'   => $message,
-                    'data'      => $data
-                );       
-                
-                echo json_encode($response);
-            }
-        }        
-        
-        protected function headers()
-        {
-            header("Content-Type: application/json; charset=utf-8");            
-        }         
-        
-        protected function getResponseType()
-        {
-            return end(explode('\\', get_called_class())); // Имя класса без namespace
-        }       
-        
         /**
          * @param string $text Текст сообщения
          * @param int $type Тип сообщения
@@ -128,10 +82,20 @@
             return $this->responseMessages;
         }
         
+        final protected function clearResponseMessages()
+        {
+            $this->responseMessages = array();
+        }        
+        
         final protected function setResponseData(array $data)
         {
             $this->responseData = $data;
         }
+        
+        final protected function addResponseData($key, $value)
+        {
+            $this->responseData[$key] = $value;
+        }        
         
         /**
          * @return array
@@ -155,58 +119,41 @@
             return array_keys($this->supportedMethods);
         }
         
-        protected function responseNotAllowed() 
+        final protected function getServerSupportedMethods()
+        {
+            return $this->serverSupportedMethods;
+        }        
+        
+        final protected function responseNotAllowed() 
         {
             /* 405 (Method Not Allowed) */
             header('Allow: ' . implode(', ', $this->getSupportedMethods()), true, HttpResponseCode::METHOD_NOT_ALLOWED);            
         }    
         
-        protected function responseNotImplemented()
+        final protected function responseNotImplemented()
         {
             /* 501 (Method Not Implemented) */
             header('Allow: ' . implode(', ', $this->serverSupportedMethods), true, HttpResponseCode::NOT_IMPLEMENTED);          
         }          
         
-        protected function responseNotFound()
+        final protected function responseNotFound()
         {
             //header("HTTP/1.1 404 Not Found");      
             header("Status: 404 Not Found", true, HttpResponseCode::NOT_FOUND);            
         }       
         
-        protected function responseCreated($location) 
+        final protected function responseCreated($location) 
         {
             /* 201 (Created) */
             header('Location: ' . $location, true, HttpResponseCode::CREATED);            
         }         
         
-        protected function setResponseCode($code)
+        final protected function setResponseCode($code)
         {
             header("HTTP/1.1 {$code} ".HttpResponseCode::getPhrase($code));    
         }
         
-        protected function parseResId()
-        {
-            //TODO не очень красиво привязываемся к структуре URL, поэтому пока не используем
-            /*
-            $base_uri = current(explode('#', current(explode('?', $_SERVER['REQUEST_URI']))));
-            $uri_elements = explode('/',$_SERVER['REQUEST_URI']);
-            array_shift($uri_elements);
-            
-            $resId = array();
-
-            foreach($uri_elements as $key => $value) {
-                if ($key % 2 != 0) {
-                    $resId[] = $value;
-                } 
-            }            
-            
-            array_reverse($resId);
-            $this->resId  = $resId; 
-             * 
-             */
-        }
-        
-        protected function getFullUrl() 
+        final protected function getFullUrl() 
         {
             $protocol = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
             $location = $_SERVER['REQUEST_URI'];
@@ -214,5 +161,20 @@
               $location = substr($location, 0, strrpos($location, $_SERVER['QUERY_STRING']) - 1);
             }
             return $protocol.'://'.$_SERVER['HTTP_HOST'].$location;
-        }                
+        }  
+        
+        /**
+         * Определяет HTTP-заголовки
+         */
+        abstract protected function headers();
+        
+        /**
+         * Вывод HTTP-ответа
+         */
+        abstract protected function sendResponse();
+        
+        /**
+         * @return array|false Аргументы, полученные из http-запроса. False - в случае ошибки.
+         */
+        abstract protected function getRequestArgs();
     }

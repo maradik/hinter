@@ -7,7 +7,7 @@
     use Maradik\Hinter\Core\HttpResponseCode;
     use Maradik\Hinter\Core\RepositoryFactory;      
     
-    abstract class ResourceController extends ResourceBase
+    abstract class ResourceController extends ResourceApi
     {              
         protected function __construct(
             RepositoryFactory   $repositoryFactory,

@@ -5,141 +5,63 @@
     use Maradik\Testing\QuestionRepository;
     use Maradik\Testing\AnswerRepository;
     use Maradik\Testing\Query;   
-    use Maradik\Hinter\Api\HinterApi;            
+    use Maradik\Hinter\Core\ResManager;            
     use Maradik\Hinter\Core\Params;  
     
-    if (strpos($_SERVER['REQUEST_URI'], $system_s['api_base_uri']) === 0) {
-        $hinterApi = new HinterApi($repositoryFactory, $user, $system_s['api_base_uri']);
-
+    $resManager = new ResManager($repositoryFactory, $user);
+    
+    if (strpos($_SERVER['REQUEST_URI'], $system_s['api_base_uri']) === 0) { // подключаем только то, что нужно - экономим время
+        // Регистрация ресурсов для API
+        $ns = 'Maradik\\Hinter\\Api\\';
+        $upx = $system_s['api_base_uri'];
+        
         // Collections
-        $hinterApi->registerResource('mainquestion', 'MainQuestionCollection');
-        $hinterApi->registerResource('mainanswer', 'MainAnswerCollection');
-        $hinterApi->registerResource('secondaryquestion', 'SecondQuestionCollection');
-        $hinterApi->registerResource('secondaryquestion/{id}/secondaryanswer', 'SecondAnswerSQCollection');
-        $hinterApi->registerResource('secondaryanswer', 'SecondAnswerCollection');       
-        $hinterApi->registerResource('secondaryanswer/{id}/mainanswer', 'MainAnswerSACollection');
-        $hinterApi->registerResource('mainquestion/{id}/mainanswer', 'MainAnswerMQCollection');
-        $hinterApi->registerResource('mainquestion/{id}/secondaryquestion', 'SecondQuestionMQCollection');
-        $hinterApi->registerResource('category', 'CategoryCollection');
+        $resManager->register($upx . '/mainquestion', $ns . 'MainQuestionCollection');
+        $resManager->register($upx . '/mainanswer', $ns . 'MainAnswerCollection');
+        $resManager->register($upx . '/secondaryquestion', $ns . 'SecondQuestionCollection');
+        $resManager->register($upx . '/secondaryquestion/{id}/secondaryanswer', $ns . 'SecondAnswerSQCollection');
+        $resManager->register($upx . '/secondaryanswer', $ns . 'SecondAnswerCollection');       
+        $resManager->register($upx . '/secondaryanswer/{id}/mainanswer', $ns . 'MainAnswerSACollection');
+        $resManager->register($upx . '/mainquestion/{id}/mainanswer', $ns . 'MainAnswerMQCollection');
+        $resManager->register($upx . '/mainquestion/{id}/secondaryquestion', $ns . 'SecondQuestionMQCollection');
+        $resManager->register($upx . '/category', $ns . 'CategoryCollection');
         
         // Documents
-        $hinterApi->registerResource('mainquestion/{id}', 'MainQuestionDocument');
-        $hinterApi->registerResource('mainanswer/{id}', 'MainAnswerDocument');
-        $hinterApi->registerResource('secondaryquestion/{id}', 'SecondQuestionDocument');
-        $hinterApi->registerResource('secondaryanswer/{id}', 'SecondAnswerDocument');
-        $hinterApi->registerResource('category/{id}', 'CategoryDocument');
+        $resManager->register($upx . '/mainquestion/{id}', $ns . 'MainQuestionDocument');
+        $resManager->register($upx . '/mainanswer/{id}', $ns . 'MainAnswerDocument');
+        $resManager->register($upx . '/secondaryquestion/{id}', $ns . 'SecondQuestionDocument');
+        $resManager->register($upx . '/secondaryanswer/{id}', $ns . 'SecondAnswerDocument');
+        $resManager->register($upx . '/category/{id}', $ns . 'CategoryDocument');
         
         // Controllers
-        $hinterApi->registerResource('secondaryanswer/{id}/link', 'SecondAnswerLinkController');
-        $hinterApi->registerResource('secondaryanswer/{id}/unlink', 'SecondAnswerUnlinkController');
-        $hinterApi->registerResource('user/current/register', 'UserRegisterController');
-        $hinterApi->registerResource('user/current/login', 'UserLoginController');
-        $hinterApi->registerResource('user/current/logout', 'UserLogoutController');
-       
-        $hinterApi->requestResource();
+        $resManager->register($upx . '/secondaryanswer/{id}/link', $ns . 'SecondAnswerLinkController');
+        $resManager->register($upx . '/secondaryanswer/{id}/unlink', $ns . 'SecondAnswerUnlinkController');
+        $resManager->register($upx . '/user/current/register', $ns . 'UserRegisterController');
+        $resManager->register($upx . '/user/current/login', $ns . 'UserLoginController');
+        $resManager->register($upx . '/user/current/logout', $ns . 'UserLogoutController');
+        
+        // NotFound
+        $resManager->registerNotFound($ns . 'ResourceNotFound');
+        unset($ns);        
     } else {
-        header("Content-Type: text/html; charset=utf-8");
-        $vars = array();
+        // Регистрация html-страниц        
+        $ns = 'Maradik\\Hinter\\Page\\';
         
-        $clearUri = current(explode('#', current(explode('?', $_SERVER['REQUEST_URI'], 2)), 2));
-        $vars['clearUri'] = $clearUri;
+        // Pages
+        $resManager->register('/', $ns . 'PageMain');
+        $resManager->register('/category/{id}', $ns . 'PageCategory');
+        $resManager->register('/question/{id}', $ns . 'PageQuestion');
+        $resManager->register('/question/create', $ns . 'PageQuestionCreate');
         
-        $categoryList = $repositoryFactory->getCategoryRepository()
-            ->query()
-            ->addSortField('order')
-            ->addSortField('title')
-            ->getEntity();        
-        $vars['categoryList'] = $categoryList;  
-        
-        $vars['cache_id'] = Params::get(Params::KEY_CACHE_ID, '1');     
-        
-        $fenom = Fenom::factory($templates_s['templates_path'], $templates_s['compiled_path']);
-        if ($system_s['dev_server']) {
-            $fenom->setOptions(Fenom::FORCE_COMPILE);
-        }                          
-        
-        switch (true) {
-            case $clearUri == "/":
-                $mainQuestionList = array_map(
-                    'array_shift',
-                    $repositoryFactory
-                        ->getMainQuestionRepository()
-                        ->query()
-                        ->addSortField('id', Query::SORT_DESC)
-                        ->addFilterField('active', true)
-                        ->get(10)
-                );
-                $vars['mainQuestionList'] = $mainQuestionList;
-                $template = "page_main.tpl";
-                break;
-            case preg_match('{^/category/(\d+)$}', $clearUri, $matches):
-                $categoryId = (int) $matches[1];
-                $categoryCurrent = $repositoryFactory
-                    ->getCategoryRepository()
-                    ->getById($categoryId);                           
-                if ($categoryCurrent) {
-                    $vars['categoryCurrent'] = $categoryCurrent;
-                    /*
-                    $mainQuestionList = $repositoryFactory
-                        ->getMainQuestionRepository()
-                        ->getCollection(array('categoryId' => $categoryId));
-                    */
-                    $mainQuestionList = array_map(
-                        'array_shift',
-                        $repositoryFactory
-                            ->getMainQuestionRepository()
-                            ->query()
-                            ->addFilterField('categoryId', $categoryId)
-                            ->addSortField('id', Query::SORT_DESC)
-                            ->addFilterField('active', true)                            
-                            ->get(10)
-                    );                    
-                    $vars['mainQuestionList'] = $mainQuestionList;
-                    $template = "page_category.tpl";                    
-                } else {
-                    $template = "page_404.tpl";
-                    header("HTTP/1.1 404 Not Found");                     
-                }                          
-                break;     
-            case preg_match('{^/question/(\d+)$}', $clearUri, $matches):
-                $questionId = (int) $matches[1];
-                $mainQuestion = $repositoryFactory
-                    ->getMainQuestionRepository()
-                    ->getById($questionId);                           
-                if ($mainQuestion) {
-                    $vars['mainQuestion'] = $mainQuestion;
-                    $template = "page_question.tpl";   
-                }                
-                break;
-            case preg_match('{^/question/create$}', $clearUri, $matches) && $user->isRegisteredUser():
-                $template = "page_question_create.tpl";   
-                break;    
-            case $clearUri == "/admin/question" && $user->isAdmin():
-                if ($user->isAdmin()) {
-                    $template = "admin_mainquestionlist.tpl";
-                }
-                break;                
-            case $clearUri == "/admin/flushcache" && $user->isAdmin():
-                Params::put(Params::KEY_CACHE_ID, time());
-                $fenom->clearAllCompiles();
-                header('Location: /');
-                exit();     
-                break;                       
-        }
-        
-        if (!isset($template)) {
-            $template = "page_404.tpl";
-            header("HTTP/1.1 404 Not Found");             
-        }
-
-        $vars['userData'] = array(
-            'id'    => $user->data()->id,
-            'login' => $user->data()->login,
-            'email' => $user->data()->email,
-            'role'  => $user->data()->role
-        );
-    
-        $fenom->display($template, $vars);                            
+        // Admin
+        $resManager->register('/admin/question', $ns . 'AdminQuestionList');
+        $resManager->register('/admin/flushcache', $ns . 'AdminFlushCache');
+                
+        // NotFound        
+        $resManager->registerNotFound($ns . 'ResourceNotFound');
+        unset($ns);         
     }
+    
+    $resManager->request();
 
     
