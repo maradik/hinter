@@ -805,14 +805,15 @@
             ko.applyBindings(self, document.getElementById(htmlElementId || "bs-navbar-collapse-1"/* "page-navbar-user-block"*/));
         };
         
-        self.reloadPage = function() {
+        self.reloadPage = function(redirectToMainPage) {
+            redirectToMainPage = redirectToMainPage || false;
             var pagesWithoutReload = [
                 /^https?:\/\/[^/]+\/$/,
                 /^https?:\/\/[^/]+\/category\/\d+$/,
                 /^https?:\/\/[^/]+\/question\/\d+$/
             ];
             if (!pagesWithoutReload.some(function(item) { return window.location.href.match(item); })){
-                window.location.reload();
+                if (redirectToMainPage) {window.location.href = '/';} else {window.location.reload();}
             } 
         };
         
@@ -869,7 +870,7 @@
                 function (data) {
                     if (data.data) {
                         self.UserData(UserData.unpack(data.data));
-                        self.reloadPage();                        
+                        self.reloadPage(true);                        
                     }
                 },
                 function() { self.UserData().Locked(false); }
