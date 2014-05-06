@@ -2,7 +2,9 @@
 
     namespace Maradik\Hinter\Page;
     
-    class ResourceNotFound extends ResourcePageSidebar
+    use Maradik\Hinter\Core\IResource;
+    
+    class ResourceNotFound extends ResourcePageSidebar implements IResource
     {
         /**
          * Метод, обрабатывающий запрос GET к ресурсу

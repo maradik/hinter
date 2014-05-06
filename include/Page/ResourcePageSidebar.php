@@ -5,34 +5,28 @@
     use Maradik\Hinter\Core\HttpResponseCode;
     use Maradik\Hinter\Core\RepositoryFactory;
     use Maradik\Hinter\Core\Params;
-    use Maradik\Hinter\Core\IResource;     
     
-    abstract class ResourcePageSidebar extends ResourcePage implements IResource
+    abstract class ResourcePageSidebar extends ResourcePage
     {
         /**
          * @param RepositoryFactory $repositoryFactory
          * @param UserCurrent $user
+         * @param int $needUserRole Минимальная роль, которой доступна страница (из констант Maradik\User\UserRoles)
          */
         public function __construct(
             RepositoryFactory   $repositoryFactory, 
-            UserCurrent         $user
+            UserCurrent         $user,
+            $needUserRole = \Maradik\User\UserRoles::GUEST
         ) {
             parent::__construct(
                 $repositoryFactory, 
                 $user, 
+                $needUserRole,
                 'page_404.tpl', 
                 'page_accessdeny.tpl'
             );  
         }          
             
-        /**
-         * @return int Минимальная роль, которой доступна страница (из констант Maradik\User\UserRoles)
-         */
-        protected function needUserRole()
-        {
-            return \Maradik\User\UserRoles::USER;
-        }
-        
         protected function sendResponse()
         {
             $this->addResponseData(

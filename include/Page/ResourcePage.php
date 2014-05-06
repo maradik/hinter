@@ -26,7 +26,12 @@
         /**
          * @var string $templateAccessDeny
          */
-        private $templateAccessDeny;                     
+        private $templateAccessDeny; 
+        
+        /**
+         * @var string $needUserRole Минимальная роль, которой доступна страница (из констант Maradik\User\UserRoles)
+         */
+        private $needUserRole;                                  
         
         /**
          * @var RepositoryFactory
@@ -41,12 +46,14 @@
         /**
          * @param RepositoryFactory $repositoryFactory
          * @param UserCurrent $user
+         * @param int $needUserRole Минимальная роль, которой доступна страница (из констант Maradik\User\UserRoles)
          * @param string $templateNotFound
          * @param string $templateAccessDeny
          */
         protected function __construct(
             RepositoryFactory   $repositoryFactory, 
             UserCurrent         $user,
+            $needUserRole,            
             $templateNotFound,
             $templateAccessDeny
         ) {
@@ -58,6 +65,7 @@
             
             $this->repositoryFactory    = $repositoryFactory;           
             $this->user                 = $user;     
+            $this->needUserRole         = $needUserRole;
             $this->templateNotFound     = $templateNotFound;
             $this->templateAccessDeny   = $templateAccessDeny;
             
@@ -156,7 +164,7 @@
          */        
         final protected function base_get(array $args = array()) 
         {
-            if ($this->needUserRole() <= $this->user->data()->role) {
+            if ($this->needUserRole <= $this->user->data()->role) {
                 $this->request_get($args);
             } else {
                 $this->setTemplate($this->templateAccessDeny());
@@ -169,7 +177,7 @@
          */        
         final protected function base_post(array $args = array()) 
         {
-            if ($this->needUserRole() <= $this->user->data()->role) {
+            if ($this->needUserRole <= $this->user->data()->role) {
                 $this->request_post($args);
             } else {
                 $this->setTemplate($this->templateAccessDeny());
@@ -193,10 +201,5 @@
          * @param array $args
          */
         abstract protected function request_get(array $args = array());
-        
-        /**
-         * @return int Минимальная роль, которой доступна страница (из констант Maradik\User\UserRoles)
-         */
-        abstract protected function needUserRole();
     }
 

@@ -3,8 +3,9 @@
     namespace Maradik\Hinter\Page;
     
     use Maradik\Testing\Query;
+    use Maradik\Hinter\Core\IResource;
     
-    class PageMain extends ResourcePageSidebar
+    class PageMain extends ResourcePageSidebar implements IResource
     {
         protected function request_get(array $args = array())
         {
