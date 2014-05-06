@@ -881,7 +881,7 @@
         });  
         
         self.isAdmin = ko.computed(function() {
-            return self.UserData().Role() == 2;
+            return self.UserData().Role() == 3;
         });                   
     }    
     
