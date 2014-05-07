@@ -48,7 +48,7 @@
             
             $this->validateResourceClass($className);                 
             
-            $this->resources[$uri] = $className;
+            $this->resources[strtolower($uri)] = $className;
         }
 
         /**
@@ -64,7 +64,7 @@
         public function request()
         {
             $requestUri = current(explode('?', $_SERVER['REQUEST_URI'], 2));
-            $requestUri = current(explode('#', $requestUri, 2));
+            $requestUri = strtolower(current(explode('#', $requestUri, 2)));
 
             foreach ($this->resources as $uri => $className) {
                 if ( preg_match(
