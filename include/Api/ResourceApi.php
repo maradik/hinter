@@ -77,14 +77,19 @@
                 case 'PUT':      
                 case 'DELETE':       
                     $requestHeaders = getallheaders();   
-                    if (
-                        empty($requestHeaders["Content-Type"]) 
-                        || strtolower($requestHeaders["Content-Type"]) != strtolower("application/json; charset=utf-8")
-                    ) {
+                    
+                    if (!empty($requestHeaders["Content-Type"])
+                        && strtolower($requestHeaders["Content-Type"]) == "application/json; charset=utf-8") {
+                            
+                        $args = json_decode(file_get_contents('php://input'), true);    
+                    } elseif (!empty($requestHeaders["Content-Type"]) 
+                        && strpos(strtolower($requestHeaders["Content-Type"]), 'multipart/form-data') === 0) {
+                        
+                        $args = $_POST;
+                    } else {
                         $this->setResponseCode(HttpResponseCode::UNSUPPORTED_MEDIA_TYPE); 
                         return false;                    
                     }                               
-                    $args = json_decode(file_get_contents('php://input'), true);
                     break;                        
             }   
             

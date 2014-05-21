@@ -1,12 +1,7 @@
 <?php
     require_once __DIR__.'/init.php';  
     
-    use Maradik\Testing\CategoryRepository;
-    use Maradik\Testing\QuestionRepository;
-    use Maradik\Testing\AnswerRepository;
-    use Maradik\Testing\Query;   
     use Maradik\Hinter\Core\ResManager;            
-    use Maradik\Hinter\Core\Params;  
     
     $resManager = new ResManager($repositoryFactory, $user);
     
@@ -17,14 +12,17 @@
         
         // Collections
         $resManager->register($upx . '/mainquestion', $ns . 'MainQuestionCollection');
+        $resManager->register($upx . '/mainquestion/{id}/mainanswer', $ns . 'MainAnswerMQCollection');
+        $resManager->register($upx . '/mainquestion/{id}/secondaryquestion', $ns . 'SecondQuestionMQCollection');
+        $resManager->register($upx . '/mainquestion/{id}/image', $ns . 'ImageMQCollection');
         $resManager->register($upx . '/mainanswer', $ns . 'MainAnswerCollection');
+        $resManager->register($upx . '/mainanswer/{id}/image', $ns . 'ImageMACollection');
         $resManager->register($upx . '/secondaryquestion', $ns . 'SecondQuestionCollection');
         $resManager->register($upx . '/secondaryquestion/{id}/secondaryanswer', $ns . 'SecondAnswerSQCollection');
         $resManager->register($upx . '/secondaryanswer', $ns . 'SecondAnswerCollection');       
         $resManager->register($upx . '/secondaryanswer/{id}/mainanswer', $ns . 'MainAnswerSACollection');
-        $resManager->register($upx . '/mainquestion/{id}/mainanswer', $ns . 'MainAnswerMQCollection');
-        $resManager->register($upx . '/mainquestion/{id}/secondaryquestion', $ns . 'SecondQuestionMQCollection');
         $resManager->register($upx . '/category', $ns . 'CategoryCollection');
+        $resManager->register($upx . '/image', $ns . 'ImageCollection');
         
         // Documents
         $resManager->register($upx . '/mainquestion/{id}', $ns . 'MainQuestionDocument');
@@ -32,6 +30,7 @@
         $resManager->register($upx . '/secondaryquestion/{id}', $ns . 'SecondQuestionDocument');
         $resManager->register($upx . '/secondaryanswer/{id}', $ns . 'SecondAnswerDocument');
         $resManager->register($upx . '/category/{id}', $ns . 'CategoryDocument');
+        $resManager->register($upx . '/image/{id}', $ns . 'ImageDocument');
         
         // Controllers
         $resManager->register($upx . '/secondaryanswer/{id}/link', $ns . 'SecondAnswerLinkController');

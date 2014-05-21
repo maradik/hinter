@@ -66,23 +66,33 @@
 									<select class="form-control" id="selectMainQuestionCategory" data-bind="options: $root.CategoryList, value: CategoryId, optionsText: 'Title', optionsValue: 'Id', optionsCaption: 'Выберите категорию'"></select>
 									<span class="small text-danger" data-bind="text: CategoryId.validationMessage(), visible: CategoryId.validationMessage()"></span>									
 								</div>
-							</div>												
+							</div>			
 						</fieldset>
+						<fieldset data-bind="disable: Locked() || Title.hasError() || CategoryId.hasError() || Description.hasError()">
+							<button class="btn btn-default" data-bind="click: function(){ document.getElementById('MainQuestionImage').click(); }">
+								Прикрепить изображение <span class="glyphicon glyphicon-picture"></span>
+							</button>	
+							<input id="MainQuestionImage" type="file" class="file-upload" data-bind="event: { change: function(m, e){ $root.addMainQuestionImage(m, e, $element.files[0]); } }">					
+							<button class="btn btn-primary" data-bind="click: $root.saveMainQuestion">
+								Далее <span class="glyphicon glyphicon-chevron-right"></span>
+							</button>
+						</fieldset>							
 					</form>		
-					<div>
-						<button class="btn btn-primary" data-bind="click: $root.saveMainQuestion, disable: Locked() || Title.hasError() || CategoryId.hasError() || Description.hasError()">
-							Далее <span class="glyphicon glyphicon-chevron-right"></span>
-						</button>
-					</div>					
 				</div>		
-				<div data-bind="visible: !Editing()">
-					<h2 data-bind="text: Title"></h2>
-					<div class="multiline" data-bind="text: Description"></div>
-					<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId())">
-						<div class="label label-info">
-							<span class="glyphicon glyphicon-folder-open"></span> <span data-bind="text: Title"></span>
-						</div>
-					</div>						
+				<div class="row" data-bind="visible: !Editing()">
+					<div data-bind="css: Images().length ? 'col-sm-8' : 'col-sm-12'">
+						<h2 data-bind="text: Title" class="top10"></h2>
+						<div class="multiline" data-bind="text: Description"></div>
+						<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId())">
+							<div class="label label-info">
+								<span class="glyphicon glyphicon-folder-open"></span> <span data-bind="text: Title"></span>
+							</div>
+						</div>	
+					</div>		
+					<div class="text-center" data-bind="css: Images().length ? 'col-xs-6 col-sm-4' : '', visible: !Images().count">
+						<!-- ko template: { name: 'thumbnails', foreach: Images } -->
+						<!-- /ko -->
+					</div>			
 				</div>														
 			</div>		
 		</div>
@@ -106,8 +116,8 @@
 							<td class="col-xs-11">
 								<div class="row">
 									<div class="col-md-12">									
-										<form class="form-horizontal" role="form" data-bind="visible: Editing()">
-											<fieldset data-bind="disable: Locked">											
+										<form class="form-horizontal" role="form" data-bind="visible: Editing(), disable: Locked">
+											<fieldset>											
 												<div class="form-group" data-bind="css: { 'has-error' : Title.hasError, 'has-success' : !Title.hasError() && Title() }">
 													<label class="col-sm-2 control-label">Ответ</label>
 													<div class="col-sm-10">
@@ -118,15 +128,27 @@
 												<div class="form-group" data-bind="css: { 'has-error' : Description.hasError, 'has-success' : !Description.hasError() && Description() }">
 													<label class="col-sm-2 control-label">Описание</label>
 													<div class="col-sm-10">
-														<textarea rows="2" class="form-control" placeholder="Поясняющий комментарий" data-bind="value: Description"></textarea>
+														<textarea rows="4" class="form-control" placeholder="Поясняющий комментарий" data-bind="value: Description"></textarea>
 														<span class="small text-danger" data-bind="text: Description.validationMessage(), visible: Description.validationMessage()"></span>
 													</div>
 												</div>		
+											</fieldset>
+											<fieldset data-bind="disable: Locked() || Title.hasError() || Description.hasError()">
+												<button class="btn btn-default btn-sm" data-bind="click: function(){ document.getElementById('MainAnswerImage' + $index()).click(); }">
+													Прикрепить изображение <span class="glyphicon glyphicon-picture"></span>
+												</button>
+												<input id="MainAnswerImage" type="file" class="file-upload" data-bind="event: { change: function(m, e){ $root.addMainAnswerImage(m, e, $element.files[0]); } }, attr: { id: 'MainAnswerImage' + $index() }">
 											</fieldset>			
 										</form>	
-										<div data-bind="visible: !Editing()">
-											<h4 data-bind="text: Title"></h4>
-											<div class="multiline" data-bind="text: Description"></div>
+										<div class="row" data-bind="visible: !Editing()">
+											<div data-bind="css: Images().length ? 'col-sm-9' : 'col-sm-12'">
+												<h4 class="top10" data-bind="text: Title"></h4>
+												<div class="multiline" data-bind="text: Description"></div>
+											</div>
+											<div class="text-center" data-bind="css: Images().length ? 'col-xs-6 col-sm-3' : '', visible: !Images().count">
+												<!-- ko template: { name: 'thumbnails', foreach: Images } -->
+												<!-- /ko -->
+											</div>											
 										</div>
 									</div>	
 								</div>
@@ -287,6 +309,11 @@
 	</div>	
 	<!-- /Последний экран -->	
 
+	<script type="text/html" id="thumbnails">
+		<a href="#" target="_blank" class="thumbnail top10" data-bind="thumbnail: { src: UrlData, title: Title }">
+			<img src="#" data-bind="attr: { src: UrlMiddle, title: Title, alt: Title }">
+		</a>
+	</script>
 {/block}
 
 {block 'scripts'}

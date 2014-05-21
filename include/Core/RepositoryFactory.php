@@ -5,11 +5,13 @@
     use Maradik\Testing\QuestionRepository;
     use Maradik\Testing\AnswerRepository;
     use Maradik\Testing\RelRepository;
+    use Maradik\Testing\FileRepository;
 
     class RepositoryFactory        
     {
         protected $db;        
         protected $dbPrefix;    
+        
         protected $tableCategory;
         protected $tableMainQuestion;
         protected $tableMainAnswer;
@@ -17,6 +19,8 @@
         protected $tableSecondAnswer;
         protected $tableRelationAnswers;
         protected $tableParam;
+        protected $tableFile;
+        protected $uploadDir;
                            
         protected $categoryRepository;
         protected $mainQuestionRepository;
@@ -25,6 +29,7 @@
         protected $secondAnswerRepository;
         protected $relAnswerRepository;
         protected $paramRepository;
+        protected $fileRepository;
         
         public function __construct(
             \PDO $pdo,
@@ -35,7 +40,9 @@
             $tableSecondQuestion        = 'secondaryquestion',
             $tableSecondAnswer          = 'secondaryanswer',
             $tableRelationAnswers       = 'relationanswers',
-            $tableParam                 = 'params'
+            $tableParam                 = 'params',
+            $tableFile                  = 'file',
+            $uploadDir                  = 'uploads'
         )
         {
             $this->db                   = $pdo;        
@@ -46,9 +53,52 @@
             $this->tableSecondQuestion  = $tableSecondQuestion;
             $this->tableSecondAnswer    = $tableSecondAnswer;
             $this->tableRelationAnswers = $tableRelationAnswers;  
-            $this->tableParam           = $tableParam;            
+            $this->tableParam           = $tableParam;      
+            $this->tableFile            = $tableFile;     
+            $this->uploadDir            = $uploadDir; 
         }
         
+        /**
+         * @param int $parentType
+         * @param int $parentId
+         *
+         * @return boolean
+         */
+        public function deleteRelatedFiles($parentType, $parentId) 
+        {
+            $uploadDir = pathinfo($_SERVER['SCRIPT_FILENAME'], PATHINFO_DIRNAME) . "/{$this->uploadDir}";
+            
+            $files = $this->getFileRepository()
+                ->query()
+                ->addFilterField('parentType', $parentType)
+                ->addFilterField('parentId', $parentId)
+                ->getEntity();
+            foreach ($files as $file) {
+                if (!$this->getFileRepository()->delete($file->id)) {
+                    return false;    
+                }
+                
+                array_map(
+                    function($f) {
+                        if (is_file($f)) {
+                            unlink($f);
+                        }
+                    },
+                    array(
+                        $uploadDir . "/{$file->fileName}",
+                        $uploadDir . "/thumbnail/{$file->fileName}",
+                        $uploadDir . "/middle/{$file->fileName}",
+                        $uploadDir . "/large/{$file->fileName}"
+                    )
+                );
+            }   
+            
+            return true;           
+        }
+        
+        /**
+         * @return Maradik\Testing\CategoryRepository
+         */
         public function getCategoryRepository()
         {
             if (!isset($this->categoryRepository)) {
@@ -60,7 +110,10 @@
             }
             return $this->categoryRepository;                    
         }
-
+        
+        /**
+         * @return Maradik\Testing\QuestionRepository
+         */  
         public function getMainQuestionRepository()
         {
             if (!isset($this->mainQuestionRepository)) {
@@ -89,12 +142,15 @@
                             return false;    
                         }
                     }                         
-                    return true;
+                    return $self->deleteRelatedFiles(FileParentType::MAIN_QUESTION, $id);
                 });                 
             }
             return $this->mainQuestionRepository;                    
         }
         
+        /**
+         * @return Maradik\Testing\AnswerRepository
+         */        
         public function getMainAnswerRepository()
         {
             if (!isset($this->mainAnswerRepository)) {
@@ -114,12 +170,15 @@
                             return false;    
                         }
                     }    
-                    return true;
+                    return $self->deleteRelatedFiles(FileParentType::MAIN_ANSWER, $id);
                 });                 
             }
             return $this->mainAnswerRepository;                    
         }
         
+        /**
+         * @return Maradik\Testing\QuestionRepository
+         */        
         public function getSecondQuestionRepository()
         {
             if (!isset($this->secondQuestionRepository)) {
@@ -139,12 +198,15 @@
                             return false;    
                         }
                     }    
-                    return true;
+                    return $self->deleteRelatedFiles(FileParentType::SECOND_QUESTION, $id);
                 });                 
             }
             return $this->secondQuestionRepository;                    
         }
         
+        /**
+         * @return Maradik\Testing\AnswerRepository
+         */        
         public function getSecondAnswerRepository()
         {
             if (!isset($this->secondAnswerRepository)) {
@@ -164,12 +226,15 @@
                             return false;    
                         }
                     }    
-                    return true;
+                    return $self->deleteRelatedFiles(FileParentType::SECOND_ANSWER, $id);
                 });                  
             }
             return $this->secondAnswerRepository;                    
         }
         
+        /**
+         * @return Maradik\Testing\RelRepository
+         */        
         public function getRelAnswerRepository()
         {
             if (!isset($this->relAnswerRepository)) {
@@ -182,6 +247,9 @@
             return $this->relAnswerRepository;                    
         } 
         
+        /**
+         * @return Maradik\Core\ParamRepository
+         */        
         public function getParamRepository()
         {
             if (!isset($this->paramRepository)) {
@@ -192,5 +260,35 @@
                 );      
             }
             return $this->paramRepository;                    
-        }        
+        }     
+        
+        /**
+         * @return Maradik\Testing\FileRepository
+         */
+        public function getFileRepository()
+        {
+            if (!isset($this->fileRepository)) {
+                $this->fileRepository = new FileRepository(
+                    $this->db,
+                    $this->tableFile,
+                    $this->dbPrefix
+                );      
+            }
+            return $this->fileRepository;                    
+        }           
+        
+        /**
+         * @return Maradik\Testing\BaseRepository
+         */
+        public function getRepositoryByFpt($fileParentType)
+        {
+            switch ($fileParentType) {
+                case FileParentType::MAIN_QUESTION:     return $this->getMainQuestionRepository();
+                case FileParentType::MAIN_ANSWER:       return $this->getMainAnswerRepository();
+                case FileParentType::SECOND_QUESTION:   return $this->getSecondQuestionRepository();
+                case FileParentType::SECOND_ANSWER:     return $this->getSecondAnswerRepository();
+            }
+            
+            throw \InvalidArgumentException('Некорректное значение аргумента $fileParentType');
+        } 
     }

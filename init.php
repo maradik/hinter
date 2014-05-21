@@ -27,7 +27,9 @@
         $table_s['secondquestion'],
         $table_s['secondanswer'],
         $table_s['relationanswers'],
-        $table_s['param']
+        $table_s['param'],
+        $table_s['file'],
+        $general_s['upload_dir']
     );    
 
     Params::setRepository($repositoryFactory->getParamRepository());

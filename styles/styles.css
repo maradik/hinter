@@ -51,6 +51,14 @@
 	border-color: #365c5e;
 }
 
+.btn-default.disabled, .btn-default[disabled], fieldset[disabled] .btn-default,
+.btn-default.disabled:hover, .btn-default[disabled]:hover, fieldset[disabled] .btn-default:hover,
+.btn-default.disabled:focus, .btn-default[disabled]:focus, fieldset[disabled] .btn-default:focus,
+.btn-default.disabled:active, .btn-default[disabled]:active, fieldset[disabled] .btn-default:active,
+.btn-default.disabled.active, .btn-default[disabled].active, fieldset[disabled] .btn-default.active {
+	background-color: #769494;   	
+}
+
 .nav li a:hover,
 .nav li a:focus,
 .list-group a.list-group-item:hover,
@@ -91,4 +99,11 @@
 
 .top10 {
 	margin-top: 10px;
+}
+
+input[type=file].file-upload {
+    position: absolute;
+    top: 0;
+    visibility: hidden;
+    opacity: 0;
 }

@@ -10,12 +10,19 @@
 				<h3 class="panel-title"><span class="glyphicon glyphicon-question-sign"></span> Решается вопрос</h3>
 			</div>
 			<div class="panel-body">
-				<div>		
-					<h1>{$mainQuestion->title|e:'HTML'}</h1>
+				<h1>{$mainQuestion->title|e:'HTML'}</h1>
+				<div class="row">
 					{if !empty($mainQuestion->description)}
-						<div class="multiline">{$mainQuestion->description|e:'HTML'}</div>
+						<div class="col-sm-12" data-bind="css: { 'col-sm-8': MainQuestionImageList().length, 'col-sm-12': !MainQuestionImageList().length }">		
+								<div class="multiline">{$mainQuestion->description|e:'HTML'}</div>
+						</div>
 					{/if}	
-				</div>
+										
+					<div class="text-center" data-bind="css: MainQuestionImageList().length ? 'col-xs-6 col-sm-4' : '', visible: !MainQuestionImageList().count">
+						<!-- ko template: { name: 'thumbnails', foreach: MainQuestionImageList } -->
+						<!-- /ko -->
+					</div>		 
+				</div>					
 			</div>
 			<div class="panel-footer" data-bind="visible: CurrentSecQuestion() == 0">				
 				<div class="row">
@@ -35,7 +42,13 @@
 			</div>
 			<div class="panel-body" data-bind="with: MainAnswerList()[0]">	
 				<h3 data-bind="text: Title"></h3>
-				<div class="multiline" data-bind="text: Description, visible: Description"></div>
+				<div class="row">
+					<div class="multiline" data-bind="text: Description, visible: Description, css: Images().length ? 'col-sm-8' : 'col-sm-12'"></div>
+					<div class="text-center" data-bind="css: Images().length ? 'col-xs-6 col-sm-4' : '', visible: !Images().count">
+						<!-- ko template: { name: 'thumbnails', foreach: Images } -->
+						<!-- /ko -->
+					</div>
+				</div>
 			</div>
 			<div class="panel-footer">				
 				<button class="btn btn-success btn-sm" data-bind="click: $root.start">
@@ -77,9 +90,25 @@
 			</div>
 			<div class="panel-body">		
 				<div data-bind="if: MainAnswerList().length > 0">
+					<!--
 					<ol data-bind="foreach: MainAnswerList">
 						<li data-bind="text: Title"></li>
-					</ol>				
+					</ol>
+					-->
+					<!-- ko foreach: { data: MainAnswerList, afterRender: MainAnswerList()[0].Images.afterRender } -->
+						<div class="row top10">
+							<div class="col-xs-1 text-center"><span class="label label-default" data-bind="text: $index() + 1"></span></div>
+							<div class="col-xs-1 text-center thumbnail-block" data-bind="visible: Images().length, with: Images()[0]">
+								<a href="#" class="thumbnail" target="_blank" data-bind="thumbnail: { src: UrlData, title: Title }">
+									<img src="#" data-bind="attr: { src: UrlThumbnail, title: Title, alt: Title }">
+								</a>
+							</div>
+							<div class="col-xs-10" data-bind="css: { 'col-xs-10': Images().length, 'col-xs-11': !Images().length }">
+								<strong data-bind="text: Title.truncatedText(50)"></strong>
+								<em class="text-muted" data-bind="text: Description.truncatedText(100)"></em>
+							</div>
+						</div>
+					<!-- /ko -->		
 				</div>
 				<div data-bind="if: MainAnswerList().length == 0">
 					Загрузка...
@@ -87,7 +116,12 @@
 			</div>
 		</div>							
 	</div>
-
+	
+	<script type="text/html" id="thumbnails">
+		<a href="#" target="_blank" class="thumbnail top10" data-bind="thumbnail: { src: UrlData, title: Title }">
+			<img src="#" data-bind="attr: { src: UrlMiddle, title: Title, alt: Title }">
+		</a>
+	</script>
 {/block}
 
 {block 'scripts'}

@@ -155,13 +155,17 @@
         
         final protected function getFullUrl() 
         {
-            $protocol = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
             $location = $_SERVER['REQUEST_URI'];
             if (!empty($_SERVER['QUERY_STRING'])) {
               $location = substr($location, 0, strrpos($location, $_SERVER['QUERY_STRING']) - 1);
             }
-            return $protocol.'://'.$_SERVER['HTTP_HOST'].$location;
+            return $this->getProtocol() . '://' . $_SERVER['HTTP_HOST'] . $location;
         }  
+        
+        final protected function getProtocol()
+        {
+            return !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+        }
         
         /**
          * Определяет HTTP-заголовки

@@ -16,7 +16,8 @@
      * Общие настройки
      */
     $general_s = array(
-        'enctryptsalt' => 'a0s9D8F7g6H5'
+        'enctryptsalt' => 'a0s9D8F7g6H5',
+        'upload_dir' => 'uploads'
     );     
     
     
@@ -31,7 +32,8 @@
         'secondanswer'      => 'secondaryanswer',
         'relationanswers'   => 'relationanswers',
         'param'             => 'params',
-        'user'              => 'user'   
+        'user'              => 'user',
+        'file'              => 'file'   
     );
 
     $templates_s = array(

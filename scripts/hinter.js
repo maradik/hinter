@@ -2,7 +2,9 @@
     // наследование смотри http://habrahabr.ru/post/131714/
     // Синхронизация http://habrahabr.ru/post/108542/
     
+    var FileParentType = {MAIN_QUESTION: 1, MAIN_ANSWER: 2, SECOND_QUESTION: 3, SECOND_ANSWER: 4};
     var MessageType = {NOTIFICATION: 0, SUCCESS: 1, WARNING: 2, ERROR: 3};
+    var NoYesAll = {No: 0, Yes: 1, All: 2};
     
     function Message(text, type) {
         var self = this;
@@ -10,8 +12,6 @@
         self.Text = text;
         self.Type = type;
     }    
-    
-    var NoYesAll = {No: 0, Yes: 1, All: 2};
     
     function baseObservableArray(baseModelArray) {
         var observableArray = ko.observableArray(baseModelArray);
@@ -31,6 +31,55 @@
         self.Edited     = ko.observable(false);
         self.Locked     = ko.observable(false);
         self.Visible    = ko.observable(true);
+        self.Images     = baseObservableArray();
+
+        self.uploadImage = function(file, callbackSuccess, callbackError) {
+            var fileParentType = 0;
+            switch (true) {
+                case (this instanceof MainQuestion):    fileParentType = FileParentType.MAIN_QUESTION; break;
+                case (this instanceof MainAnswer):      fileParentType = FileParentType.MAIN_ANSWER; break;
+                case (this instanceof SecondQuestion):  fileParentType = FileParentType.SECOND_QUESTION; break;
+                case (this instanceof SecondAnswer):    fileParentType = FileParentType.SECOND_ANSWER; break;
+            }
+            
+            var maxFilesize = 500; //KB
+            if (file.size > maxFilesize*1024) {
+                userMessageList.push(new Message('Слишком большой файл для загрузки! Максимальный размер ' + maxFilesize + ' КБ', MessageType.WARNING));
+                return callbackError();
+            }
+            
+            var allowedExt = ['jpeg', 'jpg', 'gif', 'png'];
+            if (!allowedExt.some(function(ext) { return file.name.substr(-ext.length-1) == '.' + ext; })) {
+                userMessageList.push(new Message('Некорректный файл! Допустимые форматы: ' + allowedExt.join(', '), MessageType.WARNING));
+                return callbackError();
+            }
+            
+            self.Locked(true);       
+            
+            var fd = new FormData();
+            fd.append('image', file);
+            fd.append('parentType', fileParentType);
+            fd.append('parentId', self.Id());
+            requestAjaxJson(
+                'POST', 
+                apiUrlBase + '/image', 
+                fd, 
+                function(data, textStatus, jqXHR) {
+                    self.Images.push(Image.unpack(data.data));
+                    self.Locked(false);  
+                    if (callbackSuccess) {
+                        callbackSuccess(data, textStatus, jqXHR);
+                    }                      
+                },
+                function(jqXHR, textStatus) {
+                    self.Locked(false);
+                    userMessageList.push(new Message('Не удалось загрузить изображение.', MessageType.ERROR));
+                    if (callbackError) {
+                        callbackError(jqXHR, textStatus);
+                    }                    
+                }    
+            );
+        };        
     }
     
     BaseModel.send = function(model, method, callbackSuccess, callbackError) {
@@ -129,7 +178,7 @@
         self.CreateDate     = ko.observable(createDate);
         self.Order          = ko.observable(order);
         self.UserId         = ko.observable(userId);   
-        self.Active         = ko.observable(active);  
+        self.Active         = ko.observable(active);          
         
         self.getUri = function() {
             return 'mainquestion';
@@ -350,6 +399,79 @@
         );             
     };   
     
+    function Image(
+        id, 
+        title, 
+        description,
+        parentType,
+        parentId,
+        order,
+        createDate,
+        userId,
+        size,
+        fileName,
+        origFileName,
+        urlData,
+        urlThumbnail,
+        urlMiddle,
+        urlLarge
+    ) {
+        var self = this;
+        ko.utils.extend(self, new BaseModel(id));        
+        
+        self.Title          = ko.observable(title).extend({ bounds: {maxLen: 100}, truncatedText: true });
+        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000}, truncatedText: true });;
+        self.ParentType     = ko.observable(parentType);
+        self.ParentId       = ko.observable(parentId);
+        self.Order          = ko.observable(order);
+        self.CreateDate     = ko.observable(createDate);
+        self.UserId         = ko.observable(userId);
+        self.Size           = ko.observable(size);
+        self.FileName       = ko.observable(fileName);
+        self.OrigFileName   = ko.observable(origFileName);
+        self.UrlData        = ko.observable(urlData);
+        self.UrlThumbnail   = ko.observable(urlThumbnail);
+        self.UrlMiddle      = ko.observable(urlMiddle);
+        self.UrlLarge       = ko.observable(urlLarge);
+    
+        self.getUri = function() {
+            return 'image';
+        };
+    
+        self.unpack = Image.unpack;
+    
+        self.pack = function() {
+            return {
+                id:         self.Id(),
+                title:      self.Title(),
+                description:self.Description(), 
+                parentType: self.ParentType(),
+                parentId:   self.ParentId(),
+                order:      self.Order()                
+            };
+        };
+    }
+    
+    Image.unpack = function(json) {
+        return new Image(
+            json.id, 
+            json.title, 
+            json.description,
+            json.parentType,
+            json.parentId,
+            json.order,
+            json.createDate,
+            json.userId,
+            json.size,
+            json.fileName,
+            json.origFileName,
+            json.urlData,
+            json.urlThumbnail,
+            json.urlMiddle,
+            json.urlLarge
+        );
+    };     
+    
     //-------------------------------------------------------
     // Модели представления
     
@@ -361,14 +483,15 @@
     function PassTestVM(mainQuestionId) {
         var mainQuestionId = mainQuestionId;
         var self = this;
-        self.CurrentSecQuestion = ko.observable(0);
-        self.Finish             = ko.observable(false);
+        self.CurrentSecQuestion     = ko.observable(0);
+        self.Finish                 = ko.observable(false);
         
-        self.SecondQuestionList = baseObservableArray();
-        self.SecondQuestion     = ko.observable(null);
-        self.SecondAnswerList   = baseObservableArray();
-        self.MainAnswerList     = baseObservableArray();
-        self.RelMainAnswerList  = baseObservableArray();
+        self.MainQuestionImageList  = baseObservableArray();
+        self.SecondQuestionList     = baseObservableArray();
+        self.SecondQuestion         = ko.observable(null);
+        self.SecondAnswerList       = baseObservableArray();
+        self.MainAnswerList         = baseObservableArray();
+        self.RelMainAnswerList      = baseObservableArray();
         
         self.bind = function(htmlElementId) {
             ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));
@@ -376,11 +499,30 @@
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/mainanswer", null, function (json) {                
                 self.MainAnswerList(
                     json 
-                    ? $.map(json.data, function (item) { return MainAnswer.unpack(item); }) 
+                    ? $.map(json.data, function (item) { 
+                        var ma = MainAnswer.unpack(item);
+                        requestAjaxJson('GET', apiUrlBase + "/mainanswer/" + ma.Id() + "/image", null, function (json) {                
+                            ma.Images(
+                                json 
+                                ? $.map(json.data, function (item) { return Image.unpack(item); }) 
+                                : []
+                            );
+                        });  
+                        return ma;                       
+                    }) 
                     : []
                 );
                 self.MainAnswerList.sort(sortQuestionAnswerArray);
             });
+            
+            requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/image", null, function (json) {                
+                self.MainQuestionImageList(
+                    json 
+                    ? $.map(json.data, function (item) { return Image.unpack(item); }) 
+                    : []
+                );
+                self.MainQuestionImageList.sort(sortQuestionAnswerArray);
+            });            
             
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/secondaryquestion", null, function (json) {                
                 self.SecondQuestionList(
@@ -471,7 +613,7 @@
         };
         */
         self.MainAnswerList.Locked = function() {
-            return this().some(function(item) { return item.Locked() });
+            return this().some(function(item) { return item.Locked(); });
         };       
         
         self.SecondQuestionList.Locked = function() {
@@ -521,6 +663,32 @@
             }                       
         };
         
+        self.addMainQuestionImage = function(mainQuestion, event, file) {
+            if (file == null) {
+                return;
+            }            
+            
+            var uploadImageFunc = function() {
+                self.MainQuestion().uploadImage(
+                    file,
+                    function() {self.nextStep(2);},
+                    function() {self.MainQuestion().Editing(true);}
+                );
+            };
+            
+            if (!mainQuestion.Id()) {            
+                BaseModel.save(
+                    mainQuestion, 
+                    function(data) {
+                        self.MainQuestion(MainQuestion.unpack(data.data));
+                        uploadImageFunc();
+                    }
+                );
+            } else {
+                uploadImageFunc();
+            }
+        };        
+        
         self.saveMainQuestion = function(mainQuestion) {
             BaseModel.save(
                 mainQuestion, 
@@ -530,6 +698,29 @@
                 }
             );
         };      
+        
+        self.addMainAnswerImage = function(mainAnswer, event, file) {
+            if (file == null) {
+                return;
+            }            
+            
+            var uploadImageFunc = function(maIdx) {
+                self.MainAnswerList()[maIdx].uploadImage(file);
+            };
+            
+            var maIdx = self.MainAnswerList().indexOf(mainAnswer);            
+            if (!mainAnswer.Id()) {            
+                BaseModel.save(
+                    mainAnswer,
+                    function(data) {
+                        self.MainAnswerList.replace(mainAnswer, MainAnswer.unpack(data.data));
+                        uploadImageFunc(maIdx);
+                    }
+                );
+            } else {
+                uploadImageFunc(maIdx);
+            }
+        };        
         
         self.addMainAnswer = function() {
             var newMainAnswer = new MainAnswer();
@@ -543,8 +734,7 @@
             BaseModel.save(
                 mainAnswer,
                 function(data) {
-                    var mainAnswerSaved = MainAnswer.unpack(data.data);
-                    self.MainAnswerList.replace(mainAnswer, mainAnswerSaved);
+                    self.MainAnswerList.replace(mainAnswer, MainAnswer.unpack(data.data));
                 }
             );
         };
@@ -571,6 +761,7 @@
                     );                
                 } 
             });
+            tryNextStep();
         };        
         
         self.addSecondQuestion = function() {
@@ -981,6 +1172,26 @@
         return target;
     };    
     
+    ko.bindingHandlers.thumbnail = {
+        //http://knockoutjs.com/documentation/custom-bindings.html
+        init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+            /*
+            var value = ko.unwrap(valueAccessor()); // Get the current value of the current property we're bound to
+            $(element).toggle(value); // jQuery will hide/show the element depending on whether "value" or true or false
+            */
+        },
+        update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+            var value = ko.unwrap(valueAccessor());
+            if (value.src) {
+                $(element).attr('href', ko.unwrap(value.src));
+            }
+            if (value.title) {
+                $(element).attr('title', ko.unwrap(value.title));
+            }
+            Shadowbox.addCache(element);
+        }
+    };    
+    
     var apiUrlBase = '/api';
     
     var sortQuestionAnswerArray = function(left, right, desc) {
@@ -995,7 +1206,7 @@
     var requestAjaxJson = function (requestType, serviceUrl, sendData, callback, callbackError) {
         //console.log(serviceUrl);        
         cbError = function (jqXHR, textStatus) {
-                console.log("-->" + serviceUrl + "\n" + jqXHR.status + " " + textStatus + ":" + jqXHR.statusText + "\n" + jqXHR.responseText + "<--");
+                console.log("-->\n" + serviceUrl + "\n" + jqXHR.status + " " + textStatus + ":" + jqXHR.statusText + "\n" + jqXHR.responseText + "\n<--");
                 switch (textStatus) {
                     case "timeout":
                     case "abort":
@@ -1026,11 +1237,13 @@
 
         $.ajax({
             url: serviceUrl,
-            data: JSON.stringify(sendData),
+            data: sendData != null ? (sendData instanceof FormData ? sendData : JSON.stringify(sendData)) : null,
             type: requestType,
             dataType: 'json',
             cache: false,
-            contentType: 'application/json; charset=utf-8',
+            async: true,
+            contentType: sendData instanceof FormData ? false : 'application/json; charset=utf-8',
+            processData: sendData instanceof FormData ? false : true,
             success: callback,
             error: cbError
         });
