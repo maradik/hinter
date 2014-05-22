@@ -5,3 +5,7 @@ dev/
 modules/vendor/
 vendor/
 settings.php
+uploads/img*
+uploads/large/img*
+uploads/middle/img*
+uploads/thumbnail/img*
