@@ -24,14 +24,23 @@
     //-------------------------------------------------------
     // Модели
     
-    function BaseModel(id) {
+    function BaseModel(id, title, description, order, resUri) {
         var self = this;
-        self.Id         = ko.observable(id);        
-        self.Editing    = ko.observable(false);
-        self.Edited     = ko.observable(false);
-        self.Locked     = ko.observable(false);
-        self.Visible    = ko.observable(true);
-        self.Images     = baseObservableArray();
+        self.Id             = ko.observable(id);        
+        self.Title          = ko.observable(title);
+        self.Description    = ko.observable(description);
+        self.Order          = ko.observable(order);        
+        self.Images         = baseObservableArray();
+        
+        self.Editing        = ko.observable(false);
+        self.Edited         = ko.observable(false);
+        self.Locked         = ko.observable(false);
+        self.Visible        = ko.observable(true);
+        
+        var uri = resUri;
+        self.getUri = function() {
+            return uri;
+        };
 
         self.uploadImage = function(file, callbackSuccess, callbackError) {
             var fileParentType = 0;
@@ -45,13 +54,19 @@
             var maxFilesize = 500; //KB
             if (file.size > maxFilesize*1024) {
                 userMessageList.push(new Message('Слишком большой файл для загрузки! Максимальный размер ' + maxFilesize + ' КБ', MessageType.WARNING));
-                return callbackError();
+                if (callbackError) {
+                    callbackError();
+                }
+                return;
             }
             
             var allowedExt = ['jpeg', 'jpg', 'gif', 'png'];
             if (!allowedExt.some(function(ext) { return file.name.substr(-ext.length-1) == '.' + ext; })) {
                 userMessageList.push(new Message('Некорректный файл! Допустимые форматы: ' + allowedExt.join(', '), MessageType.WARNING));
-                return callbackError();
+                if (callbackError) {
+                    callbackError();
+                }
+                return;
             }
             
             self.Locked(true);       
@@ -60,12 +75,13 @@
             fd.append('image', file);
             fd.append('parentType', fileParentType);
             fd.append('parentId', self.Id());
+            fd.append('title', self.Title.truncatedText(100));
             requestAjaxJson(
                 'POST', 
                 apiUrlBase + '/image', 
                 fd, 
                 function(data, textStatus, jqXHR) {
-                    self.Images.push(Image.unpack(data.data));
+                    self.Images.push((new Image).unpack(data.data));
                     self.Locked(false);  
                     if (callbackSuccess) {
                         callbackSuccess(data, textStatus, jqXHR);
@@ -125,18 +141,20 @@
         order
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel(id));        
+        ko.utils.extend(self, new BaseModel(id, title, description, order, 'category'));        
         
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 30, required: true}, truncatedText: true });
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000}, truncatedText: true });;
+        self.Title          = self.Title.extend({ bounds: {minLen: 1, maxLen: 30, required: true}, truncatedText: true });
+        self.Description    = self.Description.extend({ bounds: {maxLen: 1000}, truncatedText: true });;
         self.ParentId       = ko.observable(parentId);
-        self.Order          = ko.observable(order);
     
-        self.getUri = function() {
-            return 'category';
+        self.unpack = function(json) {
+            self.Id(            json.id);
+            self.Title(         json.title);
+            self.Description(   json.description);
+            self.ParentId(      json.parentId);
+            self.Order(         json.order);
+            return self;
         };
-    
-        self.unpack = Category.unpack;
     
         self.pack = function() {
             return {
@@ -148,16 +166,6 @@
             };
         };
     }
-    
-    Category.unpack = function(json) {
-        return new Category(
-            json.id,
-            json.title,
-            json.description,
-            json.parentId,
-            json.order
-        );
-    }; 
 
     function MainQuestion(
         id, 
@@ -170,21 +178,26 @@
         active
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel(id));
+        ko.utils.extend(self, new BaseModel(id, title, description, order, 'mainquestion'));
         
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 10, maxLen: 150, required: true}, truncatedText: true });        
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000}, truncatedText: true });
+        self.Title          = self.Title.extend({ bounds: {minLen: 10, maxLen: 150, required: true}, truncatedText: true });        
+        self.Description    = self.Description.extend({ bounds: {maxLen: 1000}, truncatedText: true });
         self.CategoryId     = ko.observable(categoryId).extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
         self.CreateDate     = ko.observable(createDate);
-        self.Order          = ko.observable(order);
         self.UserId         = ko.observable(userId);   
         self.Active         = ko.observable(active);          
         
-        self.getUri = function() {
-            return 'mainquestion';
-        };        
-        
-        self.unpack = MainQuestion.unpack;
+        self.unpack = function(json) {
+            self.Id(            json.id);
+            self.Title(         json.title);
+            self.Description(   json.description);
+            self.CategoryId(    json.categoryId);
+            self.CreateDate(    json.createDate);
+            self.Order(         json.order);
+            self.UserId(        json.userId);
+            self.Active(        json.active);
+            return self;
+        };
         
         self.pack = function() {
             return {
@@ -199,19 +212,6 @@
         };        
     };
     
-    MainQuestion.unpack = function(json) {
-        return new MainQuestion(
-            json.id,
-            json.title,
-            json.description,
-            json.categoryId,
-            json.createDate,
-            json.order,
-            json.userId,
-            json.active
-        );
-    };
-    
     function MainAnswer(
         id, 
         title, 
@@ -222,20 +222,24 @@
         userId
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel(id));
+        ko.utils.extend(self, new BaseModel(id, title, description, order, 'mainanswer'));
         
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 50, required: true}, truncatedText: true });
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 500}, truncatedText: true });
+        self.Title          = self.Title.extend({ bounds: {minLen: 1, maxLen: 50, required: true}, truncatedText: true });
+        self.Description    = self.Description.extend({ bounds: {maxLen: 500}, truncatedText: true });
         self.QuestionId     = ko.observable(questionId);
         self.CreateDate     = ko.observable(createDate);
-        self.Order          = ko.observable(order);
         self.UserId         = ko.observable(userId);
         
-        self.getUri = function() {
-            return 'mainanswer';
-        };          
-        
-        self.unpack = MainAnswer.unpack;
+        self.unpack = function(json) {
+            self.Id(            json.id);
+            self.Title(         json.title); 
+            self.Description(   json.description);
+            self.QuestionId(    json.questionId);
+            self.CreateDate(    json.createDate);
+            self.Order(         json.order);
+            self.UserId(        json.userId);
+            return self;
+        }; 
 
         self.pack = function() {
             return {
@@ -248,19 +252,7 @@
             };
         };         
     }    
-    
-    MainAnswer.unpack = function(json) {
-        return new MainAnswer(
-            json.id, 
-            json.title, 
-            json.description,
-            json.questionId,
-            json.createDate,
-            json.order,
-            json.userId
-        );             
-    };
-    
+       
     function SecondQuestion(
         id, 
         title, 
@@ -271,22 +263,26 @@
         userId
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel(id));
+        ko.utils.extend(self, new BaseModel(id, title, description, order, 'secondaryquestion'));
         
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 10, maxLen: 150, required: true}, truncatedText: true });
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000}, truncatedText: true });
+        self.Title          = self.Title.extend({ bounds: {minLen: 10, maxLen: 150, required: true}, truncatedText: true });
+        self.Description    = self.Description.extend({ bounds: {maxLen: 1000}, truncatedText: true });
         self.ParentId       = ko.observable(parentId);
         self.CreateDate     = ko.observable(createDate);
-        self.Order          = ko.observable(order);
         self.UserId         = ko.observable(userId);
         
         self.SecondAnswers  = baseObservableArray(); 
         
-        self.getUri = function() {
-            return 'secondaryquestion';
-        };            
-        
-        self.unpack = SecondQuestion.unpack;
+        self.unpack = function(json) {
+            self.Id(            json.id);
+            self.Title(         json.title);
+            self.Description(   json.description);
+            self.ParentId(      json.parentId);
+            self.CreateDate(    json.createDate);
+            self.Order(         json.order);
+            self.UserId(        json.userId);
+            return self;
+        };
         
         self.pack = function() {
             return {
@@ -300,18 +296,6 @@
         };         
     };    
     
-    SecondQuestion.unpack = function(json) {
-        return new SecondQuestion(
-            json.id,
-            json.title,
-            json.description,
-            json.parentId,
-            json.createDate,
-            json.order,
-            json.userId
-        );
-    };       
-    
     function SecondAnswer(
         id, 
         title, 
@@ -322,22 +306,26 @@
         userId
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel(id));
+        ko.utils.extend(self, new BaseModel(id, title, description, order, 'secondaryanswer'));
         
-        self.Title          = ko.observable(title).extend({ bounds: {minLen: 1, maxLen: 50, required: true}, truncatedText: true });
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 150}, truncatedText: true });
+        self.Title          = self.Title.extend({ bounds: {minLen: 1, maxLen: 50, required: true}, truncatedText: true });
+        self.Description    = self.Description.extend({ bounds: {maxLen: 150}, truncatedText: true });
         self.QuestionId     = ko.observable(questionId);
         self.CreateDate     = ko.observable(createDate);
-        self.Order          = ko.observable(order);
         self.UserId         = ko.observable(userId);
 
         self.MainAnswers    = baseObservableArray().extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
         
-        self.getUri = function() {
-            return 'secondaryanswer';
-        };          
-        
-        self.unpack = SecondAnswer.unpack;
+        self.unpack = function(json) {
+            self.Id(            json.id);
+            self.Title(         json.title);
+            self.Description(   json.description);
+            self.QuestionId(    json.questionId);
+            self.CreateDate(    json.createDate);
+            self.Order(         json.order);
+            self.UserId(        json.userId);
+            return self;
+        };
         
         self.pack = function() {
             return {
@@ -350,18 +338,6 @@
             };
         };       
     }     
-    
-    SecondAnswer.unpack = function(json) {
-        return new SecondAnswer(
-            json.id,
-            json.title,
-            json.description,
-            json.questionId,
-            json.createDate,
-            json.order,
-            json.userId
-        );
-    };
     
     function UserData(
         id, 
@@ -378,6 +354,15 @@
         self.Email    = ko.observable(email);
         self.Role     = ko.observable(role);
         
+        self.unpack = function(json) {
+            self.Id(        json.id);
+            self.Login(     json.login);
+            self.Password(  json.password);
+            self.Email(     json.email);
+            self.Role(      json.role);
+            return self;
+        };   
+        
         self.pack = function() {
             return {
                 id:         self.Id(),
@@ -388,16 +373,6 @@
             };
         };        
     };    
-    
-    UserData.unpack = function(json) {
-        return new UserData(
-            json.id,
-            json.login,
-            json.password,
-            json.email,
-            json.role    
-        );             
-    };   
     
     function Image(
         id, 
@@ -417,13 +392,12 @@
         urlLarge
     ) {
         var self = this;
-        ko.utils.extend(self, new BaseModel(id));        
+        ko.utils.extend(self, new BaseModel(id, title, description, order, 'image'));        
         
-        self.Title          = ko.observable(title).extend({ bounds: {maxLen: 100}, truncatedText: true });
-        self.Description    = ko.observable(description).extend({ bounds: {maxLen: 1000}, truncatedText: true });;
+        self.Title          = self.Title.extend({ bounds: {maxLen: 100}, truncatedText: true });
+        self.Description    = self.Description.extend({ bounds: {maxLen: 1000}, truncatedText: true });;
         self.ParentType     = ko.observable(parentType);
         self.ParentId       = ko.observable(parentId);
-        self.Order          = ko.observable(order);
         self.CreateDate     = ko.observable(createDate);
         self.UserId         = ko.observable(userId);
         self.Size           = ko.observable(size);
@@ -434,11 +408,24 @@
         self.UrlMiddle      = ko.observable(urlMiddle);
         self.UrlLarge       = ko.observable(urlLarge);
     
-        self.getUri = function() {
-            return 'image';
-        };
-    
-        self.unpack = Image.unpack;
+        self.unpack = function(json) {
+            self.Id(                json.id);
+            self.Title(             json.title); 
+            self.Description(       json.description);
+            self.ParentType(        json.parentType);
+            self.ParentId(          json.parentId);
+            self.Order(             json.order);
+            self.CreateDate(        json.createDate);
+            self.UserId(            json.userId);
+            self.Size(              json.size);
+            self.FileName(          json.fileName);
+            self.OrigFileName(      json.origFileName);
+            self.UrlData(           json.urlData);
+            self.UrlThumbnail(      json.urlThumbnail);
+            self.UrlMiddle(         json.urlMiddle);
+            self.UrlLarge(          json.urlLarge);
+            return self;
+        };   
     
         self.pack = function() {
             return {
@@ -451,26 +438,6 @@
             };
         };
     }
-    
-    Image.unpack = function(json) {
-        return new Image(
-            json.id, 
-            json.title, 
-            json.description,
-            json.parentType,
-            json.parentId,
-            json.order,
-            json.createDate,
-            json.userId,
-            json.size,
-            json.fileName,
-            json.origFileName,
-            json.urlData,
-            json.urlThumbnail,
-            json.urlMiddle,
-            json.urlLarge
-        );
-    };     
     
     //-------------------------------------------------------
     // Модели представления
@@ -500,11 +467,11 @@
                 self.MainAnswerList(
                     json 
                     ? $.map(json.data, function (item) { 
-                        var ma = MainAnswer.unpack(item);
+                        var ma = (new MainAnswer).unpack(item);
                         requestAjaxJson('GET', apiUrlBase + "/mainanswer/" + ma.Id() + "/image", null, function (json) {                
                             ma.Images(
                                 json 
-                                ? $.map(json.data, function (item) { return Image.unpack(item); }) 
+                                ? $.map(json.data, function (item) { return (new Image).unpack(item); }) 
                                 : []
                             );
                         });  
@@ -518,7 +485,7 @@
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/image", null, function (json) {                
                 self.MainQuestionImageList(
                     json 
-                    ? $.map(json.data, function (item) { return Image.unpack(item); }) 
+                    ? $.map(json.data, function (item) { return (new Image).unpack(item); }) 
                     : []
                 );
                 self.MainQuestionImageList.sort(sortQuestionAnswerArray);
@@ -527,7 +494,7 @@
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/secondaryquestion", null, function (json) {                
                 self.SecondQuestionList(
                     json
-                    ? $.map(json.data, function (item) { return SecondQuestion.unpack(item); }) 
+                    ? $.map(json.data, function (item) { return (new SecondQuestion).unpack(item); }) 
                     : []
                 );
             });            
@@ -552,7 +519,7 @@
                 }
                 requestAjaxJson('GET', apiUrlBase + "/secondaryanswer/" + selectedSecondAnswer.Id() + "/mainanswer", null, function (json) {                
                     var collection = json 
-                        ? $.map(json.data, function (item) { return MainAnswer.unpack(item); })
+                        ? $.map(json.data, function (item) { return (new MainAnswer).unpack(item); })
                         : [];
                     //ko.mapping.fromJS(collection, null, self.SecondAnswerList);
                     self.RelMainAnswerList(collection);                      
@@ -575,7 +542,7 @@
                 self.SecondAnswerList([]);
                 requestAjaxJson('GET', apiUrlBase + "/secondaryquestion/" + self.SecondQuestion().Id() + "/secondaryanswer", null, function (json) {                
                     var collection = json 
-                        ? $.map(json.data, function (item) { return SecondAnswer.unpack(item); })
+                        ? $.map(json.data, function (item) { return (new SecondAnswer).unpack(item); })
                         : [];
                     //ko.mapping.fromJS(collection, null, self.SecondAnswerList);
                     self.SecondAnswerList(collection);
@@ -629,7 +596,7 @@
             requestAjaxJson('GET', apiUrlBase + "/category", null, function (json) {                
                 self.CategoryList(
                     json 
-                    ? $.map(json.data, function (item) { return Category.unpack(item); }) 
+                    ? $.map(json.data, function (item) { return (new Category).unpack(item); }) 
                     : []
                 );
                 self.CategoryList.sort(sortQuestionAnswerArray);
@@ -671,7 +638,7 @@
             var uploadImageFunc = function() {
                 self.MainQuestion().uploadImage(
                     file,
-                    function() {self.nextStep(2);},
+                    function() {self.MainQuestion().Editing(false);self.nextStep(2);},
                     function() {self.MainQuestion().Editing(true);}
                 );
             };
@@ -680,7 +647,7 @@
                 BaseModel.save(
                     mainQuestion, 
                     function(data) {
-                        self.MainQuestion(MainQuestion.unpack(data.data));
+                        self.MainQuestion((new MainQuestion).unpack(data.data));
                         uploadImageFunc();
                     }
                 );
@@ -693,7 +660,7 @@
             BaseModel.save(
                 mainQuestion, 
                 function(data) {
-                    self.MainQuestion(MainQuestion.unpack(data.data));
+                    self.MainQuestion((new MainQuestion).unpack(data.data));
                     self.nextStep(2);  
                 }
             );
@@ -705,7 +672,11 @@
             }            
             
             var uploadImageFunc = function(maIdx) {
-                self.MainAnswerList()[maIdx].uploadImage(file);
+                self.MainAnswerList()[maIdx].uploadImage(
+                    file,
+                    function() { self.MainAnswerList()[maIdx].Editing(false); },
+                    function() { self.MainAnswerList()[maIdx].Editing(true); }
+                );
             };
             
             var maIdx = self.MainAnswerList().indexOf(mainAnswer);            
@@ -713,7 +684,7 @@
                 BaseModel.save(
                     mainAnswer,
                     function(data) {
-                        self.MainAnswerList.replace(mainAnswer, MainAnswer.unpack(data.data));
+                        self.MainAnswerList.replace(mainAnswer, (new MainAnswer).unpack(data.data));
                         uploadImageFunc(maIdx);
                     }
                 );
@@ -734,7 +705,7 @@
             BaseModel.save(
                 mainAnswer,
                 function(data) {
-                    self.MainAnswerList.replace(mainAnswer, MainAnswer.unpack(data.data));
+                    self.MainAnswerList.replace(mainAnswer, (new MainAnswer).unpack(data.data));
                 }
             );
         };
@@ -754,7 +725,7 @@
                     BaseModel.save(
                         mainAnswer,
                         function(data) {
-                            var mainAnswerSaved = MainAnswer.unpack(data.data);
+                            var mainAnswerSaved = (new MainAnswer).unpack(data.data);
                             self.MainAnswerList.replace(mainAnswer, mainAnswerSaved);
                             tryNextStep();
                         }
@@ -805,7 +776,7 @@
             BaseModel.save(
                 secondQuestion,
                 function(data) {
-                    var secondQuestionSaved = SecondQuestion.unpack(data.data);
+                    var secondQuestionSaved = (new SecondQuestion).unpack(data.data);
                     secondQuestionSaved.SecondAnswers(secondQuestion.SecondAnswers());
                     secondQuestionSaved.SecondAnswers().forEach(function(secondAnswer) {
                        secondAnswer.QuestionId(secondQuestionSaved.Id()); 
@@ -822,7 +793,7 @@
                     BaseModel.save(
                         secondAnswer,
                         function(data) {
-                            var secondAnswerSaved = SecondAnswer.unpack(data.data);
+                            var secondAnswerSaved = (new SecondAnswer).unpack(data.data);
                             secondAnswerSaved.Locked(true);
                             secondAnswerSaved.MainAnswers(secondAnswer.MainAnswers());
                             secondAnswerList.replace(secondAnswer, secondAnswerSaved);                            
@@ -843,7 +814,7 @@
                 function(data) {
                     var mainAnswers = [];
                     data.data.forEach(function(item) {
-                        mainAnswers.push(MainAnswer.unpack(item));
+                        mainAnswers.push((new MainAnswer).unpack(item));
                     });  
                     secondAnswer.MainAnswers(self.MainAnswerList().filter(function(item) {
                         return mainAnswers.some(function(item2) { return item.Id() == item2.Id(); });
@@ -881,13 +852,13 @@
         self.bind = function(mainQuestionList, categoryList, htmlElementId) {
             if (mainQuestionList) {
                 mainQuestionList.forEach(function(item) {
-                    self.MainQuestionList.push(MainQuestion.unpack(item));
+                    self.MainQuestionList.push((new MainQuestion).unpack(item));
                 });  
             }
             
             if (categoryList) {
                 categoryList.forEach(function(item) {
-                   self.CategoryList.push(Category.unpack(item)); 
+                   self.CategoryList.push((new Category).unpack(item)); 
                 });
             }
                       
@@ -906,7 +877,7 @@
                 mainQuestion, 
                 function(data) {
                     if (data.data) {
-                        self.MainQuestionList.replace(mainQuestion, MainQuestion.unpack(data.data));                        
+                        self.MainQuestionList.replace(mainQuestion, (new MainQuestion).unpack(data.data));                        
                     }
                 }
             );
@@ -968,7 +939,7 @@
                     function(data) {
                         if (data.data) {
                             data.data.forEach(function(item){
-                                self.MainQuestionList.push(MainQuestion.unpack(item));
+                                self.MainQuestionList.push((new MainQuestion).unpack(item));
                             });
                         } 
                         if (!data.data || !data.data.length) {
@@ -989,7 +960,7 @@
     function CurrentUserVM(userData) {
         var self = this;
         
-        self.UserData = ko.observable(typeof userData == 'undefined' ? new UserData : UserData.unpack(userData)); 
+        self.UserData = ko.observable(typeof userData == 'undefined' ? new UserData : (new UserData).unpack(userData)); 
         self.Messages = ko.observableArray();
         
         self.bind = function(htmlElementId) {
@@ -1021,7 +992,7 @@
                 self.UserData().pack(),
                 function (data) {
                     if (data.data) {
-                        self.UserData(UserData.unpack(data.data));
+                        self.UserData((new UserData).unpack(data.data));
                         self.reloadPage();
                     }
                 },
@@ -1041,7 +1012,7 @@
                 self.UserData().pack(),
                 function (data) {
                     if (data.data) {
-                        self.UserData(UserData.unpack(data.data));
+                        self.UserData((new UserData).unpack(data.data));
                         self.reloadPage();                        
                     }
                 },
@@ -1060,7 +1031,7 @@
                 self.UserData().pack(),
                 function (data) {
                     if (data.data) {
-                        self.UserData(UserData.unpack(data.data));
+                        self.UserData((new UserData).unpack(data.data));
                         self.reloadPage(true);                        
                     }
                 },
@@ -1167,7 +1138,7 @@
         target.truncatedText = function(maxLen) {
             maxLen = maxLen || 100;
             var originalText = target();
-            return originalText.length > maxLen ? originalText.substring(0, maxLen) + "..." : originalText;
+            return originalText.length > maxLen ? originalText.substring(0, maxLen - 3) + "..." : originalText;
         };
         return target;
     };    
