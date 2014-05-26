@@ -14,16 +14,12 @@
     }    
     
     function baseObservableArray(baseModelArray) {
-        var observableArray = ko.observableArray(baseModelArray);
-        observableArray.findById = function(searchId) {
-            return this().filter(function(item){ return item.Id() == searchId; }).pop();
-        };        
+        var observableArray = ko.observableArray(baseModelArray).extend({baseList: true});
         return observableArray;    
-    }     
-    
+    };     
     //-------------------------------------------------------
     // Модели
-    
+
     function BaseModel(id, title, description, order, resUri) {
         var self = this;
         self.Id             = ko.observable(id);        
@@ -41,6 +37,18 @@
         self.getUri = function() {
             return uri;
         };
+
+        self.save = function(callbackSuccess, callbackError) {
+            var model = this;
+            var cbSuccess = function(json, textStatus, jqXHR) {
+                model.unpack(json.data);
+                if (callbackSuccess) {
+                    callbackSuccess(json, textStatus, jqXHR);
+                }
+            };
+            var cbError = callbackError;
+            BaseModel.save(model, cbSuccess, cbError); 
+        }; 
 
         self.uploadImage = function(file, callbackSuccess, callbackError) {
             var fileParentType = 0;
@@ -108,15 +116,18 @@
             apiUrlBase + '/' + model.getUri() + (model.Id() ? '/' + model.Id() : ''), 
             model.pack(), 
             function (data, textStatus, jqXHR) { 
-                //observableModel(model.unpack(data.data));
+                model.Locked(false);
+                model.Editing(false);
+                model.Edited(false);
+
                 if (callbackSuccess) {
                     callbackSuccess(data, textStatus, jqXHR);
                 }
             },
             function (jqXHR, textStatus) {
-                model.Editing(model.Edited());
                 model.Locked(false);
-                model.Edited(false);                
+                model.Editing(model.Edited());
+                model.Edited(false);  
                 
                 if (callbackError) {
                     callbackError(jqXHR, textStatus);
@@ -498,7 +509,6 @@
                     : []
                 );
             });            
-            //ko.mapping.fromJS(json, mappingOptions(), model);
         };      
         
         self.start = function() {
@@ -572,13 +582,8 @@
         self.MainQuestion       = ko.observable(new MainQuestion());        
         self.MainAnswerList     = baseObservableArray();
         self.SecondQuestionList = baseObservableArray();
-        //self.SecondAnswerList   = baseObservableArray();
         self.CategoryList       = baseObservableArray();
-        /*
-        self.CategoryList.findById = function(searchId) {
-            return this().filter(function(item){ return item.Id() == searchId; }).pop();
-        };
-        */
+
         self.MainAnswerList.Locked = function() {
             return this().some(function(item) { return item.Locked(); });
         };       
@@ -644,10 +649,8 @@
             };
             
             if (!mainQuestion.Id()) {            
-                BaseModel.save(
-                    mainQuestion, 
+                mainQuestion.save(
                     function(data) {
-                        self.MainQuestion((new MainQuestion).unpack(data.data));
                         uploadImageFunc();
                     }
                 );
@@ -657,13 +660,7 @@
         };        
         
         self.saveMainQuestion = function(mainQuestion) {
-            BaseModel.save(
-                mainQuestion, 
-                function(data) {
-                    self.MainQuestion((new MainQuestion).unpack(data.data));
-                    self.nextStep(2);  
-                }
-            );
+            mainQuestion.save(function(data) {self.nextStep(2);});
         };      
         
         self.addMainAnswerImage = function(mainAnswer, event, file) {
@@ -681,10 +678,8 @@
             
             var maIdx = self.MainAnswerList().indexOf(mainAnswer);            
             if (!mainAnswer.Id()) {            
-                BaseModel.save(
-                    mainAnswer,
+                mainAnswer.save(
                     function(data) {
-                        self.MainAnswerList.replace(mainAnswer, (new MainAnswer).unpack(data.data));
                         uploadImageFunc(maIdx);
                     }
                 );
@@ -701,37 +696,15 @@
             newMainAnswer.Order(self.MainAnswerList().length - 1);
         };      
         
-        self.saveMainAnswer = function(mainAnswer) {
-            BaseModel.save(
-                mainAnswer,
-                function(data) {
-                    self.MainAnswerList.replace(mainAnswer, (new MainAnswer).unpack(data.data));
-                }
-            );
-        };
-        
         self.applyMainAnswers = function() {
             function tryNextStep() {
-                if (self.MainAnswerList().every(function(item) {
-                    if (item.Editing() || item.Edited()) {return false;}
-                    return true;
-                })) {
+                if (self.MainAnswerList().every(function(ma) {return !Boolean(ma.Editing() || ma.Edited() || ma.Locked()); })) {
                     self.nextStep(3);
                 }                
             };
             
-            self.MainAnswerList().forEach(function(mainAnswer) { 
-                if (mainAnswer.Editing()) {               
-                    BaseModel.save(
-                        mainAnswer,
-                        function(data) {
-                            var mainAnswerSaved = (new MainAnswer).unpack(data.data);
-                            self.MainAnswerList.replace(mainAnswer, mainAnswerSaved);
-                            tryNextStep();
-                        }
-                    );                
-                } 
-            });
+            self.MainAnswerList().filter(function(ma) {return ma.Editing();})
+                .forEach(function(ma) { ma.save(function(data) { tryNextStep(); }); });
             tryNextStep();
         };        
         
@@ -757,32 +730,24 @@
         self.applySecondQuestion = function(secondQuestion, addSecondQuestion) {
             addSecondQuestion = addSecondQuestion || false;
             var tryNextStep = function() {
-                if (secondQuestion.SecondAnswers().every(function(item) {
-                    if (item.Editing() || item.Edited() || item.Locked()) {return false;}
-                    return true;
+                if (secondQuestion.SecondAnswers().every(function(sa) {
+                    return !Boolean(sa.Editing() || sa.Edited() || sa.Locked());
                 })) {
                     self.nextStep(4);
                 }                
             };    
             var tryAddSecondQuestion= function() {
-                if (secondQuestion.SecondAnswers().every(function(item) {
-                    if (item.Editing() || item.Edited() || item.Locked()) {return false;}
-                    return true;
+                if (secondQuestion.SecondAnswers().every(function(sa) {
+                    return !Boolean(sa.Editing() || sa.Edited() || sa.Locked());
                 })) {
                     self.addSecondQuestion();
                 }                
             };                     
             
-            BaseModel.save(
-                secondQuestion,
+            secondQuestion.save(
                 function(data) {
-                    var secondQuestionSaved = (new SecondQuestion).unpack(data.data);
-                    secondQuestionSaved.SecondAnswers(secondQuestion.SecondAnswers());
-                    secondQuestionSaved.SecondAnswers().forEach(function(secondAnswer) {
-                       secondAnswer.QuestionId(secondQuestionSaved.Id()); 
-                    });                    
-                    self.SecondQuestionList.replace(secondQuestion, secondQuestionSaved);
-                    self.saveSecondAnswers(secondQuestionSaved.SecondAnswers, addSecondQuestion ? tryAddSecondQuestion : tryNextStep);
+                    secondQuestion.SecondAnswers().forEach(function(sa) { sa.QuestionId(secondQuestion.Id()); });
+                    self.saveSecondAnswers(secondQuestion.SecondAnswers, addSecondQuestion ? tryAddSecondQuestion : tryNextStep);
                 }
             );           
         };
@@ -790,14 +755,10 @@
         self.saveSecondAnswers = function(secondAnswerList, callbackOnSuccess) {
             secondAnswerList().forEach(function(secondAnswer) {
                 if (secondAnswer.Editing()) {
-                    BaseModel.save(
-                        secondAnswer,
+                    secondAnswer.save(
                         function(data) {
-                            var secondAnswerSaved = (new SecondAnswer).unpack(data.data);
-                            secondAnswerSaved.Locked(true);
-                            secondAnswerSaved.MainAnswers(secondAnswer.MainAnswers());
-                            secondAnswerList.replace(secondAnswer, secondAnswerSaved);                            
-                            self.saveSecondAnswerRel(secondAnswerSaved, callbackOnSuccess);
+                            secondAnswer.Locked(true);
+                            self.saveSecondAnswerRel(secondAnswer, callbackOnSuccess);
                         }
                     );     
                 };           
@@ -841,13 +802,15 @@
         self.MainQuestionList   = baseObservableArray();     
         self.CategoryList       = baseObservableArray();           
         self.IsEndOfList        = ko.observable(false);
-        self.Loading            = ko.observable(false);  
         self.CategoryId         = ko.observable(categoryId);
         self.FilterActive       = ko.observable(admin ? NoYesAll.All : NoYesAll.Yes);
         self.LastMainQuestionId = ko.computed(function() {
             var mq = self.MainQuestionList()[self.MainQuestionList().length - 1];
             return mq ? mq.Id() : 2147483647;
         });      
+        self.Loading            = ko.computed(function() { //TODO Удалить и исправить шаблон tpl
+           return self.MainQuestionList.Loading();
+        });
         
         self.bind = function(mainQuestionList, categoryList, htmlElementId) {
             if (mainQuestionList) {
@@ -873,14 +836,7 @@
         
         self.activateMainQuestion = function(mainQuestion) {
             mainQuestion.Active(mainQuestion.Active() == true ? false : true);
-            BaseModel.save(
-                mainQuestion, 
-                function(data) {
-                    if (data.data) {
-                        self.MainQuestionList.replace(mainQuestion, (new MainQuestion).unpack(data.data));                        
-                    }
-                }
-            );
+            mainQuestion.save();
         };        
         
         self.removeMainQuestion = function(mainQuestion) {
@@ -904,8 +860,7 @@
         }        
         
         function asyncLoadOlderList() {
-            if (!self.Loading()) {
-                self.Loading(true);
+            if (!self.MainQuestionList.Loading()) {
                 var filterCount = 0;
                 var params = {
                     sortField:      [],
@@ -930,23 +885,11 @@
                     params.filterField[filterCount] = 'categoryId';
                     params.filterValue[filterCount++] = self.CategoryId();     
                 }               
-                var url = apiUrlBase + '/mainquestion?limit=10&' + $.param(params);
-                
-                requestAjaxJson(
-                    'GET',
-                    url,
-                    null,
-                    function(data) {
-                        if (data.data) {
-                            data.data.forEach(function(item){
-                                self.MainQuestionList.push((new MainQuestion).unpack(item));
-                            });
-                        } 
-                        if (!data.data || !data.data.length) {
-                            self.IsEndOfList(true);
-                        }
-                        self.Loading(false);
-                    }   
+                self.MainQuestionList.load(
+                    apiUrlBase + '/mainquestion?limit=10&' + $.param(params), 
+                    MainQuestion, 
+                    false, 
+                    function(json) { if (!json.data.length) {self.IsEndOfList(true);} }
                 );
             }
         }        
@@ -1143,13 +1086,98 @@
         return target;
     };    
     
+    ko.extenders.baseList = function(target) {
+        target.findById = function(searchId) {
+            return target().filter(function(baseModel){ return baseModel.Id() == searchId; }).pop();
+        }; 
+        
+        target.saveAll = function(callbackSuccess, callbackError) {
+            var sucModels = errModels = [];
+            target().every(function(baseModel) { 
+                baseModel.save(function() { sucModels.push(baseModel); }, function() { errModels.push(baseModel); });
+            });
+            if (errModels.length && callbackError) {
+                callbackError(errModels);
+            }
+            if (!errModels.length && callbackSuccess) {
+                callbackSuccess(sucModels);
+            }            
+        }; 
+        
+        target.removeModel = function(baseModel, callbackSuccess, callbackError) {
+            if (target.indexOf(baseModel) == -1) {
+                return false;
+            } 
+            
+            BaseModel.remove(
+                baseModel,
+                function(json, textStatus, jqXHR) {
+                    target.remove(baseModel);
+                    if (callbackSuccess) {
+                        callbackSuccess(json, textStatus, jqXHR);
+                    }
+                }, 
+                callbackError
+            );
+            
+            return true;
+        };     
+            
+        target.removeAll = function(callbackSuccess, callbackError) {
+            target().forEach(function(baseModel) { target.removeModel(baseModel, callbackSuccess, callbackError); });
+        };               
+           
+        target.Locked = function(locked) {
+            if (typeof locked !== 'undefined') {
+                locked = Boolean(locked);
+                target().forEach(function(baseModel) { baseModel.Locked(locked); });
+            }
+            return target().some(function(baseModel) { return baseModel.Locked(); });
+        };          
+
+        target.load = function(url, modelConstructor, replaceData, callbackSuccess, callbackError) {
+            replaceData = (typeof replaceData === 'undefined') ? true : replaceData;
+            
+            if (!target.Loading()) {
+                target.Loading(true);
+                
+                requestAjaxJson(
+                    'GET',
+                    url,
+                    null,
+                    function(json, textStatus, jqXHR) {
+                        if (replaceData) {
+                            target($.map(json.data, function(item){ return (new modelConstructor).unpack(item); }));
+                        } else {      
+                            if (Array.isArray(json.data)) {
+                                json.data.forEach(function(item){
+                                    target.push((new modelConstructor).unpack(item));
+                                });
+                            } 
+                        }
+                        target.Loading(false);
+                        if (callbackSuccess) {
+                            callbackSuccess(json, textStatus, jqXHR);
+                        }
+                    },
+                    function(jqXHR, textStatus) {
+                        target.Loading(false);
+                        if (callbackError) {
+                            callbackError(jqXHR, textStatus);    
+                        }                    
+                    }
+                );   
+            }         
+        };
+
+        target.Loading = ko.observable(false);        
+
+        return target;
+    };      
+    
     ko.bindingHandlers.thumbnail = {
         //http://knockoutjs.com/documentation/custom-bindings.html
         init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-            /*
-            var value = ko.unwrap(valueAccessor()); // Get the current value of the current property we're bound to
-            $(element).toggle(value); // jQuery will hide/show the element depending on whether "value" or true or false
-            */
         },
         update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var value = ko.unwrap(valueAccessor());
