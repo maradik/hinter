@@ -46,16 +46,19 @@
                             "img{$data->id}_{$data->parentType}_{$data->parentId}." 
                             . pathinfo($data->fileName, PATHINFO_EXTENSION)
                         );
-                        $result &= $this->repository->update($data);
+                        $result = $result && $this->repository->update($data);
                         
                         $filename = pathinfo($_SERVER['SCRIPT_FILENAME'], PATHINFO_DIRNAME) 
                             . "/{$general_s['upload_dir']}/" . $data->fileName;
-                        $result &= move_uploaded_file($this->file['tmp_name'],$filename);
+                        $result = $result && move_uploaded_file($this->file['tmp_name'],$filename);
                         
                         $dir = pathinfo($filename, PATHINFO_DIRNAME);
-                        $result &= $this->resizeImage($filename, $dir . "/thumbnail/" . $data->fileName, self::IMAGE_SIZE_THUMBNAIL);
-                        $result &= $this->resizeImage($filename, $dir . "/middle/" . $data->fileName, self::IMAGE_SIZE_MIDDLE);
-                        $result &= $this->resizeImage($filename, $dir . "/large/" . $data->fileName, self::IMAGE_SIZE_LARGE);                                                
+                        $result = $result 
+                            && $this->resizeImage($filename, $dir . "/thumbnail/" . $data->fileName, self::IMAGE_SIZE_THUMBNAIL);
+                        $result = $result
+                            && $this->resizeImage($filename, $dir . "/middle/" . $data->fileName, self::IMAGE_SIZE_MIDDLE);
+                        $result = $result
+                            && $this->resizeImage($filename, $dir . "/large/" . $data->fileName, self::IMAGE_SIZE_LARGE);                                                
                         unset($dir);
                         
                         if ($result) {
