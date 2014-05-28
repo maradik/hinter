@@ -16,8 +16,10 @@
      * Общие настройки
      */
     $general_s = array(
-        'enctryptsalt' => 'a0s9D8F7g6H5',
-        'upload_dir' => 'uploads'
+        'enctryptsalt'  => 'a0s9D8F7g6H5',      // соль для хеширования паролей
+        'cron_key'      => 'j1Nfle804L5Nzc',    // параметр в запросе для запуска задачи cron
+        'upload_dir'    => 'uploads',           // директория аплоада
+        'sitemap_file'  => 'sitemap.xml'        // относительный путь к файлу sitemap
     );     
     
     
@@ -43,6 +45,6 @@
     
     $system_s = array(
         'api_base_uri'      => '/api',
-        'dev_server'        => $_SERVER['SERVER_NAME'] == 'hintok.an'
+        'dev_server'        => $_SERVER['HTTP_HOST'] == 'hintok.an'
     );
     
