@@ -41,11 +41,13 @@
             
             if (isset($data) || isset($message)) {
                 $response = array(
-                    'url'       => $this->getFullUrl(),
-                    'methods'   => $this->getSupportedMethods(),
-                    'type'      => $this->getResponseType(),
-                    'message'   => $message,
-                    'data'      => $data
+                    'url'           => $this->getFullUrl(),
+                    'status'        => $this->getResponseCode(),
+                    'statusText'    => HttpResponseCode::getPhrase($this->getResponseCode()),
+                    'methods'       => $this->getSupportedMethods(),
+                    'type'          => $this->getResponseType(),
+                    'message'       => $message,
+                    'data'          => $data
                 );       
                 
                 echo json_encode($response);

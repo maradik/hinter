@@ -20,7 +20,7 @@
         
         protected function notFound(array $args)
         {
-            header("HTTP/1.1 404 Not Found");
+            $this->responseNotFound();
             $this->addResponseMessage("Ресурс не существует!", self::MESS_ERROR);
         }
     }

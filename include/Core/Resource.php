@@ -9,6 +9,11 @@
         const MESS_ERROR        = 3;
         
         /**
+         * @var int $responseCode
+         */
+        private $responseCode = 200;
+        
+        /**
          * @var array $responseData
          */
         private $responseData = array();       
@@ -127,30 +132,41 @@
         final protected function responseNotAllowed() 
         {
             /* 405 (Method Not Allowed) */
+            $this->setResponseCode(HttpResponseCode::METHOD_NOT_ALLOWED);
             header('Allow: ' . implode(', ', $this->getSupportedMethods()), true, HttpResponseCode::METHOD_NOT_ALLOWED);            
         }    
         
         final protected function responseNotImplemented()
         {
             /* 501 (Method Not Implemented) */
+            $this->setResponseCode(HttpResponseCode::NOT_IMPLEMENTED);
             header('Allow: ' . implode(', ', $this->serverSupportedMethods), true, HttpResponseCode::NOT_IMPLEMENTED);          
         }          
         
         final protected function responseNotFound()
         {
-            //header("HTTP/1.1 404 Not Found");      
+            $this->setResponseCode(HttpResponseCode::NOT_FOUND);
             header("Status: 404 Not Found", true, HttpResponseCode::NOT_FOUND);            
         }       
         
         final protected function responseCreated($location) 
         {
             /* 201 (Created) */
+            $this->setResponseCode(HttpResponseCode::CREATED);
             header('Location: ' . $location, true, HttpResponseCode::CREATED);            
         }         
         
         final protected function setResponseCode($code)
         {
+            // прим: в PHP 5.4 есть функция http_response_code
+            $this->responseCode = $code;
             header("HTTP/1.1 {$code} ".HttpResponseCode::getPhrase($code));    
+        }
+        
+        final protected function getResponseCode()
+        {
+            // прим: в PHP 5.4 есть функция http_response_code
+            return $this->responseCode;
         }
         
         final protected function getFullUrl() 
