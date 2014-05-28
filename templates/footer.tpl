@@ -5,7 +5,7 @@
 				(C) Maradik 2014
 			</div>
 			<div class="col-md-1">
-				{if $.server.SERVER_NAME == 'hintok.ru'}
+				{if $.server.HTTP_HOST == 'hintok.ru'}
 					{ignore}
 						<!-- Yandex.Metrika counter -->
 						<script type="text/javascript">
