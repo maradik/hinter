@@ -28,7 +28,7 @@
         
         protected function api_post(array $args = array())
         {
-            global $general_s;
+            global $general_s; //TODO переделать global на параметры
             $this->file = current($_FILES); 
             
             if (!empty($args)
