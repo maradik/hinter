@@ -32,7 +32,17 @@
 						})(document, window, "yandex_metrika_callbacks");
 						</script>
 						<noscript><div><img src="//mc.yandex.ru/watch/24840683" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-						<!-- /Yandex.Metrika counter -->			
+						<!-- /Yandex.Metrika counter -->	
+						<script>
+						  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+						  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+						  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+						  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+						
+						  ga('create', 'UA-38197880-3', 'hintok.ru');
+						  ga('send', 'pageview');
+						
+						</script>								
 					{/ignore}	
 				{/if}
 			</div>
