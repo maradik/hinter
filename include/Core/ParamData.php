@@ -44,15 +44,15 @@
             $v = parent::validators($fields);
             
             if (in_array($f = 'key', $fields)) {
-                $v[$f] = Validator::attribute($f, Validator::string()->notEmpty()->length(1, 20))
+                $v[$f] = Validator::attribute($f, Validator::string()->notEmpty()->length(1, 30))
                     ->setName($f)
-                    ->setTemplate('{$fields} должно быть строкой длиной от 1 до 20 символов.');
+                    ->setTemplate('{$fields} должно быть строкой длиной от 1 до 30 символов.');
             }
             
             if (in_array($f = 'value', $fields)) {
-                $v[$f] = Validator::attribute($f, Validator::string()->length(0, 100))
+                $v[$f] = Validator::attribute($f, Validator::string()->length(0, 255))
                     ->setName($f)
-                    ->setTemplate('{$fields} должно быть строкой длиной от 0 до 100 символов.');
+                    ->setTemplate('{$fields} должно быть строкой длиной от 0 до 255 символов.');
             }            
             
             return $v;
