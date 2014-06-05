@@ -28,6 +28,9 @@
                 
                 $args['filterfield'][] = 'parentId';
                 $args['filtervalue'][] = $this->resId[0];
+
+                $args['filterfield'][] = 'type';
+                $args['filtervalue'][] = FileData::TYPE_IMAGE;
                 
                 parent::api_get($args);                           
             } else {
