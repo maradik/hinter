@@ -82,8 +82,8 @@
             try {
                 $sql = "CREATE TABLE IF NOT EXISTS `{$this->tableFullName()}` (
                           `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-                          `key` varchar(20) NOT NULL,
-                          `value` varchar(100) NOT NULL,
+                          `key` varchar(30) NOT NULL,
+                          `value` varchar(255) NOT NULL,
                           PRIMARY KEY (`id`),
                           UNIQUE KEY `{$this->tableFullName()}_key` (`key`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";        
