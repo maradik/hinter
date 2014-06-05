@@ -39,6 +39,7 @@
         $resManager->register($upx . '/user/current/login', $ns . 'UserLoginController');
         $resManager->register($upx . '/user/current/logout', $ns . 'UserLogoutController');
         $resManager->register($upx . '/cron/sitemap-update', $ns . 'SitemapCronController');
+        $resManager->register($upx . '/cron/vk-post', $ns . 'VkPostCronController');
         
         // NotFound
         $resManager->registerNotFound($ns . 'ResourceNotFound');
