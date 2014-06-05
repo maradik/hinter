@@ -17,7 +17,7 @@
         
         const IMAGE_SIZE_THUMBNAIL  = 100;
         const IMAGE_SIZE_MIDDLE     = 220;
-        const IMAGE_SIZE_LARGE      = 480;
+        const IMAGE_SIZE_LARGE      = 640;
         
         protected $file;
         
