@@ -2,10 +2,12 @@
     namespace Maradik\Hinter\Api;
     
     use Maradik\Testing\BaseRepository; 
+    use Maradik\Testing\FileData;
     use Maradik\User\UserCurrent;   
     use Maradik\Hinter\Core\HttpResponseCode;
     use Maradik\Hinter\Core\RepositoryFactory;     
     use Maradik\Hinter\Core\Resource;    
+    use Maradik\Hinter\Core\FileParentType;
     
     abstract class ResourceApi extends Resource
     {
@@ -97,4 +99,52 @@
             
             return is_null($args) ? array() : $args;          
         }                 
+
+        /**
+         * @param int $parentId Id сущности, к которой привязаны изображения
+         * @param int $parentType тип сущности, к которой привязаны изображения. Если не задано - определяется по классу объекта $this
+         * @return array[][] Метаданные изображений в виде массива. Первый индекс - изображение, второй ассоциативный - поле изображения
+         */
+        protected function getPackedImages($parentId, $parentType = 0)
+        {
+            if (empty($parentType)) {
+                switch (true) {
+                    case $this instanceof \Maradik\Hinter\Api\SecondQuestionCollection:
+                    case $this instanceof \Maradik\Hinter\Api\SecondQuestionDocument:
+                        $parentType = FileParentType::SECOND_QUESTION;
+                        break;    
+                    case $this instanceof \Maradik\Hinter\Api\SecondAnswerCollection:
+                    case $this instanceof \Maradik\Hinter\Api\SecondAnswerDocument:
+                        $parentType = FileParentType::SECOND_ANSWER;
+                        break;
+                    case $this instanceof \Maradik\Hinter\Api\MainQuestionCollection:
+                    case $this instanceof \Maradik\Hinter\Api\MainQuestionDocument:
+                        $parentType = FileParentType::MAIN_QUESTION;
+                        break;                        
+                    case $this instanceof \Maradik\Hinter\Api\MainAnswerCollection:
+                    case $this instanceof \Maradik\Hinter\Api\MainAnswerDocument:
+                        $parentType = FileParentType::MAIN_ANSWER;
+                        break; 
+                }
+            }
+            
+            if (empty($parentType)) {
+                return array();
+            }
+            
+            $images = $this->repositoryFactory
+                ->getFileRepository()
+                ->query()
+                ->addFilterField('parentType', $parentType)
+                ->addFilterField('parentId', $parentId)
+                ->addFilterField('type', FileData::TYPE_IMAGE)
+                ->getEntity();           
+                
+            return array_map(
+                function($image) {
+                    return ImageDocument::packImage($image);
+                },
+                $images
+            );                    
+        }
     }

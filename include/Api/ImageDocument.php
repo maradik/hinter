@@ -57,8 +57,6 @@
          */        
         protected function packEntity(BaseData $entity)    
         {
-            global $general_s; //TODO переделать на аргумент конструктору
-            
             if (!($entity instanceof \Maradik\Testing\FileData)) {
                 throw new \InvalidArgumentException(
                     'Неверный тип параметра $entity: ожидается \Maradik\Testing\FileData, получен '
@@ -66,26 +64,7 @@
                 );       
             }               
             
-            $hrefUploads = "{$this->getProtocol()}://{$_SERVER['HTTP_HOST']}/{$general_s['upload_dir']}";            
-            
-            return array(
-                'id'            => $entity->id,
-                'fileName'      => $entity->fileName,
-                'origFileName'  => $entity->origFileName,
-                'size'          => $entity->size,
-                'parentType'    => $entity->parentType,
-                'parentId'      => $entity->parentId,
-                'createDate'    => $entity->createDate,
-                'userId'        => $entity->userId,                                                
-                'title'         => $entity->title,
-                'description'   => $entity->description,
-                'order'         => $entity->order,
-                'type'          => $entity->type,
-                'urlData'       => "{$hrefUploads}/{$entity->fileName}",
-                'urlThumbnail'  => "{$hrefUploads}/thumbnail/{$entity->fileName}",
-                'urlMiddle'     => "{$hrefUploads}/middle/{$entity->fileName}",
-                'urlLarge'      => "{$hrefUploads}/large/{$entity->fileName}"
-            );
+            return self::packImage($entity);
         }
         
         /**
@@ -139,5 +118,37 @@
             $toEntity->order        = $toEntity->order;
             $toEntity->parentId     = $toEntity->parentId;
             $toEntity->parentType   = $toEntity->parentType;                                
+        }
+
+        /**
+         * Упаковывает МЕТА-данные изображения в массив для последующей передачи пользователю
+         * 
+         * @param Maradik\Testing\FileData $image
+         * @return array 
+         */  
+        static public function packImage(FileData $image)
+        {
+            global $general_s; //TODO переделать на аргумент конструктору           
+            
+            $hrefUploads = self::getHttpProtocol()."://{$_SERVER['HTTP_HOST']}/{$general_s['upload_dir']}";   
+            
+            return array(
+                'id'            => $image->id,
+                'fileName'      => $image->fileName,
+                'origFileName'  => $image->origFileName,
+                'size'          => $image->size,
+                'parentType'    => $image->parentType,
+                'parentId'      => $image->parentId,
+                'createDate'    => $image->createDate,
+                'userId'        => $image->userId,                                                
+                'title'         => $image->title,
+                'description'   => $image->description,
+                'order'         => $image->order,
+                'type'          => $image->type,
+                'urlData'       => "{$hrefUploads}/{$image->fileName}",
+                'urlThumbnail'  => "{$hrefUploads}/thumbnail/{$image->fileName}",
+                'urlMiddle'     => "{$hrefUploads}/middle/{$image->fileName}",
+                'urlLarge'      => "{$hrefUploads}/large/{$image->fileName}"                                                                                                  
+            );            
         }
     }    

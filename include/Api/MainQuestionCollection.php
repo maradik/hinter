@@ -7,7 +7,7 @@
     use Maradik\User\UserCurrent;
     use Maradik\Hinter\Core\HttpResponseCode;
     use Maradik\Hinter\Core\RepositoryFactory; 
-    use Maradik\Hinter\Core\IResource;    
+    use Maradik\Hinter\Core\IResource;   
     
     class MainQuestionCollection extends ResourceCollection implements IResource
     {
@@ -50,7 +50,9 @@
                 );       
             }                
             
-            return $entity->jsonSerialize(); //TODO Переделать в JSON!
+            $ret = $entity->jsonSerialize(); //TODO Переделать в JSON!
+            $ret['images'] = $this->getPackedImages($entity->id);
+            return $ret;
         }
         
         /**

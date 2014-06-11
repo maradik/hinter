@@ -192,8 +192,6 @@
          */        
         protected function packEntity(BaseData $entity)    
         {
-            global $general_s; //TODO переделать на аргумент конструктору           
-            
             if (!($entity instanceof \Maradik\Testing\FileData)) {
                 throw new \InvalidArgumentException(
                     'Неверный тип параметра $entity: ожидается \Maradik\Testing\FileData, получен '
@@ -201,26 +199,7 @@
                 );       
             }           
             
-            $hrefUploads = "{$this->getProtocol()}://{$_SERVER['HTTP_HOST']}/{$general_s['upload_dir']}";   
-            
-            return array(
-                'id'            => $entity->id,
-                'fileName'      => $entity->fileName,
-                'origFileName'  => $entity->origFileName,
-                'size'          => $entity->size,
-                'parentType'    => $entity->parentType,
-                'parentId'      => $entity->parentId,
-                'createDate'    => $entity->createDate,
-                'userId'        => $entity->userId,                                                
-                'title'         => $entity->title,
-                'description'   => $entity->description,
-                'order'         => $entity->order,
-                'type'          => $entity->type,
-                'urlData'       => "{$hrefUploads}/{$entity->fileName}",
-                'urlThumbnail'  => "{$hrefUploads}/thumbnail/{$entity->fileName}",
-                'urlMiddle'     => "{$hrefUploads}/middle/{$entity->fileName}",
-                'urlLarge'      => "{$hrefUploads}/large/{$entity->fileName}"                                                                                                  
-            );
+            return ImageDocument::packImage($entity);
         }
         
         /**
@@ -254,5 +233,6 @@
             $ret->type = FileData::TYPE_IMAGE;         
             
             return $ret;
-        }          
+        }
     }    
+    

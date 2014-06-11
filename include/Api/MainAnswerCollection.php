@@ -58,7 +58,9 @@
                 );       
             }                
             
-            return $entity->jsonSerialize(); //TODO Переделать в JSON!
+            $ret = $entity->jsonSerialize(); //TODO Переделать в JSON!
+            $ret['images'] = $this->getPackedImages($entity->id);
+            return $ret;
         }
         
         /**

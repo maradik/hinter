@@ -180,7 +180,7 @@
         
         final protected function getProtocol()
         {
-            return !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+            return self::getHttpProtocol();
         }
         
         /**
@@ -197,4 +197,12 @@
          * @return array|false Аргументы, полученные из http-запроса. False - в случае ошибки.
          */
         abstract protected function getRequestArgs();
+        
+        /**
+         * @return Http-протокол
+         */
+        static public function getHttpProtocol()
+        {
+            return !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';            
+        }
     }
