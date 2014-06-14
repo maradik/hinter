@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="col-md-11 col-md-offset-1">
+	<div class="col-md-12">
 		{if (!empty($mainQuestionList))}
 			<table class="table table-striped table-hover">								
 				<tbody>
@@ -24,7 +24,14 @@
 						<tr>
 							<td>
 								<div class="row">
-									<div class="col-md-9">
+									<div class="col-sm-2 hidden-xs">
+										<div data-bind="with: Images()[0]">
+											<a href="#" target="_blank" class="thumbnail top10" data-bind="thumbnail: { src: UrlData, title: Title }">
+												<img src="#" data-bind="attr: { src: UrlMiddle, title: Title, alt: Title }">
+											</a>
+										</div>							
+									</div>									
+									<div class="col-sm-7 col-xs-12">
 										<h3 class="top10" data-bind="text: Title"></h3>
 										<div class="multiline" data-bind="text: Description.truncatedText(300), visible: Description"></div>
 										<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId()), visible: !$root.CategoryId()">
@@ -32,8 +39,8 @@
 												<span class="glyphicon glyphicon-folder-open"></span> <span data-bind="text: Title"></span>
 											</div>
 										</div>
-									</div>
-									<div class="col-md-3 text-right">
+									</div>									
+									<div class="col-sm-3 col-xs-12 text-right">
 										<a href="#" title="" class="btn btn-primary top10" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
 											Узнать ответ!
 										</a>

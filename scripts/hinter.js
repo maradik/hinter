@@ -207,6 +207,8 @@
             self.Order(         json.order);
             self.UserId(        json.userId);
             self.Active(        json.active);
+            self.Images.unpack(json.images, Image);
+            //console.log(self.Images().length);
             return self;
         };
         
@@ -1168,6 +1170,12 @@
                     }
                 );   
             }         
+        };
+
+        target.unpack = function(data, modelConstructor) {
+            if (Array.isArray(data)) {
+                target($.map(data, function(item) { return (new modelConstructor).unpack(item); }));                
+            }
         };
 
         target.Loading = ko.observable(false);        
