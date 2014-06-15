@@ -25,8 +25,8 @@
 							<td>
 								<div class="row">
 									<div class="col-sm-2 hidden-xs">
-										<div data-bind="with: Images()[0]">
-											<a href="#" target="_blank" class="thumbnail top10" data-bind="thumbnail: { src: UrlData, title: Title }">
+										<div>
+											<a href="#" class="thumbnail top10" data-bind="attr: { href: '/question/' + Id(), title: Title() }, with: Images()[0] || { UrlMiddle: '/uploads/default.png', Title: 'Нет фото' }">
 												<img src="#" data-bind="attr: { src: UrlMiddle, title: Title, alt: Title }">
 											</a>
 										</div>							
