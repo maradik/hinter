@@ -28,6 +28,7 @@
 						
 				<div class="row" id="page-content-block">
 					<div class="col-md-9">
+						{include 'block_messages.tpl'}
 						{block 'content'}{/block}
 					</div>
 					
