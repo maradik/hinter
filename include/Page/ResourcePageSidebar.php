@@ -29,6 +29,12 @@
             
         protected function sendResponse()
         {
+            global $linkList;
+            $this->addResponseData(
+                'linkList',
+                $linkList
+            );           
+            
             $this->addResponseData(
                 'clearUri',
                 current(explode('#', current(explode('?', $_SERVER['REQUEST_URI'], 2)), 2))

@@ -22,6 +22,17 @@
         'sitemap_file'  => 'sitemap.xml'        // относительный путь к файлу sitemap
     );     
     
+    /**
+     * Ссылки
+     */
+    $linkList = array(
+        array(
+            'title'         => 'Группа ВКонтакте',
+            'description'   => 'Будь в курсе новостей и интересных подсказок!',
+            'url'           => 'http://vk.com',
+            'imageUrl'      => '/uploads/vkontakte.png'
+        )
+    );       
     
     /**
      * Системные настройки (лучше не менять)
