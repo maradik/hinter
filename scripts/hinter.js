@@ -481,10 +481,10 @@
             return VK.Share.button({
                   url: window.location.href,
                   title: document.title,
-                  description: mainAnswer.Title().toUpperCase() + ' - оптимальный вариант!\n\n' + mainAnswer.Description(),
+                  description: mainAnswer.Title().toUpperCase() + ' - оптимальный вариант!',// + mainAnswer.Description(),
                   image: mainAnswer.Images().length 
-                    ? mainAnswer.Images()[0].UrlData()
-                    : window.location.protocol + '//' + window.location.hostname + '/uploads/default.png',
+                    ? mainAnswer.Images()[0].UrlThumbnail()
+                    : window.location.protocol + '//' + window.location.hostname + '/uploads/thumbnail/default.png',
                   noparse: true
                 },
                 {
