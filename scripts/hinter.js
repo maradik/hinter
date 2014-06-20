@@ -473,6 +473,27 @@
         self.MainAnswerList         = baseObservableArray();
         self.RelMainAnswerList      = baseObservableArray();
         
+        self.VkShareButton          = ko.computed(function(){
+            if (!self.MainAnswerList().length) { 
+                return ''; 
+            }
+            var mainAnswer = self.MainAnswerList()[0];            
+            return VK.Share.button({
+                  url: window.location.href,
+                  title: document.title,
+                  description: mainAnswer.Title().toUpperCase() + ' - оптимальный вариант!\n\n' + mainAnswer.Description(),
+                  image: mainAnswer.Images().length 
+                    ? mainAnswer.Images()[0].UrlData()
+                    : window.location.protocol + '//' + window.location.hostname + '/uploads/default.png',
+                  noparse: true
+                },
+                {
+                    type: 'custom',
+                    text: '<span class="btn btn-info btn-sm"><img src="/uploads/vkontakte.png"/> Поделиться ответом</span>'        
+                }
+            ); 
+        });
+        
         self.bind = function(htmlElementId) {
             ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));
             

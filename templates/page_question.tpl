@@ -53,7 +53,8 @@
 			<div class="panel-footer">				
 				<button class="btn btn-success btn-sm" data-bind="click: $root.start">
 					<span class="glyphicon glyphicon-repeat"></span> Повторить
-				</button>						
+				</button>	
+				<span data-bind="html: VkShareButton"></span>					
 			</div>			
 		</div>	
 

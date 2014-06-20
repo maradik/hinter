@@ -17,6 +17,7 @@
 		<script type="text/javascript" src="/scripts/hinter.js?cid={$cache_id}"></script>
 		<script type="text/javascript" src="/scripts/shadowbox-3.0.3/shadowbox.js?cid={$cache_id}"></script>
 		<script type="text/javascript">Shadowbox.init();</script>
+		<script type="text/javascript" src="http://vkontakte.ru/js/api/share.js?9" charset="windows-1251"></script>
 		
 		<title>{block 'title'}HintOk{/block}</title>
 	</head>
