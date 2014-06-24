@@ -54,7 +54,8 @@
 				<button class="btn btn-success btn-sm" data-bind="click: $root.start">
 					<span class="glyphicon glyphicon-repeat"></span> Повторить
 				</button>	
-				<span data-bind="html: VkShareButton"></span>					
+				<a href="/question/create" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span> Создать свою подсказку!</a> 
+				<span data-bind="html: VkShareButton"></span>		
 			</div>			
 		</div>	
 
