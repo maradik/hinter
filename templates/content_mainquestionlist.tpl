@@ -53,7 +53,12 @@
 						<td>
 							Загрузка...
 						</td>
-					</tr>
+					</tr>			
+					<tr data-bind="visible: !Loading() && !IsEndOfList()">
+						<td>
+							<a href="#" class="btn btn-default" data-bind="click: asyncLoadOlderList">Еще...</a>
+						</td>
+					</tr>			
 				</tbody>
 			</table>
 		{else}

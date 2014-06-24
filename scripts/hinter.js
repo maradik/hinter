@@ -873,6 +873,8 @@
             }    
         };
         
+        self.asyncLoadOlderList = asyncLoadOlderList;
+        
         function onWindowScroll(){
             if (needLoadOlderList())
                 asyncLoadOlderList();
@@ -912,7 +914,7 @@
                     apiUrlBase + '/mainquestion?limit=10&' + $.param(params), 
                     MainQuestion, 
                     false, 
-                    function(json) { if (!json.data.length) {self.IsEndOfList(true);} }
+                    function(json) { if (!json.data.length || json.data.length < 10) {self.IsEndOfList(true);} }
                 );
             }
         }        
