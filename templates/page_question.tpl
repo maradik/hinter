@@ -99,13 +99,13 @@
 					-->
 					<!-- ko foreach: { data: MainAnswerList, afterRender: MainAnswerList()[0].Images.afterRender } -->
 						<div class="row top10">
-							<div class="col-xs-1 text-center"><span class="label label-default" data-bind="text: $index() + 1"></span></div>
-							<div class="col-xs-1 text-center thumbnail-block" data-bind="visible: Images().length, with: Images()[0]">
+							<div class="col-sm-1 col-xs-1 text-center"><span class="label label-default" data-bind="text: $index() + 1"></span></div>
+							<div class="col-sm-2 hidden-xs text-center thumbnail-block" data-bind="visible: Images().length, with: Images()[0]">
 								<a href="#" class="thumbnail" target="_blank" data-bind="thumbnail: { src: UrlData, title: Title }">
 									<img src="#" data-bind="attr: { src: UrlThumbnail, title: Title, alt: Title }">
 								</a>
 							</div>
-							<div class="col-xs-10" data-bind="css: { 'col-xs-10': Images().length, 'col-xs-11': !Images().length }">
+							<div class="col-sm-9 col-xs-11" data-bind="css: { 'col-xs-10': Images().length, 'col-xs-11': !Images().length }">
 								<strong data-bind="text: Title.truncatedText(50)"></strong>
 								<em class="text-muted" data-bind="text: Description.truncatedText(100)"></em>
 							</div>
