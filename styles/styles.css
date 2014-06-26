@@ -107,3 +107,7 @@ input[type=file].file-upload {
     visibility: hidden;
     opacity: 0;
 }
+
+#vk_comments {
+	margin-bottom: 20px;
+}

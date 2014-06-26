@@ -119,6 +119,8 @@
 		</div>							
 	</div>
 	
+	<div id="vk_comments"></div>
+	
 	<script type="text/html" id="thumbnails">
 		<a href="#" target="_blank" class="thumbnail top10" data-bind="thumbnail: { src: UrlData, title: Title }">
 			<img src="#" data-bind="attr: { src: UrlMiddle, title: Title, alt: Title }">
@@ -128,9 +130,17 @@
 
 {block 'scripts'}
 <script type="text/javascript">
-	$(document).ready(function () {
+	$(document).ready(function () {	
 		PassTestVM = new Hinter.PassTestVM({$mainQuestion->id});
 		PassTestVM.bind();
+		
+		{if !$dev_server}
+			VK.init({
+				apiId: 4431858,
+				onlyWidgets: true
+			});		
+			VK.Widgets.Comments('vk_comments', { limit: 10, attach: "*" }, {$mainQuestion->id});
+		{/if}		
 	});
 </script>
 {/block}
