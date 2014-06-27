@@ -474,7 +474,7 @@
         self.RelMainAnswerList      = baseObservableArray();
         
         self.VkShareButton          = ko.computed(function(){
-            if (!self.MainAnswerList().length) { 
+            if (!self.MainAnswerList().length || !self.Finish()) { 
                 return ''; 
             }
             var mainAnswer = self.MainAnswerList()[0];            
