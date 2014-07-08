@@ -173,7 +173,9 @@
                     ->query()
                     ->addFilterField('questionId', $mainQuestion->id)   
                     ->getEntity();
-                $message = "{$mainQuestion->title}\n\n{$mainQuestion->description}\n\n"
+                $mqUrl = $this->getProtocol() . '://' . $_SERVER['HTTP_HOST'] . "/question/{$mainQuestion->id}";
+                $message = mb_strtoupper($mainQuestion->title, 'UTF-8') 
+                    . "\n{$mqUrl}\n\n{$mainQuestion->description}\n\n"
                     . "Возможные варианты:\n"
                     . implode("\n", array_map(function($ma) { return "- {$ma->title}"; }, $mainAnswers));
                 $fileData = $this->repositoryFactory
@@ -191,7 +193,7 @@
                     );
                 }
                 $attachments = array(
-                    $this->getProtocol() . '://' . $_SERVER['HTTP_HOST'] . "/question/{$mainQuestion->id}"
+                    $mqUrl   
                 );
                 if (!empty($photoId)) {
                     $attachments[] = $photoId;
