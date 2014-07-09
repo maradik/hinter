@@ -5,7 +5,6 @@
 {block 'meta_description'}{$mainQuestion->description|truncate:150:'...'|e:'HTML'}{/block}
 
 {block 'content'}
-	
 	<div>
 		<div class="panel" data-bind="css: CurrentSecQuestion() == 0 ? 'panel-primary' : 'panel-default'">
 			<div class="panel-heading">
@@ -134,7 +133,7 @@
 <script type="text/javascript">
 	$(document).ready(function () {	
 		PassTestVM = new Hinter.PassTestVM({$mainQuestion->id});
-		PassTestVM.bind();
+		PassTestVM.bind({json_encode($mainQuestion)});
 		
 		{if !$dev_server}
 			VK.init({

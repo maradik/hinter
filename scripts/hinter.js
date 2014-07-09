@@ -17,6 +17,7 @@
         var observableArray = ko.observableArray(baseModelArray).extend({baseList: true});
         return observableArray;    
     };     
+
     //-------------------------------------------------------
     // Модели
 
@@ -36,6 +37,24 @@
         var uri = resUri;
         self.getUri = function() {
             return uri;
+        };
+
+        self.unpack = function(json) {
+            self.Id(            json.id);
+            self.Title(         json.title);
+            self.Description(   json.description);
+            self.Order(         json.order);
+            self.Images.unpack(json.images, Image);
+            return self;
+        };
+
+        self.pack = function() {
+            return {
+                id:         self.Id(),
+                title:      self.Title(),
+                description:self.Description(),                 
+                order:      self.Order()
+            };
         };
 
         self.save = function(callbackSuccess, callbackError) {
@@ -158,23 +177,21 @@
         self.Description    = self.Description.extend({ bounds: {maxLen: 1000}, truncatedText: true });;
         self.ParentId       = ko.observable(parentId);
     
+        var parentUnpack = self.unpack;
         self.unpack = function(json) {
-            self.Id(            json.id);
-            self.Title(         json.title);
-            self.Description(   json.description);
-            self.ParentId(      json.parentId);
-            self.Order(         json.order);
+            parentUnpack(json);
+            self.ParentId(json.parentId);
             return self;
         };
     
+        var parentPack = self.pack;    
         self.pack = function() {
-            return {
-                id:         self.Id(),
-                title:      self.Title(),
-                description:self.Description(), 
-                parentId:   self.ParentId(),
-                order:      self.Order()
-            };
+            return ko.utils.extend(
+                parentPack(),
+                {
+                    parentId:   self.ParentId()
+                }
+            );
         };
     }
 
@@ -198,32 +215,30 @@
         self.UserId         = ko.observable(userId);   
         self.Active         = ko.observable(active);          
         
+        var parentUnpack = self.unpack;
         self.unpack = function(json) {
-            self.Id(            json.id);
-            self.Title(         json.title);
-            self.Description(   json.description);
+            parentUnpack(json);
             self.CategoryId(    json.categoryId);
             self.CreateDate(    json.createDate);
-            self.Order(         json.order);
             self.UserId(        json.userId);
             self.Active(        json.active);
-            self.Images.unpack(json.images, Image);
             //console.log(self.Images().length);
             return self;
         };
         
+        var parentPack = self.pack;
         self.pack = function() {
-            return {
-                id:         self.Id(),
-                title:      self.Title(),
-                description:self.Description(), 
-                categoryId: self.CategoryId(),
-                order:      self.Order(),
-                userId:     0,
-                active:     self.Active()                    
-            };
+            return ko.utils.extend(
+                parentPack(),
+                {
+                    categoryId: self.CategoryId(),
+                    userId:     0,
+                    active:     self.Active()
+                } 
+            );                   
         };        
     };
+    //inherit(MainQuestion, BaseModel);
     
     function MainAnswer(
         id, 
@@ -243,26 +258,24 @@
         self.CreateDate     = ko.observable(createDate);
         self.UserId         = ko.observable(userId);
         
+        var parentUnpack = self.unpack;        
         self.unpack = function(json) {
-            self.Id(            json.id);
-            self.Title(         json.title); 
-            self.Description(   json.description);
+            parentUnpack(json);
             self.QuestionId(    json.questionId);
             self.CreateDate(    json.createDate);
-            self.Order(         json.order);
             self.UserId(        json.userId);
             return self;
         }; 
 
+        var parentPack = self.pack;
         self.pack = function() {
-            return {
-                id:         self.Id(),
-                title:      self.Title(),
-                description:self.Description(), 
-                questionId: self.QuestionId(),
-                order:      self.Order(),    
-                userId:     0                 
-            };
+            return ko.utils.extend(
+                parentPack(),
+                {
+                    questionId: self.QuestionId(),
+                    userId:     0                 
+                }
+            );
         };         
     }    
        
@@ -286,26 +299,24 @@
         
         self.SecondAnswers  = baseObservableArray(); 
         
+        var parentUnpack = self.unpack;
         self.unpack = function(json) {
-            self.Id(            json.id);
-            self.Title(         json.title);
-            self.Description(   json.description);
+            parentUnpack(json);
             self.ParentId(      json.parentId);
             self.CreateDate(    json.createDate);
-            self.Order(         json.order);
             self.UserId(        json.userId);
             return self;
         };
         
+        var parentPack = self.pack;
         self.pack = function() {
-            return {
-                id:         self.Id(),
-                title:      self.Title(),
-                description:self.Description(), 
-                parentId:   self.ParentId(),
-                order:      self.Order(),
-                userId:     0                      
-            };
+            return ko.utils.extend(
+                parentPack(),
+                {
+                    parentId:   self.ParentId(),
+                    userId:     0    
+                }                  
+            );
         };         
     };    
     
@@ -329,26 +340,24 @@
 
         self.MainAnswers    = baseObservableArray().extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
         
+        var parentUnpack = self.unpack;
         self.unpack = function(json) {
-            self.Id(            json.id);
-            self.Title(         json.title);
-            self.Description(   json.description);
+            parentUnpack(json);
             self.QuestionId(    json.questionId);
             self.CreateDate(    json.createDate);
-            self.Order(         json.order);
             self.UserId(        json.userId);
             return self;
         };
         
+        var parentPack = self.pack;
         self.pack = function() {
-            return {
-                id:         self.Id(),
-                title:      self.Title(),
-                description:self.Description(), 
-                questionId: self.QuestionId(),
-                order:      self.Order(),
-                userId:     0                     
-            };
+            return ko.utils.extend(
+                parentPack(),
+                {
+                    questionId: self.QuestionId(),
+                    userId:     0                     
+                }
+            );
         };       
     }     
     
@@ -421,13 +430,11 @@
         self.UrlMiddle      = ko.observable(urlMiddle);
         self.UrlLarge       = ko.observable(urlLarge);
     
+        var parentUnpack = self.unpack;    
         self.unpack = function(json) {
-            self.Id(                json.id);
-            self.Title(             json.title); 
-            self.Description(       json.description);
+            parentUnpack(json);
             self.ParentType(        json.parentType);
             self.ParentId(          json.parentId);
-            self.Order(             json.order);
             self.CreateDate(        json.createDate);
             self.UserId(            json.userId);
             self.Size(              json.size);
@@ -440,15 +447,15 @@
             return self;
         };   
     
+        var parentPack = self.pack;
         self.pack = function() {
-            return {
-                id:         self.Id(),
-                title:      self.Title(),
-                description:self.Description(), 
-                parentType: self.ParentType(),
-                parentId:   self.ParentId(),
-                order:      self.Order()                
-            };
+            return ko.utils.extend(
+                parentPack(),
+                {
+                    parentType: self.ParentType(),
+                    parentId:   self.ParentId()
+                }
+            );
         };
     }
     
@@ -494,7 +501,7 @@
             ); 
         });
         
-        self.bind = function(htmlElementId) {
+        self.bind = function(mainQuestion, htmlElementId) {
             ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));
             
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/mainanswer", null, function (json) {                
@@ -502,6 +509,7 @@
                     json 
                     ? $.map(json.data, function (item) { 
                         var ma = (new MainAnswer).unpack(item);
+                        /*
                         requestAjaxJson('GET', apiUrlBase + "/mainanswer/" + ma.Id() + "/image", null, function (json) {                
                             ma.Images(
                                 json 
@@ -509,13 +517,14 @@
                                 : []
                             );
                         });  
+                        */
                         return ma;                       
                     }) 
                     : []
                 );
                 self.MainAnswerList.sort(sortQuestionAnswerArray);
             });
-            
+            /*
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/image", null, function (json) {                
                 self.MainQuestionImageList(
                     json 
@@ -524,6 +533,9 @@
                 );
                 self.MainQuestionImageList.sort(sortQuestionAnswerArray);
             });            
+            */
+            self.MainQuestionImageList((new MainQuestion).unpack(mainQuestion).Images());
+            self.MainQuestionImageList.sort(sortQuestionAnswerArray);
             
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/secondaryquestion", null, function (json) {                
                 self.SecondQuestionList(
