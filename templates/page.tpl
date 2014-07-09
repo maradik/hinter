@@ -3,8 +3,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="title" content="{block 'meta_title'}{/block}" />
+		<meta name="description" content="{block 'meta_description'}{/block}" />
 		
 		<link rel="shortcut icon" href="/favicon.png" type="image/png">
+		<link rel="image_src" href="/uploads/thumbnail/default_mini.png">
 		
 		<link rel="stylesheet" type="text/css" href="/styles/bootstrap/3.1.1/css/bootstrap.min.css?cid={$cache_id}">
 		<link rel="stylesheet" type="text/css" href="/styles/styles.css?cid={$cache_id}">
@@ -19,7 +22,7 @@
 		<script type="text/javascript">Shadowbox.init();</script>
 		<script type="text/javascript" src="https://vk.com/js/api/share.js?90" charset="windows-1251"></script>
 		<script type="text/javascript" src="https://vk.com/js/api/openapi.js?113" charset="windows-1251"></script>
-		
+				
 		<title>{block 'title'}HintOk{/block}</title>
 	</head>
 	<body>

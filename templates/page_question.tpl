@@ -1,6 +1,8 @@
 {extends 'page.tpl'}
 
 {block 'title'}{$mainQuestion->title|truncate:100:'...'|e:'HTML'} | HintOk{/block}
+{block 'meta_title'}{$mainQuestion->title|truncate:100:'...'|e:'HTML'}{/block}
+{block 'meta_description'}{$mainQuestion->description|truncate:150:'...'|e:'HTML'}{/block}
 
 {block 'content'}
 	
