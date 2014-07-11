@@ -162,7 +162,12 @@
                 ->join($this->repositoryFactory->getMainQuestionRepository())
                 ->addLinkFields('id', 'categoryId')
                 ->addFilterField('active', true);
-                
+
+            $mainQuestionId = empty($args['mq']) ? 0 : (int) $args['mq'];            
+            if (!empty($mainQuestionId)) {
+                $q = $q->addFilterField('id', $mainQuestionId);
+            }
+            
             $mainQuestionCount = $q->getCount();
             $row = $q->getOne(mt_rand(0, $mainQuestionCount - 1));
             if (!empty($row)) {
