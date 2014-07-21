@@ -180,9 +180,15 @@
                     ->getEntity();
                 $mqUrl = $this->getProtocol() . '://' . $_SERVER['HTTP_HOST'] . "/question/{$mainQuestion->id}";
                 $message = mb_strtoupper($mainQuestion->title, 'UTF-8') 
+                    . "\n\n{$mainQuestion->description}\n\n"
+                    . "ОТВЕТ ЗДЕСЬ: {$mqUrl}";                                
+                /*
+                $message = mb_strtoupper($mainQuestion->title, 'UTF-8') 
                     . "\n{$mqUrl}\n\n{$mainQuestion->description}\n\n"
                     . "Возможные варианты:\n"
                     . implode("\n", array_map(function($ma) { return "- {$ma->title}"; }, $mainAnswers));
+                 * 
+                 */
                 $fileData = $this->repositoryFactory
                     ->getFileRepository()
                     ->query()
