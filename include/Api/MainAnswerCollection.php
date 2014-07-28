@@ -72,6 +72,9 @@
             $ret = AnswerData::createFromJson($data); //TODO Переделать из JSON!
             $ret->userId     = $this->user->data()->id;
             $ret->createDate = time();
+            $ret->linkTitle  = empty($ret->linkUrl) 
+                ? "" 
+                : empty($ret->linkTitle) ? parse_url($ret->linkUrl, PHP_URL_HOST) : $ret->linkTitle;            
             return $ret;                   
         }          
     }    

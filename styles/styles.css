@@ -101,6 +101,33 @@
 	margin-top: 10px;
 }
 
+.top5 {
+	margin-top: 5px;
+}
+
+.toppad5 {
+	padding-top: 5px;
+}
+
+.underline-dashed {
+	border-bottom: 1px dashed gray;
+}
+
+.panel-default div.underline-dashed {
+	border-color: #63abae;
+}
+
+div.expanded {
+	background-color: #e8f2f2;
+	border-color: #cad4d4;
+	padding-left: 0;
+	padding-right: 0;
+	/*
+	padding: 3px 0;
+	border: 1px solid #e8f2f2;
+	*/
+}
+
 input[type=file].file-upload {
     position: absolute;
     top: 0;

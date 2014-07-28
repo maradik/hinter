@@ -33,10 +33,15 @@
         self.Edited         = ko.observable(false);
         self.Locked         = ko.observable(false);
         self.Visible        = ko.observable(true);
+        self.Expanded       = ko.observable(false);
         
         var uri = resUri;
         self.getUri = function() {
             return uri;
+        };
+
+        self.expand = function() {
+            self.Expanded(!self.Expanded());
         };
 
         self.unpack = function(json) {
@@ -213,7 +218,7 @@
         self.CategoryId     = ko.observable(categoryId).extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
         self.CreateDate     = ko.observable(createDate);
         self.UserId         = ko.observable(userId);   
-        self.Active         = ko.observable(active);          
+        self.Active         = ko.observable(active);                 
         
         var parentUnpack = self.unpack;
         self.unpack = function(json) {
@@ -247,7 +252,9 @@
         questionId,
         createDate,
         order,
-        userId
+        userId,
+        linkUrl,
+        linkTitle
     ) {
         var self = this;
         ko.utils.extend(self, new BaseModel(id, title, description, order, 'mainanswer'));
@@ -257,6 +264,8 @@
         self.QuestionId     = ko.observable(questionId);
         self.CreateDate     = ko.observable(createDate);
         self.UserId         = ko.observable(userId);
+        self.LinkUrl        = ko.observable(linkUrl).extend({ bounds: {maxLen: 2000, isUrl: true}});
+        self.LinkTitle      = ko.observable(linkTitle).extend({ bounds: {maxLen: 100}, truncatedText: true});        
         
         var parentUnpack = self.unpack;        
         self.unpack = function(json) {
@@ -264,6 +273,8 @@
             self.QuestionId(    json.questionId);
             self.CreateDate(    json.createDate);
             self.UserId(        json.userId);
+            self.LinkUrl(       json.linkUrl);
+            self.LinkTitle(     json.linkTitle);
             return self;
         }; 
 
@@ -273,7 +284,9 @@
                 parentPack(),
                 {
                     questionId: self.QuestionId(),
-                    userId:     0                 
+                    userId:     0,
+                    linkUrl:    self.LinkUrl(),
+                    linkTitle:  self.LinkTitle()                
                 }
             );
         };         
@@ -473,7 +486,9 @@
         self.CurrentSecQuestion     = ko.observable(0);
         self.Finish                 = ko.observable(false);
         
-        self.MainQuestionImageList  = baseObservableArray();
+        self.CategoryList           = baseObservableArray();
+        self.MainQuestion           = ko.observable(null);
+        //self.MainQuestionImageList  = baseObservableArray();
         self.SecondQuestionList     = baseObservableArray();
         self.SecondQuestion         = ko.observable(null);
         self.SecondAnswerList       = baseObservableArray();
@@ -501,27 +516,13 @@
             ); 
         });
         
-        self.bind = function(mainQuestion, htmlElementId) {
+        self.bind = function(mainQuestion, categoryList, htmlElementId) {           
             ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));
+            self.CategoryList.unpack(categoryList, Category);
+            self.MainQuestion((new MainQuestion()).unpack(mainQuestion));            
             
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/mainanswer", null, function (json) {                
-                self.MainAnswerList(
-                    json 
-                    ? $.map(json.data, function (item) { 
-                        var ma = (new MainAnswer).unpack(item);
-                        /*
-                        requestAjaxJson('GET', apiUrlBase + "/mainanswer/" + ma.Id() + "/image", null, function (json) {                
-                            ma.Images(
-                                json 
-                                ? $.map(json.data, function (item) { return (new Image).unpack(item); }) 
-                                : []
-                            );
-                        });  
-                        */
-                        return ma;                       
-                    }) 
-                    : []
-                );
+                self.MainAnswerList.unpack(json.data, MainAnswer);
                 self.MainAnswerList.sort(sortQuestionAnswerArray);
             });
             /*
@@ -534,8 +535,10 @@
                 self.MainQuestionImageList.sort(sortQuestionAnswerArray);
             });            
             */
+            /*
             self.MainQuestionImageList((new MainQuestion).unpack(mainQuestion).Images());
             self.MainQuestionImageList.sort(sortQuestionAnswerArray);
+            */
             
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/secondaryquestion", null, function (json) {                
                 self.SecondQuestionList(
@@ -557,30 +560,40 @@
         };
         
         self.nextQuestion = function(selectedSecondAnswer) {
+            finish = self.CurrentSecQuestion() + 1 > self.SecondQuestionList().length;
+            if (self.CurrentSecQuestion() == 0) {                    
+                self.MainAnswerList().forEach(function(elMa, indMa, arrMa) { elMa.Order(0); elMa.Expanded(false); });
+            }            
             if (selectedSecondAnswer instanceof SecondAnswer) {
                 //alert("выбран ответ " + selectedSecondAnswer.Id);
-                if (self.CurrentSecQuestion() == 1) {
-                    self.MainAnswerList().forEach(function(elMa, indMa, arrMa) { elMa.Order(0); });
+                /*
+                if (self.CurrentSecQuestion() == 1) {                    
+                    self.MainAnswerList().forEach(function(elMa, indMa, arrMa) { elMa.Order(0); elMa.Expanded(false); });
                 }
-                requestAjaxJson('GET', apiUrlBase + "/secondaryanswer/" + selectedSecondAnswer.Id() + "/mainanswer", null, function (json) {                
-                    var collection = json 
-                        ? $.map(json.data, function (item) { return (new MainAnswer).unpack(item); })
-                        : [];
-                    //ko.mapping.fromJS(collection, null, self.SecondAnswerList);
-                    self.RelMainAnswerList(collection);                      
-                    //---
-                    self.RelMainAnswerList().forEach(function(elRel, indRel, arrRel) {
-                        self.MainAnswerList().every(function(elMa, indMa, arrMa) {
-                            if (elRel.Id() == elMa.Id()) { elMa.Order(elMa.Order() - 1); return false; }
-                            return true;
-                        });                     
-                    });
-                    self.MainAnswerList.sort(sortQuestionAnswerArray);                         
-                    //---       
-                });                
+                */
+                requestAjaxJson('GET', apiUrlBase + "/secondaryanswer/" + selectedSecondAnswer.Id() + "/mainanswer", null, 
+                    function(json) {                
+                        var collection = json 
+                            ? $.map(json.data, function (item) { return (new MainAnswer).unpack(item); })
+                            : [];
+                        //ko.mapping.fromJS(collection, null, self.SecondAnswerList);
+                        self.RelMainAnswerList(collection);                      
+                        //---
+                        self.RelMainAnswerList().forEach(function(elRel, indRel, arrRel) {
+                            self.MainAnswerList().every(function(elMa, indMa, arrMa) {
+                                if (elRel.Id() == elMa.Id()) { elMa.Order(elMa.Order() - 1); return false; }
+                                return true;
+                            });                     
+                        });
+                        self.MainAnswerList.sort(sortQuestionAnswerArray);                         
+                        //---       
+                        self.Finish(finish);
+                    },
+                    function() {self.Finish(finish);}
+                );                
             };
             
-            if (self.CurrentSecQuestion() + 1 <= self.SecondQuestionList().length) {
+            if (!finish) {
                 self.CurrentSecQuestion(self.CurrentSecQuestion() + 1);
                 self.SecondQuestion(self.SecondQuestionList()[self.CurrentSecQuestion() - 1]);
                 
@@ -593,9 +606,7 @@
                     self.SecondAnswerList(collection);
                     self.SecondAnswerList.sort(sortQuestionAnswerArray);
                 });                      
-            } else {
-                self.Finish(true);
-            }      
+            }     
         };    
         
         self.getProgress = ko.computed(function() {
@@ -729,6 +740,13 @@
             newMainAnswer.Editing(true);
             self.MainAnswerList.push(newMainAnswer);
             newMainAnswer.Order(self.MainAnswerList().length - 1);
+            ko.computed(function(){
+                if ((typeof newMainAnswer.LinkUrl() === 'string' && newMainAnswer.LinkUrl().length)
+                    && (typeof newMainAnswer.LinkTitle() === 'undefined' || !newMainAnswer.LinkTitle().length)) {
+                    var hostname = newMainAnswer.LinkUrl().match(/^(?:https?\:\/\/)(.+?)(?:[\/\:\?\#].*)?$/);
+                    newMainAnswer.LinkTitle(hostname && hostname.length > 1 ? hostname[1] : newMainAnswer.LinkUrl().substring(0, 100));    
+                } 
+            });
         };      
         
         self.applyMainAnswers = function() {
@@ -847,17 +865,13 @@
            return self.MainQuestionList.Loading();
         });
         
-        self.bind = function(mainQuestionList, categoryList, htmlElementId) {
+        self.bind = function(mainQuestionList, categoryList, htmlElementId) {            
             if (mainQuestionList) {
-                mainQuestionList.forEach(function(item) {
-                    self.MainQuestionList.push((new MainQuestion).unpack(item));
-                });  
+                self.MainQuestionList.unpack(mainQuestionList, MainQuestion);
             }
             
             if (categoryList) {
-                categoryList.forEach(function(item) {
-                   self.CategoryList.push((new Category).unpack(item)); 
-                });
+                self.CategoryList.unpack(categoryList, Category);
             }
                       
             $(window).scroll(onWindowScroll);
@@ -1089,7 +1103,8 @@
     ko.extenders.bounds = function(target, options) {
         var required    = options.required || false;
         var minLen      = options.minLen || 0;
-        var maxLen      = options.maxLen || 0;          
+        var maxLen      = options.maxLen || 0;
+        var isUrl       = options.isUrl || false;          
         target.hasError = ko.observable();
         target.validationMessage = ko.observable();
 
@@ -1106,6 +1121,15 @@
                 target.validationMessage(options.maxLenMessage || "Значение должно быть не длиннее " + maxLen);                
             } else {
                 target.validationMessage("");
+            }
+            if (isUrl && !target.hasError() && typeof newValue !== 'undefined' && newValue.length            
+                && (                    
+                    typeof newValue !== 'string'
+                    || !isValidUrl(newValue) 
+                    //|| !newValue.match(/^https?:\/\/(www.)?.+\..+/)
+                )) {
+                target.hasError(true);
+                target.validationMessage("Введите корректный URL-адрес");
             }
                         
         }
@@ -1290,6 +1314,17 @@
             error: cbError
         });
     };
+
+    function isValidUrl(str) {
+        var pattern = new RegExp('^(https?:\\/\\/)'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    
+        return pattern.test(str);
+    }
 
     return {
         PassTestVM: PassTestVM,

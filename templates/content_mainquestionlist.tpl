@@ -35,9 +35,9 @@
 										<h3 class="top10" data-bind="text: Title"></h3>
 										<div class="multiline" data-bind="text: Description.truncatedText(300), visible: Description"></div>
 										<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId()), visible: !$root.CategoryId()">
-											<div class="label label-info">
-												<span class="glyphicon glyphicon-folder-open"></span> <span data-bind="text: Title"></span>
-											</div>
+											<a href="#" class="label label-info" data-bind="attr: { href: '/category/' + Id() }">
+												<span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;<span data-bind="text: Title"></span>
+											</a>
 										</div>
 									</div>									
 									<div class="col-sm-3 col-xs-12 text-right">

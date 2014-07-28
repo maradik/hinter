@@ -131,9 +131,23 @@
 														<textarea rows="4" class="form-control" placeholder="Поясняющий комментарий" data-bind="value: Description"></textarea>
 														<span class="small text-danger" data-bind="text: Description.validationMessage(), visible: Description.validationMessage()"></span>
 													</div>
-												</div>		
+												</div>	
+												<div class="form-group" data-bind="css: { 'has-error' : LinkUrl.hasError, 'has-success' : !LinkUrl.hasError() && LinkUrl() }">
+													<label class="col-sm-2 control-label">Ссылка на источник</label>
+													<div class="col-sm-10">
+														<input type="text" class="form-control" placeholder="http://site.com" data-bind="value: LinkUrl">
+														<span class="small text-danger" data-bind="text: LinkUrl.validationMessage(), visible: LinkUrl.validationMessage()"></span>
+													</div>
+												</div>	
+												<div class="form-group" data-bind="visible: LinkUrl(), css: { 'has-error' : LinkTitle.hasError, 'has-success' : !LinkTitle.hasError() && LinkTitle() }">
+													<label class="col-sm-2 control-label">Заголовок ссылки</label>
+													<div class="col-sm-10">
+														<input type="text" class="form-control" placeholder="Кратко текст ссылки" data-bind="value: LinkTitle">
+														<span class="small text-danger" data-bind="text: LinkTitle.validationMessage(), visible: LinkTitle.validationMessage()"></span>
+													</div>
+												</div>																									
 											</fieldset>
-											<fieldset data-bind="disable: Locked() || Title.hasError() || Description.hasError()">
+											<fieldset data-bind="disable: Locked() || Title.hasError() || Description.hasError() || LinkTitle.hasError() || LinkUrl.hasError()">
 												<button class="btn btn-default btn-sm" data-bind="click: function(){ document.getElementById('MainAnswerImage' + $index()).click(); }">
 													Прикрепить изображение <span class="glyphicon glyphicon-picture"></span>
 												</button>
@@ -161,7 +175,7 @@
 						<span class="glyphicon glyphicon-plus"></span> Добавить ответ  
 					</button>		
 
-					<button class="btn btn-primary" data-bind="click: applyMainAnswers, disable: MainAnswerList.Locked() || MainAnswerList().some(function(item){ return item.Title.hasError() || item.Description.hasError(); })">
+					<button class="btn btn-primary" data-bind="click: applyMainAnswers, disable: MainAnswerList.Locked() || MainAnswerList().some(function(item){ return item.Title.hasError() || item.Description.hasError() || item.LinkTitle.hasError() || item.LinkUrl.hasError(); })">
 						Далее <span class="glyphicon glyphicon-chevron-right"></span>
 					</button>								
 				</div>
