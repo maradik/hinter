@@ -100,60 +100,96 @@
 			</div>		
 		</div>					
 		
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title"><span class="glyphicon glyphicon-info-sign"></span> Возможные варианты</h3>
-			</div>
-			<div class="panel-body">		
-				<div data-bind="if: MainAnswerList().length > 0">
-					<!--
-					<ol data-bind="foreach: MainAnswerList">
-						<li data-bind="text: Title"></li>
-					</ol>
-					-->
-					<!-- ko foreach: { data: MainAnswerList, afterRender: MainAnswerList()[0].Images.afterRender } -->
-						<div class="row top10" data-bind="css: { 'well expanded' : Expanded() }">
-							<div class="col-sm-1 col-xs-1 text-center toppad5"><div class="label label-default" data-bind="text: $index() + 1"></div></div>
-							<div class="col-sm-2 hidden-xs text-center thumbnail-block" data-bind="visible: Images().length, with: Images()[0]">
-								<a href="#" class="thumbnail" target="_blank" data-bind="thumbnail: { src: UrlData, title: Title }">
-									<img src="#" data-bind="attr: { src: UrlThumbnail, title: Title, alt: Title }">
-								</a>
+		<div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><span class="glyphicon glyphicon-info-sign"></span> Возможные варианты</h3>
+				</div>
+				<div class="panel-body">		
+					<div data-bind="if: MainAnswerList().length > 0">
+						<!--
+						<ol data-bind="foreach: MainAnswerList">
+							<li data-bind="text: Title"></li>
+						</ol>
+						-->
+						<!-- ko foreach: { data: MainAnswerList, afterRender: MainAnswerList()[0].Images.afterRender } -->
+							<div class="row top10" data-bind="css: { 'well expanded' : Expanded() }">
+								<div class="col-sm-1 col-xs-1 text-center toppad5"><div class="label label-default" data-bind="text: $index() + 1"></div></div>
+								<div class="col-sm-2 hidden-xs text-center thumbnail-block" data-bind="visible: Images().length, with: Images()[0]">
+									<a href="#" class="thumbnail" target="_blank" data-bind="thumbnail: { src: UrlData, title: Title }">
+										<img src="#" data-bind="attr: { src: UrlThumbnail, title: Title, alt: Title }">
+									</a>
+								</div>
+								<div class="col-sm-9 col-xs-11" data-bind="css: { 'col-sm-9': Images().length, 'col-sm-11': !Images().length }">
+									<div data-bind="visible: !Expanded()">
+										<div>
+											<strong data-bind="text: Title.truncatedText(50)"></strong>
+											<em class="text-muted" data-bind="text: Description.truncatedText(100)"></em>
+										</div>
+										<div class="small">		
+											<a href="#" title="Показать полностью" data-bind="click: expand">Показать <span class="glyphicon glyphicon-download"></span></a>
+										</div>							
+									</div>
+									<div data-bind="visible: Expanded">
+										<div>
+											<strong data-bind="text: Title"></strong>
+										</div>
+										<div class="multiline" data-bind="text: Description, visible: Description()">										
+										</div>
+										<div class="top5" data-bind="visible: LinkUrl">
+											<a href="#" class="label label-info" target="_blank" title="Читать подробнее..." data-bind="attr: { href: LinkUrl }">
+												<span class="glyphicon glyphicon-share"></span>
+												<span data-bind="text: LinkTitle.truncatedText(50)"></span>
+											</a>
+										</div>
+										<div class="small top10">
+											<a href="#" title="Скрыть подробности" data-bind="click: expand">Скрыть <span class="glyphicon glyphicon-upload"></span></a>
+										</div>																		
+									</div>								
+								</div>
 							</div>
-							<div class="col-sm-9 col-xs-11" data-bind="css: { 'col-sm-9': Images().length, 'col-sm-11': !Images().length }">
-								<div data-bind="visible: !Expanded()">
+						<!-- /ko -->		
+					</div>
+					<div data-bind="if: MainAnswerList().length == 0">
+						Загрузка...
+					</div>					
+				</div>
+			</div>		
+		</div>			
+		
+		<div data-bind="if: MainQuestionRelList().length > 0">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h3 class="panel-title"><span class="glyphicon glyphicon-question-sign"></span> Узнать также...</h3>
+				</div>
+				<div class="panel-body">		
+					<div>
+						<!-- ko foreach: { data: MainQuestionRelList, afterRender: MainQuestionRelList()[0].Images.afterRender } -->
+							<div class="row top10">
+								<div class="col-sm-2 hidden-xs text-center thumbnail-block">
+									<a href="#" class="thumbnail" data-bind="attr: { href: '/question/' + Id(), title: Title() }, with: Images()[0] || { UrlThumbnail: '/uploads/thumbnail/default_mini.png', Title: 'Нет фото' }">
+										<img src="#" data-bind="attr: { src: UrlThumbnail, title: Title, alt: Title }">
+									</a>															
+								</div>
+								<div class="col-sm-10 col-xs-12">									
 									<div>
 										<strong data-bind="text: Title.truncatedText(50)"></strong>
-										<em class="text-muted" data-bind="text: Description.truncatedText(100)"></em>
 									</div>
-									<div class="small">		
-										<a href="#" title="Показать полностью" data-bind="click: expand">Показать <span class="glyphicon glyphicon-download"></span></a>
-									</div>							
-								</div>
-								<div data-bind="visible: Expanded">
 									<div>
-										<strong data-bind="text: Title"></strong>
+										<em class="text-muted" data-bind="visible: Description(), text: Description.truncatedText(100)"></em> 
+									</div>						
+									<div>
+										<a href="#" data-bind="attr: { href: '/question/' + Id(), title: 'Узнать ответ!' }">
+											Далее <span class="glyphicon glyphicon-circle-arrow-right"></span>
+										</a>										
 									</div>
-									<div class="multiline" data-bind="text: Description, visible: Description()">										
-									</div>
-									<div class="top5" data-bind="visible: LinkUrl">
-										<a href="#" class="label label-info" target="_blank" title="Читать подробнее..." data-bind="attr: { href: LinkUrl }">
-											<span class="glyphicon glyphicon-share"></span>
-											<span data-bind="text: LinkTitle.truncatedText(50)"></span>
-										</a>
-									</div>
-									<div class="small top10">
-										<a href="#" title="Скрыть подробности" data-bind="click: expand">Скрыть <span class="glyphicon glyphicon-upload"></span></a>
-									</div>																		
-								</div>								
+								</div>
 							</div>
-						</div>
-					<!-- /ko -->		
+						<!-- /ko -->		
+					</div>			
 				</div>
-				<div data-bind="if: MainAnswerList().length == 0">
-					Загрузка...
-				</div>					
-			</div>
-		</div>							
+			</div>	
+		</div>				
 	</div>
 	
 	<div id="vk_comments"></div>
@@ -175,11 +211,13 @@
 		);
 		
 		{if !$dev_server}
-			VK.init({
-				apiId: 4431858,
-				onlyWidgets: true
-			});		
-			VK.Widgets.Comments('vk_comments', { limit: 10, attach: "*" }, {$mainQuestion->id});
+			if (typeof VK !== 'undefined') {
+				VK.init({
+					apiId: 4431858,
+					onlyWidgets: true
+				});		
+				VK.Widgets.Comments('vk_comments', { limit: 10, attach: "*" }, {$mainQuestion->id});
+			}
 		{/if}		
 	});
 </script>

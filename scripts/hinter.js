@@ -494,9 +494,10 @@
         self.SecondAnswerList       = baseObservableArray();
         self.MainAnswerList         = baseObservableArray();
         self.RelMainAnswerList      = baseObservableArray();
+        self.MainQuestionRelList    = baseObservableArray();
         
         self.VkShareButton          = ko.computed(function(){
-            if (!self.MainAnswerList().length || !self.Finish()) { 
+            if (!self.MainAnswerList().length || !self.Finish() || (typeof VK === 'undefined')) { 
                 return ''; 
             }
             var mainAnswer = self.MainAnswerList()[0];            
@@ -525,6 +526,29 @@
                 self.MainAnswerList.unpack(json.data, MainAnswer);
                 self.MainAnswerList.sort(sortQuestionAnswerArray);
             });
+            
+
+            var filterCount = 0;
+            var params = {
+                sortField:      [],
+                sortOrder:      [],
+                filterField:    [],
+                filterType:     [],
+                filterValue:    []
+            };
+            params.sortField[0] = 'id';
+            params.sortOrder[0] = 'desc';
+            params.filterField[filterCount] = 'id';
+            params.filterType[filterCount] = '<>';
+            params.filterValue[filterCount++] = self.MainQuestion().Id();            
+            params.filterField[filterCount] = 'active';
+            params.filterValue[filterCount++] = 1;                                   
+            params.filterField[filterCount] = 'categoryId';
+            params.filterValue[filterCount++] = self.MainQuestion().CategoryId();                                        
+            requestAjaxJson('GET', apiUrlBase + "/mainquestion?limit=5&" + $.param(params), null, function (json) {                
+                self.MainQuestionRelList.unpack(json.data, MainQuestion);
+                //self.MainQuestionRelList.sort(sortQuestionAnswerArray);
+            });            
             /*
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/image", null, function (json) {                
                 self.MainQuestionImageList(

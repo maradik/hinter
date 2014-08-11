@@ -115,12 +115,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/maradik/testing.git",
-                "reference": "a513de04640a68d30dd3b17034051db3a74e163c"
+                "reference": "8b511f9bb133bcaf98484274f516b5475524dafd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maradik/testing/zipball/a513de04640a68d30dd3b17034051db3a74e163c",
-                "reference": "a513de04640a68d30dd3b17034051db3a74e163c",
+                "url": "https://api.github.com/repos/maradik/testing/zipball/8b511f9bb133bcaf98484274f516b5475524dafd",
+                "reference": "8b511f9bb133bcaf98484274f516b5475524dafd",
                 "shasum": ""
             },
             "require": {
@@ -156,7 +156,7 @@
                 "source": "https://github.com/maradik/testing/tree/master",
                 "issues": "https://github.com/maradik/testing/issues"
             },
-            "time": "2014-07-11 09:37:33"
+            "time": "2014-08-11 09:37:27"
         },
         {
             "name": "maradik/user",
