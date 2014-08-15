@@ -130,14 +130,14 @@
         };        
     }
     
-    BaseModel.send = function(model, method, callbackSuccess, callbackError) {
+    BaseModel.send = function(model, method, url, callbackSuccess, callbackError) {
         //var model = observableModel();
         model.Edited(model.Editing());
         model.Locked(true);
         model.Editing(false);        
         requestAjaxJson(
             method,  
-            apiUrlBase + '/' + model.getUri() + (model.Id() ? '/' + model.Id() : ''), 
+            url || (apiUrlBase + '/' + model.getUri() + (model.Id() ? '/' + model.Id() : '')), 
             model.pack(), 
             function (data, textStatus, jqXHR) { 
                 model.Locked(false);
@@ -161,11 +161,11 @@
     };
     
     BaseModel.save = function(model, callbackSuccess, callbackError) {
-        BaseModel.send(model, model.Id() ? 'PUT' : 'POST', callbackSuccess, callbackError);    
+        BaseModel.send(model, model.Id() ? 'PUT' : 'POST', '', callbackSuccess, callbackError);    
     }; 
     
     BaseModel.remove = function(model, callbackSuccess, callbackError) {
-        BaseModel.send(model, 'DELETE', callbackSuccess, callbackError);    
+        BaseModel.send(model, 'DELETE', '', callbackSuccess, callbackError);    
     }; 
     
     function Category(
@@ -219,6 +219,24 @@
         self.CreateDate     = ko.observable(createDate);
         self.UserId         = ko.observable(userId);   
         self.Active         = ko.observable(active);                 
+        
+        self.finish = function(callbackSuccess, callbackError) {
+            var model = self;
+            var cbSuccess = function(json, textStatus, jqXHR) {
+                model.unpack(json.data);
+                if (callbackSuccess) {
+                    callbackSuccess(json, textStatus, jqXHR);
+                }
+            };
+
+            BaseModel.send(
+                model, 
+                'POST', 
+                apiUrlBase + '/' + model.getUri() + '/' + model.Id() + '/finish', 
+                cbSuccess, 
+                callbackError
+            );
+        };        
         
         var parentUnpack = self.unpack;
         self.unpack = function(json) {
@@ -617,7 +635,9 @@
                 );                
             };
             
-            if (!finish) {
+            if (finish) {
+                self.MainQuestion().finish();
+            } else {
                 self.CurrentSecQuestion(self.CurrentSecQuestion() + 1);
                 self.SecondQuestion(self.SecondQuestionList()[self.CurrentSecQuestion() - 1]);
                 

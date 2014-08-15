@@ -119,6 +119,7 @@
                         break;
                     case $this instanceof \Maradik\Hinter\Api\MainQuestionCollection:
                     case $this instanceof \Maradik\Hinter\Api\MainQuestionDocument:
+                    case $this instanceof \Maradik\Hinter\Api\MainQuestionController:
                         $parentType = FileParentType::MAIN_QUESTION;
                         break;                        
                     case $this instanceof \Maradik\Hinter\Api\MainAnswerCollection:

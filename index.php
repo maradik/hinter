@@ -33,6 +33,7 @@
         $resManager->register($upx . '/image/{id}', $ns . 'ImageDocument');
         
         // Controllers
+        $resManager->register($upx . '/mainquestion/{id}/finish', $ns . 'MainQuestionFinishController');
         $resManager->register($upx . '/secondaryanswer/{id}/link', $ns . 'SecondAnswerLinkController');
         $resManager->register($upx . '/secondaryanswer/{id}/unlink', $ns . 'SecondAnswerUnlinkController');
         $resManager->register($upx . '/user/current/register', $ns . 'UserRegisterController');
