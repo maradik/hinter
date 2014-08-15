@@ -27,6 +27,9 @@
       	  	<a href="/question/create" class="btn btn-primary" title="Помочь другим людям" data-bind="visible: isRegisteredUser()">
       	  		<span class="glyphicon glyphicon-plus"></span> Создать подсказку!
       	  	</a>
+          	<a href="/about" class="btn btn-default" title="Зачем нужен HintOk?">
+          		<span class="glyphicon glyphicon-info-sign"></span> О проекте
+          	</a>      	  	
 		  	<a href="/admin/question" class="btn btn-danger" title="Список подсказок" data-bind="visible: isAdmin()">
 		  		<span class="glyphicon glyphicon-list-alt"></span> Список
 		  	</a>      

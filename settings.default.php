@@ -23,6 +23,13 @@
     );     
     
     /**
+     * Параметры, доступные в tpl-шаблонах через $info_s
+     */
+    $info_s = array(
+        'admin_email'  => 'admin@mysite.com'
+    );
+    
+    /**
      * Ссылки
      */
     $linkList = array(

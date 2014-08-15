@@ -53,6 +53,7 @@
         $resManager->register('/category/{id}', $ns . 'PageCategory');
         $resManager->register('/question/{id}', $ns . 'PageQuestion');
         $resManager->register('/question/create', $ns . 'PageQuestionCreate');
+        $resManager->register('/about', $ns . 'PageAbout');
         
         // Admin
         $resManager->register('/admin/question', $ns . 'AdminQuestionList');

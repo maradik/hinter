@@ -9,12 +9,12 @@
 		<link rel="shortcut icon" href="/favicon.png" type="image/png">
 		<link rel="image_src" href="/uploads/thumbnail/default_mini.png">
 		
-		<link rel="stylesheet" type="text/css" href="/styles/bootstrap/3.1.1/css/bootstrap.min.css?cid={$cache_id}">
+		<link rel="stylesheet" type="text/css" href="/styles/bootstrap/3.2.0/css/bootstrap.min.css?cid={$cache_id}">
 		<link rel="stylesheet" type="text/css" href="/styles/styles.css?cid={$cache_id}">
 		<link rel="stylesheet" type="text/css" href="/scripts/shadowbox-3.0.3/shadowbox.css?cid={$cache_id}">
 		
 		<script type="text/javascript" src="/scripts/jquery-1.11.0.min.js?cid={$cache_id}"></script>
-		<script type="text/javascript" src="/styles/bootstrap/3.1.1/js/bootstrap.min.js?cid={$cache_id}"></script>
+		<script type="text/javascript" src="/styles/bootstrap/3.2.0/js/bootstrap.min.js?cid={$cache_id}"></script>
 		<script type="text/javascript" src="/scripts/knockout-3.1.0.js?cid={$cache_id}"></script>
 		<script type="text/javascript" src="/scripts/knockout.mapping-latest.js?cid={$cache_id}"></script>
 		<script type="text/javascript" src="/scripts/hinter.js?cid={$cache_id}"></script>

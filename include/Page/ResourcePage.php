@@ -140,8 +140,9 @@
            
         protected function sendResponse()
         {
-            global $system_s;
+            global $system_s, $info_s;
             $this->addResponseData('dev_server', $system_s['dev_server']);
+            $this->addResponseData('info_s', $info_s);
             
             $template = $this->getTemplate();            
             

@@ -1,11 +1,12 @@
 <div class="footer">
 	<div class="container">
 		<div class="row">
-			<div class="col-md-5">
-				(C) Maradik 2014
+			<div class="col-sm-6">
+				&copy; Maradik 2014 
+				<a href="mailto:{$info_s.admin_email}">{$info_s.admin_email}</a>
 			</div>
-			<div class="col-md-1">
-				{if $.server.HTTP_HOST == 'hintok.ru'}
+			<div class="col-sm-1">
+				{if !$dev_server}
 					{ignore}
 						<!-- Yandex.Metrika counter -->
 						<script type="text/javascript">
@@ -46,8 +47,8 @@
 					{/ignore}	
 				{/if}
 			</div>
-			<div class="col-md-6 text-right">
-				Alpha Version
+			<div class="col-sm-5 text-right">
+				Version &alpha;
 			</div>
 		</div>
 	</div>

@@ -989,6 +989,7 @@
             redirectToMainPage = redirectToMainPage || false;
             var pagesWithoutReload = [
                 /^https?:\/\/[^/]+\/$/,
+                /^https?:\/\/[^/]+\/about$/,
                 /^https?:\/\/[^/]+\/category\/\d+$/,
                 /^https?:\/\/[^/]+\/question\/\d+$/
             ];

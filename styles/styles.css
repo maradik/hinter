@@ -97,12 +97,25 @@
 	padding-bottom: 10px;
 }
 
+.footer a {
+	color: #00C0CC;
+}
+
+.footer a:hover,
+.footer a:focus {
+	color: #00F0FF;
+}
+
 .top10 {
 	margin-top: 10px;
 }
 
 .top5 {
 	margin-top: 5px;
+}
+
+.bottom0 {
+	margin-bottom: 0;
 }
 
 .toppad5 {
@@ -126,6 +139,10 @@ div.expanded {
 	padding: 3px 0;
 	border: 1px solid #e8f2f2;
 	*/
+}
+
+.text-deleted {
+	text-decoration: line-through;
 }
 
 input[type=file].file-upload {
