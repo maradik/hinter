@@ -51,7 +51,7 @@
 					<!-- /ko -->
 					<tr data-bind="visible: Loading() && !IsEndOfList()">
 						<td>
-							Загрузка...
+							<img src="/uploads/loading2.gif" alt="Загрузка..." title="Загрузка..." />
 						</td>
 					</tr>			
 					<tr data-bind="visible: !Loading() && !IsEndOfList()">

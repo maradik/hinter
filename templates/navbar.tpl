@@ -8,8 +8,10 @@
     		<span class="icon-bar"></span>
     		<span class="icon-bar"></span>
     	</button>
-      	<a class="navbar-brand" href="/">HintOk.RU</a>
-      	<p class="navbar-text"><em>Поможет в любом вопросе!</em></p>
+      	<a class="navbar-brand" href="/">
+      		<img class="img-responsive" src="/uploads/logo.png" alt="HintOk.RU" title="HintOk.RU" />
+      	</a>
+      	<p class="navbar-text hidden-md"><em>Поможем в любом вопросе!</em></p>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -24,27 +26,48 @@
           	<a href="/" class="btn btn-default" title="Перейти на главную">
           		<span class="glyphicon glyphicon-home"></span> Главная
           	</a>
+	        <span class="dropdown">
+	            <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;Категории <span class="caret"></span></a>
+	            <ul class="dropdown-menu" role="menu">
+	            	{foreach $categoryList as $category}
+					<li{if $clearUri == "/category/{$category->id}"} class="active"{/if}>
+						<a href="/category/{$category->id}" title="{$category->description|truncate:40:'...'|e:'HTML'}">
+							{$category->title|e:'HTML'}
+						</a>
+					</li>	       
+					{/foreach}     
+	            </ul>
+	        </span>            	
       	  	<a href="/question/create" class="btn btn-primary" title="Помочь другим людям" data-bind="visible: isRegisteredUser()">
       	  		<span class="glyphicon glyphicon-plus"></span> Создать подсказку!
       	  	</a>
           	<a href="/about" class="btn btn-default" title="Зачем нужен HintOk?">
           		<span class="glyphicon glyphicon-info-sign"></span> О проекте
-          	</a>      	  	
-		  	<a href="/admin/question" class="btn btn-danger" title="Список подсказок" data-bind="visible: isAdmin()">
-		  		<span class="glyphicon glyphicon-list-alt"></span> Список
-		  	</a>      
-  		  	<a href="/admin/flushcache" class="btn btn-danger" title="Сбросить системный кэш" data-bind="visible: isAdmin()">
-		  		<span class="glyphicon glyphicon-refresh"></span> Кэш
-		  	</a> 
+          	</a>    
+	        <span class="dropdown">
+	            <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" data-bind="visible: isAdmin()">Админ <span class="caret"></span></a>
+	            <ul class="dropdown-menu" role="menu">
+		            <li>
+					  	<a href="/admin/question" title="Список подсказок" data-bind="visible: isAdmin()">
+					  		<span class="glyphicon glyphicon-list-alt"></span> Список
+					  	</a> 	            	
+					</li>
+		            <li>
+			  		  	<a href="/admin/flushcache" title="Сбросить системный кэш" data-bind="visible: isAdmin()">
+					  		<span class="glyphicon glyphicon-refresh"></span> Кэш
+					  	</a> 	            	
+		            </li>
+	            </ul>
+	        </span>   
       </div>
       <form class="navbar-form navbar-right">
       	  <fieldset data-bind="disable: UserData().Locked()">
 	      	<div data-bind="visible: !isRegisteredUser()">
 		        <div class="form-group">
-		          <input name="login" type="text" size="15" class="form-control" placeholder="Имя" data-bind="value: UserData().Login">
+		          <input name="login" type="text" size="10" class="form-control" placeholder="Имя" data-bind="value: UserData().Login">
 		        </div>
 		        <div class="form-group">
-		          <input name="password" type="password" size="15" class="form-control" placeholder="Пароль" data-bind="value: UserData().Password">
+		          <input name="password" type="password" size="10" class="form-control" placeholder="Пароль" data-bind="value: UserData().Password">
 		        </div>
 		        <button class="btn btn-primary" title="Войти под своим именем" data-bind="click: login">Войти</button>
 		        <button class="btn btn-danger" title="Быстрая регистрация в один клик!" data-bind="click: register">Новый</button>

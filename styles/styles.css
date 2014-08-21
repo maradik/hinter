@@ -118,6 +118,10 @@
 	margin-bottom: 0;
 }
 
+.navbar-brand {
+	padding-top: 5px;
+}
+
 .toppad5 {
 	padding-top: 5px;
 }
@@ -143,6 +147,10 @@ div.expanded {
 
 .text-deleted {
 	text-decoration: line-through;
+}
+
+.text-default {
+	color: #5a9b9d;
 }
 
 input[type=file].file-upload {

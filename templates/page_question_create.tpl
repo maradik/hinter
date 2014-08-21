@@ -100,7 +100,7 @@
 	<!-- /Основной вопрос -->
 
 	<!-- Основные ответы -->		
-	<div class="panel panel-primary" data-bind="visible: Step() > 1, css: Step() == 2 ? 'panel-primary' : 'panel-default'">
+	<div class="panel panel-primary" data-bind="visibleAndScroll: { visible: Step() > 1, offset: -10 }, css: Step() == 2 ? 'panel-primary' : 'panel-default'">
 		<div class="panel-heading">
 			<h3 class="panel-title">Возможные варианты ответа</h3>
 		</div>
@@ -185,7 +185,7 @@
 	<!-- /Основные ответы -->
 	
 	<!-- Наводящие вопросы -->		
-	<div class="panel panel-primary" data-bind="visible: Step() > 2, css: Step() == 3 ? 'panel-primary' : 'panel-default'">
+	<div class="panel panel-primary" data-bind="visibleAndScroll: { visible: Step() > 2, offset: -10 }, css: Step() == 3 ? 'panel-primary' : 'panel-default'">
 		<div class="panel-heading">
 			<h3 class="panel-title">Наводящие вопросы с ответами</h3>
 		</div>
@@ -307,7 +307,7 @@
 	<!-- /Наводящие вопросы -->	
 
 	<!-- Последний экран -->		
-	<div class="panel panel-success" data-bind="visible: Step() == 4">
+	<div class="panel panel-success" data-bind="visibleAndScroll: { visible: Step() == 4, offset: -10 }">
 		<div class="panel-heading">
 			<h3 class="panel-title">Подсказка создана</h3>
 		</div>

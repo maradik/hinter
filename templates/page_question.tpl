@@ -42,7 +42,7 @@
 			</div>
 		</div>				
 		
-		<div class="panel panel-success" data-bind="visible: Finish">
+		<div class="panel panel-success" id="q_best_answer" data-bind="visibleAndScroll: { visible: Finish, offset: '-10' }">
 			<div class="panel-heading">
 				<h3 class="panel-title"><span class="glyphicon glyphicon-ok-sign"></span> Оптимальный вариант</h3>
 			</div>
@@ -73,14 +73,14 @@
 			</div>			
 		</div>	
 
-		<div data-bind="visible: CurrentSecQuestion() && !Finish()">
+		<div  data-bind="visibleAndScroll: { visible: CurrentSecQuestion() && !Finish(), offset: '-10' }">
 			<div class="progress" data-bind="visible: CurrentSecQuestion() && !Finish()">
 				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="" data-bind="text: getProgress() + '%', style: { width: getProgress() + '%' }">				
 				</div>
 			</div>		
 		</div>	
 		
-		<div class="alert alert-info" data-bind="visible: CurrentSecQuestion() && !Finish()">
+		<div class="alert alert-info" id="q_secondary_question" data-bind="visible: CurrentSecQuestion() && !Finish()">
 			<div class="row" data-bind="if: SecondQuestion">
 				<div class="col-md-7">
 					<div data-bind="with: SecondQuestion">
@@ -151,7 +151,7 @@
 						<!-- /ko -->		
 					</div>
 					<div data-bind="if: MainAnswerList().length == 0">
-						Загрузка...
+						<img src="/uploads/loading2.gif" alt="Загрузка..." title="Загрузка..." />
 					</div>					
 				</div>
 			</div>		

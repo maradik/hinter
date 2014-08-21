@@ -1,0 +1,34 @@
+{
+    "name": "scrollToTop",
+    "title": "jQuery scrollToTop",
+    "description": "One click to scroll back to the top of the webpage.",
+    "keywords": [
+        "scrollToTop"
+    ],
+    "version": "1.0.3",
+    "author": {
+        "name": "Yang Zhao",
+        "url": "http://www.geniuscarrier.com/about/"
+    },
+    "maintainers": [
+        {
+            "name": "Yang Zhao",
+            "email": "geniuscarrier@gmail.com",
+            "url": "http://www.geniuscarrier.com/"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://opensource.org/licenses/MIT"
+        }
+    ],
+    "bugs": "https://github.com/geniuscarrier/scrollToTop/issues",
+    "demo": "http://www.geniuscarrier.com/demo/scrollToTop/",
+    "homepage": "http://geniuscarrier.com/scrolltotop-a-jquery-plugin/",
+    "docs": "https://github.com/geniuscarrier/scrollToTop",
+    "download": "https://github.com/geniuscarrier/scrollToTop/archive/master.zip",
+    "dependencies": {
+        "jquery": ">=1.5"
+    }
+}

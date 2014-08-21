@@ -605,6 +605,7 @@
             finish = self.CurrentSecQuestion() + 1 > self.SecondQuestionList().length;
             if (self.CurrentSecQuestion() == 0) {                    
                 self.MainAnswerList().forEach(function(elMa, indMa, arrMa) { elMa.Order(0); elMa.Expanded(false); });
+                //$('body').scrollTo('.footer', 800, {offset: 0}); // http://plugins.jquery.com/scrollto/                
             }            
             if (selectedSecondAnswer instanceof SecondAnswer) {
                 //alert("выбран ответ " + selectedSecondAnswer.Id);
@@ -1301,7 +1302,35 @@
             }
             Shadowbox.addCache(element);
         }
-    };    
+    };     
+    
+    ko.bindingHandlers.visibleAndScroll = {
+        //http://knockoutjs.com/documentation/custom-bindings.html
+        init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        },
+        update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {               
+            var value = ko.unwrap(valueAccessor());                       
+            var visible = ko.unwrap(value.visible);
+            visible = typeof visible !== 'undefined' ? Boolean(visible) : false;            
+            var offset = ko.unwrap(value.offset);
+            offset = typeof offset !== 'undefined' 
+                ? (typeof offset === 'string' && offset.indexOf('%') != -1 
+                    ? parseInt($(window).height() * parseInt(offset) / 100) 
+                    : parseInt(offset)) 
+                : 0;
+            var delay = ko.unwrap(value.delay);
+            delay = typeof delay !== 'undefined' ? delay : 800;
+            
+            var isVisible = $(element).is(':visible');
+                        
+            $(element).toggle(visible);            
+            
+            if (visible && !isVisible) {
+                console.log("It worked!");
+                $('body').scrollTo(element, delay, {offset: offset}); 
+            }
+        }
+    };            
     
     var apiUrlBase = '/api';
     

@@ -5,7 +5,7 @@
 {block 'content'}
 	<div class="row">
 		<div class="col-md-12">
-			<h1>Hint<span class="text-success">Ok</span> подскажет всем!</h1>
+			<h1>Hint<span class="text-default">Ok</span> подскажет всем!</h1>
 			<p>
 				Сервис поиска простых ответов на сложные вопросы.
 			</p>
