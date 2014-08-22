@@ -33,9 +33,9 @@
 			<div class="panel-footer" data-bind="visible: CurrentSecQuestion() == 0">				
 				<div class="row">
 					<div class="col-md-12">
-						<p><small>Чтобы узнать ответ, придется ответить на несколько наводящих вопросов.</small></p>
+						<p><small>Узнайте оптимальный вариант ответа, ответив на несколько наводящих вопросов.</small></p>
 						<button class="btn btn-primary" data-bind="click: $root.start, enable: MainAnswerList().length != 0">
-							Узнать ответ прямо сейчас!
+							Подобрать оптимальный вариант!
 						</button>							
 					</div>
 				</div>					
@@ -160,7 +160,7 @@
 		<div data-bind="if: MainQuestionRelList().length > 0">
 			<div class="panel panel-info">
 				<div class="panel-heading">
-					<h3 class="panel-title"><span class="glyphicon glyphicon-question-sign"></span> Узнать также...</h3>
+					<h3 class="panel-title"><span class="glyphicon glyphicon-question-sign"></span> Узнайте также...</h3>
 				</div>
 				<div class="panel-body">		
 					<div>
