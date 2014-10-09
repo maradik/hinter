@@ -5,8 +5,8 @@
     	<button type="button" class="navbar-toggle" title="Развернуть меню" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
     		<span class="sr-only">Развернуть меню</span>
     		<span class="icon-bar"></span>
-    		<span class="icon-bar"></span>
-    		<span class="icon-bar"></span>
+    		<span class="icon-bar"></span>    		
+    		<span class="icon-bar"></span>    		
     	</button>
       	<a class="navbar-brand" href="/">
       		<img class="img-responsive" src="/uploads/logo.png" alt="HintOk.RU" title="HintOk.RU" />
@@ -44,21 +44,6 @@
           	<a href="/about" class="btn btn-default" title="Зачем нужен HintOk?">
           		<span class="glyphicon glyphicon-info-sign"></span> О проекте
           	</a>    
-	        <span class="dropdown">
-	            <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" data-bind="visible: isAdmin()">Админ <span class="caret"></span></a>
-	            <ul class="dropdown-menu" role="menu">
-		            <li>
-					  	<a href="/admin/question" title="Список подсказок" data-bind="visible: isAdmin()">
-					  		<span class="glyphicon glyphicon-list-alt"></span> Список
-					  	</a> 	            	
-					</li>
-		            <li>
-			  		  	<a href="/admin/flushcache" title="Сбросить системный кэш" data-bind="visible: isAdmin()">
-					  		<span class="glyphicon glyphicon-refresh"></span> Кэш
-					  	</a> 	            	
-		            </li>
-	            </ul>
-	        </span>   
       </div>
       <form class="navbar-form navbar-right">
       	  <fieldset data-bind="disable: UserData().Locked()">
@@ -76,7 +61,50 @@
 		        <div class="form-group">
 					Здравствуйте, <strong><span class="text-danger" data-bind="text: UserData().Login"></span></strong>				
 		        </div>
-				<button class="btn btn-default" title="Завершить работу под своим именем" data-bind="click: logout">Выйти</button>
+    	        <span class="dropdown hidden-xs">
+		            <a href="#" class="btn btn-primary btn-navbar-onlyicon dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></a>
+		            <ul class="dropdown-menu" role="menu">
+			            <li>
+						  	<a href="/admin/question" title="Список подсказок" data-bind="visible: isAdmin()">
+						  		<span class="glyphicon glyphicon-list-alt"></span> Список
+						  	</a> 	            	
+						</li>
+			            <li>
+				  		  	<a href="/admin/flushcache" title="Сбросить системный кэш" data-bind="visible: isAdmin()">
+						  		<span class="glyphicon glyphicon-refresh"></span> Кэш
+						  	</a> 	            	
+			            </li>
+			            <li class="divider" data-bind="visible: isAdmin()"></li>		            	
+			            <li>
+						  	<a href="/user/question" title="Список подсказок">
+						  		<span class="glyphicon glyphicon-list-alt"></span> Мои подсказки
+						  	</a> 	            	
+						</li>
+						<li class="divider"></li>
+			            <li>
+				  		  	<a href="#" title="Завершить работу под своим именем" data-bind="click: logout">
+						  		<span class="glyphicon glyphicon-off"></span> Выйти
+						  	</a> 	            	
+			            </li>
+		            </ul>
+		        </span>  
+		        
+		        <span class="visible-xs">
+			        <span data-bind="visible: isAdmin()">
+					  	<a href="/admin/question" class="btn btn-danger" title="Список подсказок">
+					  		<span class="glyphicon glyphicon-list-alt"></span> Список
+					  	</a> 	            					
+			  		  	<a href="/admin/flushcache" class="btn btn-danger" title="Сбросить системный кэш">
+					  		<span class="glyphicon glyphicon-refresh"></span> Кэш
+					  	</a> 	            	
+				    </span> 	        			        	
+				  	<a href="/user/question" class="btn btn-primary" title="Список подсказок">
+				  		<span class="glyphicon glyphicon-list-alt"></span> Мои подсказки
+				  	</a> 	            							
+		  		  	<a href="#" class="btn btn-default" title="Завершить работу под своим именем" data-bind="click: logout">
+				  		<span class="glyphicon glyphicon-off"></span> Выйти
+				  	</a> 	
+			  	</span>	        
 		    </div> 
 		  </fieldset>
 	  </form>	 
@@ -85,8 +113,9 @@
 </div>	
 
 <script type="text/javascript">
+	var CurrentUserVM;
 	$(document).ready(function () {
 		CurrentUserVM = new Hinter.CurrentUserVM({json_encode($userData)});
-		CurrentUserVM.bind('bs-navbar-collapse-1');
+		CurrentUserVM.bind('bs-navbar-collapse-1');		
 	});	
 </script>

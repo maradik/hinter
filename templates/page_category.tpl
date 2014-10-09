@@ -22,4 +22,14 @@
 	</div>
 {/block}
 
-
+{block 'scripts'}
+	<script type="text/javascript">
+		$(document).ready(function () {
+			MainQuestionListVM = new Hinter.MainQuestionListVM({!empty($categoryCurrent) ? $categoryCurrent->id : null});
+			MainQuestionListVM.bind(
+				{json_encode($mainQuestionList)}, 
+				{if !empty($categoryList)}{json_encode($categoryList)}{else}null{/if}
+			);
+		});
+	</script>
+{/block}

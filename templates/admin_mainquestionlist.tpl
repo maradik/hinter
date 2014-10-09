@@ -20,7 +20,7 @@
 								<div class="row">
 									<div class="col-md-9">
 										<h3 class="top10">
-											<span class="glyphicon glyphicon-off" data-bind="css: ( Active() ? 'text-success' : 'text-muted' )"></span>
+											<span class="glyphicon glyphicon-off" data-bind="css: ( Active() ? 'text-success' : 'text-danger' )"></span>
 											<span data-bind="text: Title"></span>
 										</h3>
 										<div class="multiline" data-bind="text: Description.truncatedText(300), visible: Description"></div>
@@ -31,13 +31,13 @@
 										</div>
 									</div>
 									<div class="col-md-3 text-right">
-										<a href="#" target="_blank" class="btn btn-info btn-block" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
+										<a href="#" target="_blank" class="btn btn-info btn-block-sm" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
 											<span class="glyphicon glyphicon-play"></span> Просмотр
 										</a>
-										<button class="btn btn-warning btn-block" data-bind="click: $root.activateMainQuestion, disable: Locked">
+										<button class="btn btn-warning btn-block-sm" data-bind="click: $root.activateMainQuestion, disable: Locked">
 											<span class="glyphicon glyphicon-off"></span> <span data-bind="text: Active() ? 'Отключить' : 'Активировать'"></span>
 										</button>	
-										<button class="btn btn-danger btn-block" data-bind="click: $root.removeMainQuestion, disable: Locked">
+										<button class="btn btn-danger btn-block-sm" data-bind="click: $root.removeMainQuestion, disable: Locked">
 											<span class="glyphicon glyphicon-remove"></span> Удалить
 										</button>																	
 									</div>
@@ -50,7 +50,7 @@
 							<img src="/uploads/loading2.gif" alt="Загрузка..." title="Загрузка..." />
 						</td>
 					</tr>
-					<tr data-bind="visible: !MainQuestionList().length">
+					<tr data-bind="visible: !Loading() && IsEndOfList() && !MainQuestionList().length">
 						<td>
 							<em>Нет записей</em>
 						</td>

@@ -894,14 +894,17 @@
      * Подгружаемый список основных вопросов
      * 
      * ********************************************************/
-    function MainQuestionListVM(categoryId, admin) {
+    function MainQuestionListVM(categoryId, withInactive, currentUserVM, editMode) {
         var self = this;
+        var userId = typeof currentUserVM == 'undefined' ? 0 : currentUserVM.UserData().Id();
         
         self.MainQuestionList   = baseObservableArray();     
         self.CategoryList       = baseObservableArray();           
         self.IsEndOfList        = ko.observable(false);
         self.CategoryId         = ko.observable(categoryId);
-        self.FilterActive       = ko.observable(admin ? NoYesAll.All : NoYesAll.Yes);
+        self.FilterActive       = ko.observable(withInactive ? NoYesAll.All : NoYesAll.Yes);
+        self.FilterUserId       = ko.observable(userId);
+        self.EditMode           = ko.observable(editMode ? true : false);
         self.LastMainQuestionId = ko.computed(function() {
             var mq = self.MainQuestionList()[self.MainQuestionList().length - 1];
             return mq ? mq.Id() : 2147483647;
@@ -934,7 +937,7 @@
         };        
         
         self.removeMainQuestion = function(mainQuestion) {
-            if (confirm("Действительно желаете удалить?")) {
+            if (confirm("Действительно желаете удалить подсказку?")) {
                 BaseModel.remove(
                     mainQuestion, 
                     function() {
@@ -980,7 +983,11 @@
                 if (self.CategoryId()) {
                     params.filterField[filterCount] = 'categoryId';
                     params.filterValue[filterCount++] = self.CategoryId();     
-                }               
+                }        
+                if (self.FilterUserId()) {
+                    params.filterField[filterCount] = 'userId';
+                    params.filterValue[filterCount++] = self.FilterUserId();                    
+                }       
                 self.MainQuestionList.load(
                     apiUrlBase + '/mainquestion?limit=10&' + $.param(params), 
                     MainQuestion, 

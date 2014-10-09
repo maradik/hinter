@@ -55,6 +55,9 @@
         $resManager->register('/question/{id}', $ns . 'PageQuestion');
         $resManager->register('/question/create', $ns . 'PageQuestionCreate');
         $resManager->register('/about', $ns . 'PageAbout');
+
+        // User
+        $resManager->register('/user/question', $ns . 'PageUserQuestionList');
         
         // Admin
         $resManager->register('/admin/question', $ns . 'AdminQuestionList');

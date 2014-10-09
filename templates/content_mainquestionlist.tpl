@@ -1,29 +1,36 @@
 <div class="row">
 	<div class="col-md-12">
-		{if (!empty($mainQuestionList))}
 			<table class="table table-striped table-hover">								
 				<tbody>
-					{foreach $mainQuestionList as $question}						
-					<tr class="list-item-static">
-						<td>
-							<div class="row">
-								<div class="col-md-9">
-									<h3>{$question->title|e:'HTML'}</h3>
-									<div class="multiline">{$question->description|truncate:300:'...'|e:'HTML'}</div>
+					{if (!empty($mainQuestionList))}
+						{foreach $mainQuestionList as $question}						
+						<tr class="list-item-static">
+							<td>
+								<div class="row">
+									<div class="col-md-9">
+										<h3>{$question->title|e:'HTML'}</h3>
+										<div class="multiline">{$question->description|truncate:300:'...'|e:'HTML'}</div>
+									</div>
+									<div class="col-md-3 text-right">
+										<a href="/question/{$question->id}" title="{$question->title|e:'HTML'}" class="btn btn-primary">
+											Узнать ответ!
+										</a>
+									</div>
 								</div>
-								<div class="col-md-3 text-right">
-									<a href="/question/{$question->id}" title="{$question->title|e:'HTML'}" class="btn btn-primary">
-										Узнать ответ!
-									</a>
-								</div>
-							</div>
-						</td>
-					</tr>
-					{/foreach}
+							</td>
+						</tr>
+						{/foreach}
+					{else}
+						<tr class="list-item-static">
+							<td>					
+								<p><em>Нет вопросов в данной категории</em></p>
+							</td>
+						</tr>
+					{/if}					
 					<!-- ko foreach: MainQuestionList -->
 						<tr>
 							<td>
-								<div class="row">
+								<div class="row" data-bind="css: { 'text-muted': !Active() }">
 									<div class="col-sm-2 hidden-xs">
 										<div>
 											<a href="#" class="thumbnail top10" data-bind="attr: { href: '/question/' + Id(), title: Title() }, with: Images()[0] || { UrlMiddle: '/uploads/default.png', Title: 'Нет фото' }">
@@ -41,9 +48,23 @@
 										</div>
 									</div>									
 									<div class="col-sm-3 col-xs-12 text-right">
-										<a href="#" title="" class="btn btn-primary top10" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
-											Узнать ответ!
-										</a>
+										<div data-bind="visible: !$root.EditMode()">
+											<a href="#" title="" class="btn btn-primary top10" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
+												Узнать ответ!
+											</a>
+										</div>
+										<div data-bind="visible: $root.EditMode()">
+											<span class="btn-block-sm">
+												<span class="glyphicon glyphicon-time text-warning" title="Проверяется модератором" data-bind="visible: !Active()"></span>
+												<span class="glyphicon glyphicon-ok text-success" title="Опубликовано" data-bind="visible: Active()"></span>
+											</span>											
+											<a href="#" target="_blank" class="btn btn-info btn-block-sm" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
+												<span class="glyphicon glyphicon-play"></span> Просмотр
+											</a>
+											<button class="btn btn-danger btn-block-sm" data-bind="click: $root.removeMainQuestion, disable: Locked">
+												<span class="glyphicon glyphicon-remove"></span> Удалить
+											</button>												
+										</div>										
 									</div>
 								</div>
 							</td>						
@@ -53,28 +74,20 @@
 						<td>
 							<img src="/uploads/loading2.gif" alt="Загрузка..." title="Загрузка..." />
 						</td>
-					</tr>			
+					</tr>						
 					<tr data-bind="visible: !Loading() && !IsEndOfList()">
 						<td>
 							<a href="#" class="btn btn-default" data-bind="click: asyncLoadOlderList">Еще...</a>
 						</td>
-					</tr>			
+					</tr>	
+					<tr data-bind="visible: !Loading() && IsEndOfList() && !MainQuestionList().length">
+						<td>
+							<p><em>Нет вопросов в данной категории</em></p>
+						</td>
+					</tr>									
 				</tbody>
 			</table>
-		{else}
-			<p><em>Нет вопросов в данной категории</em></p>
-		{/if}
 	</div>		
 </div>
 
-{block 'scripts'}
-	<script type="text/javascript">
-		$(document).ready(function () {
-			MainQuestionListVM = new Hinter.MainQuestionListVM({!empty($categoryCurrent) ? $categoryCurrent->id : null});
-			MainQuestionListVM.bind(
-				{json_encode($mainQuestionList)}, 
-				{if !empty($categoryList)}{json_encode($categoryList)}{else}null{/if}
-			);
-		});
-	</script>
-{/block}
+

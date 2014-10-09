@@ -163,3 +163,34 @@ input[type=file].file-upload {
 #vk_comments {
 	margin-bottom: 20px;
 }
+
+.btn-navbar-onlyicon {
+	height: 34px;
+}
+
+.btn-navbar-onlyicon .glyphicon {
+	line-height: 1.43;
+}
+
+.btn-block-sm { }
+
+.btn-block-sm + .btn-block-sm { }
+
+input[type="submit"].btn-block-sm,
+input[type="reset"].btn-block-sm,
+input[type="button"].btn-block-sm { }
+
+@media (min-width: 768px) {
+	.btn-block-sm {
+	  display: block;
+	  width: 100%;
+	}
+	.btn-block-sm + .btn-block-sm {
+	  margin-top: 5px;
+	}
+	input[type="submit"].btn-block-sm,
+	input[type="reset"].btn-block-sm,
+	input[type="button"].btn-block-sm {
+	  width: 100%;
+	}
+}
