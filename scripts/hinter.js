@@ -60,7 +60,7 @@
                 description:self.Description(),                 
                 order:      self.Order()
             };
-        };
+        };          
 
         self.save = function(callbackSuccess, callbackError) {
             var model = this;
@@ -73,6 +73,31 @@
             var cbError = callbackError;
             BaseModel.save(model, cbSuccess, cbError); 
         }; 
+        
+        self.load = function(modelId, callbackSuccess, callbackError) {
+            var model = this;
+            var cbSuccess = function(json, textStatus, jqXHR) {
+                model.unpack(json.data);
+                if (callbackSuccess) {
+                    callbackSuccess(json, textStatus, jqXHR);
+                }
+            };
+            var cbError = callbackError;
+            BaseModel.load(model, modelId, cbSuccess, cbError); 
+        };     
+        
+        self.remove = function(callbackSuccess, callbackError) {
+            var model = this;
+            var cbSuccess = function(json, textStatus, jqXHR) {
+                model.Id(0);
+                model.Locked(true);                
+                if (callbackSuccess) {
+                    callbackSuccess(json, textStatus, jqXHR);
+                }
+            };
+            var cbError = callbackError;
+            BaseModel.remove(model, cbSuccess, cbError); 
+        };               
 
         self.uploadImage = function(file, callbackSuccess, callbackError) {
             var fileParentType = 0;
@@ -93,7 +118,7 @@
             }
             
             var allowedExt = ['jpeg', 'jpg', 'gif', 'png'];
-            if (!allowedExt.some(function(ext) { return file.name.substr(-ext.length-1) == '.' + ext; })) {
+            if (!allowedExt.some(function(ext) { return file.name.substr(-ext.length-1).toLowerCase() == '.' + ext; })) {
                 userMessageList.push(new Message('Некорректный файл! Допустимые форматы: ' + allowedExt.join(', '), MessageType.WARNING));
                 if (callbackError) {
                     callbackError();
@@ -138,7 +163,7 @@
         requestAjaxJson(
             method,  
             url || (apiUrlBase + '/' + model.getUri() + (model.Id() ? '/' + model.Id() : '')), 
-            model.pack(), 
+            method != 'GET' ? model.pack() : null, 
             function (data, textStatus, jqXHR) { 
                 model.Locked(false);
                 model.Editing(false);
@@ -167,6 +192,22 @@
     BaseModel.remove = function(model, callbackSuccess, callbackError) {
         BaseModel.send(model, 'DELETE', '', callbackSuccess, callbackError);    
     }; 
+    
+    BaseModel.load = function(model, modelId, callbackSuccess, callbackError) {
+        var modelEditing = model.Editing();
+        BaseModel.send(
+            model, 
+            'GET', 
+            apiUrlBase + '/' + model.getUri() + '/' + modelId,
+            function(data, textStatus, jqXHR) {
+                model.Editing(modelEditing);
+                if (callbackSuccess) {
+                    callbackSuccess(data, textStatus, jqXHR);
+                }
+            }, 
+            callbackError
+        );    
+    };     
     
     function Category(
         id, 
@@ -669,11 +710,21 @@
         
         self.Step               = ko.observable(0);
         self.SecondQuestionIdx  = ko.observable(-1);
-                
+        self.EditMode           = ko.observable(false);
+                                   
         self.MainQuestion       = ko.observable(new MainQuestion());        
         self.MainAnswerList     = baseObservableArray();
         self.SecondQuestionList = baseObservableArray();
         self.CategoryList       = baseObservableArray();
+        
+        // ВНИМАНИЕ! self.curSecondQuestion() может вернуть NULL!!!
+        self.curSecondQuestion  = ko.computed(function() {
+            if (!(self.SecondQuestionIdx() != -1 && self.SecondQuestionIdx() < self.SecondQuestionList().length)) {
+                return null;
+            }           
+            var sqList = self.SecondQuestionList();
+            return sqList[self.SecondQuestionIdx()];
+        });
 
         self.MainAnswerList.Locked = function() {
             return this().some(function(item) { return item.Locked(); });
@@ -685,31 +736,50 @@
                     || item.SecondAnswers().some(function(saItem){ return saItem.Locked(); });  
             });
         };  
+
+        self.maxImagesMQ = function() { return 3; };
+        self.maxImagesMA = function() { return 3; };
         
-        self.bind = function(htmlElementId) {
-            ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));
-            
-            requestAjaxJson('GET', apiUrlBase + "/category", null, function (json) {                
-                self.CategoryList(
-                    json 
-                    ? $.map(json.data, function (item) { return (new Category).unpack(item); }) 
-                    : []
-                );
-                self.CategoryList.sort(sortQuestionAnswerArray);
-            }); 
+        self.bind = function(mainQuestionId, htmlElementId) {
+            ko.applyBindings(self, document.getElementById(htmlElementId || "page-content-block"));            
+
+            if (mainQuestionId) {
+                self.EditMode(true);
+                self.nextStep(1);             
+                self.loadMainQuestion(mainQuestionId);                 
+            }
+
+            self.CategoryList.load(
+                apiUrlBase + "/category", 
+                Category, 
+                true, 
+                function() { self.CategoryList.sort(sortQuestionAnswerArray); }  
+            );                                   
         };      
+        
+        self.loadMainQuestion = function(mainQuestionId) {
+            self.MainQuestion().load(mainQuestionId);    
+        };        
         
         self.nextStep = function(step) {
             self.Step(step || self.Step() + 1);
             
             if (self.Step() == 1) { // создание главного вопроса
-                self.MainQuestion(new MainQuestion());
+                //self.MainQuestion(new MainQuestion());
                 self.MainQuestion().Editing(true);           
             }
             
             if (self.Step() == 2) { // добавление ответов
-                self.addMainAnswer();
-                self.addMainAnswer();
+                if (self.EditMode()) {
+                    self.MainAnswerList.load(
+                        apiUrlBase + "/mainquestion/" + self.MainQuestion().Id() + "/mainanswer", 
+                        MainAnswer, 
+                        true
+                    );                       
+                } else {
+                    self.addMainAnswer();
+                    self.addMainAnswer();
+                }
             }
             
             if (self.Step() == 3) { // добавление наводящих вопросов с ответами
@@ -718,7 +788,16 @@
                         self.saveMainAnswer(item);
                     }
                 });
-                self.addSecondQuestion();
+                if (self.EditMode()) {
+                    self.SecondQuestionList.load(
+                        apiUrlBase + "/mainquestion/" + self.MainQuestion().Id() + "/secondaryquestion", 
+                        SecondQuestion, 
+                        true,
+                        function () { if (self.SecondQuestionList().length == 0) {self.addSecondQuestion();} }
+                    );                      
+                } else {
+                    self.addSecondQuestion();
+                }
             }   
             
             if (self.Step() == 4) { // финиш
@@ -726,15 +805,25 @@
             }                       
         };
         
+        self.removeImage = function(parentModel, imageModel) {    
+            if (confirm("Удалить изображение?")) {
+                parentModel.Locked(true);        
+                var funcUnlock = function() {
+                    parentModel.Locked(false);     
+                };
+                parentModel.Images.removeModel(imageModel, funcUnlock, funcUnlock);
+            }
+        };  
+        
         self.addMainQuestionImage = function(mainQuestion, event, file) {
             if (file == null) {
                 return;
             }            
-            
+            var mqEditing = self.MainQuestion().Editing();
             var uploadImageFunc = function() {
                 self.MainQuestion().uploadImage(
                     file,
-                    function() {self.MainQuestion().Editing(false);self.nextStep(2);},
+                    function() {self.MainQuestion().Editing(mqEditing);/*self.nextStep(2);*/},
                     function() {self.MainQuestion().Editing(true);}
                 );
             };
@@ -750,19 +839,27 @@
             }
         };        
         
+        self.removeMainQuestion = function(mainQuestion) {
+            if (confirm('Удалить подсказку?')) {
+                mainQuestion.remove(
+                    function() { window.location.href = '/user/question'; }
+                );
+            }
+        };         
+        
         self.saveMainQuestion = function(mainQuestion) {
             mainQuestion.save(function(data) {self.nextStep(2);});
-        };      
+        };              
         
         self.addMainAnswerImage = function(mainAnswer, event, file) {
             if (file == null) {
                 return;
             }            
-            
+            var maEditing = mainAnswer.Editing();
             var uploadImageFunc = function(maIdx) {
                 self.MainAnswerList()[maIdx].uploadImage(
                     file,
-                    function() { self.MainAnswerList()[maIdx].Editing(false); },
+                    function() { self.MainAnswerList()[maIdx].Editing(maEditing); },
                     function() { self.MainAnswerList()[maIdx].Editing(true); }
                 );
             };
@@ -825,50 +922,122 @@
             newSecondAnswer.Order(secondQuestion.SecondAnswers().length - 1);            
         };
 
+        self.editSecondQuestion = function(secondQuestion) {
+            if (self.SecondQuestionIdx() != -1) {
+                alert('Вначале завершите редактирование другого вопроса!');
+                return;
+            }
+            var sqIdx = self.SecondQuestionList.indexOf(secondQuestion); 
+            self.SecondQuestionIdx(sqIdx);
+            secondQuestion.Editing(true);
+            
+            if (secondQuestion.SecondAnswers().length == 0) {
+                secondQuestion.Locked(true);
+                secondQuestion.SecondAnswers.load(
+                    apiUrlBase + "/secondaryquestion/" + secondQuestion.Id() + "/secondaryanswer", 
+                    SecondAnswer, 
+                    true,
+                    function () { 
+                        secondQuestion.SecondAnswers().forEach(function(sa) {
+                            sa.Locked(true);
+                            sa.MainAnswers.load(
+                                apiUrlBase + "/secondaryanswer/" + sa.Id() + "/mainanswer", 
+                                MainAnswer, 
+                                true,
+                                function () { 
+                                    sa.MainAnswers(
+                                        $.map(sa.MainAnswers(), function (ma) { return self.MainAnswerList.findById(ma.Id()); })
+                                    );                                      
+                                    sa.Locked(false);
+                                    if (!secondQuestion.SecondAnswers.Locked()) {
+                                        secondQuestion.Locked(false);
+                                    }
+                                }
+                            );
+                        });                         
+                    }
+                );                   
+            }
+        };
+
         self.applySecondQuestion = function(secondQuestion, addSecondQuestion) {
             addSecondQuestion = addSecondQuestion || false;
             var tryNextStep = function() {
-                if (secondQuestion.SecondAnswers().every(function(sa) {
+                if (!secondQuestion || secondQuestion.SecondAnswers().every(function(sa) {
                     return !Boolean(sa.Editing() || sa.Edited() || sa.Locked());
                 })) {
                     self.nextStep(4);
                 }                
             };    
             var tryAddSecondQuestion= function() {
-                if (secondQuestion.SecondAnswers().every(function(sa) {
+                if (!secondQuestion || secondQuestion.SecondAnswers().every(function(sa) {
                     return !Boolean(sa.Editing() || sa.Edited() || sa.Locked());
                 })) {
                     self.addSecondQuestion();
                 }                
             };                     
             
-            secondQuestion.save(
-                function(data) {
-                    secondQuestion.SecondAnswers().forEach(function(sa) { sa.QuestionId(secondQuestion.Id()); });
-                    self.saveSecondAnswers(secondQuestion.SecondAnswers, addSecondQuestion ? tryAddSecondQuestion : tryNextStep);
+            var callbackOnSuccess = addSecondQuestion ? tryAddSecondQuestion : tryNextStep;
+            if (secondQuestion) {
+                self.saveSecondQuestion(secondQuestion, callbackOnSuccess);
+            } else {
+                callbackOnSuccess();    
+            }          
+        };
+        
+        self.removeSecondQuestion = function(secondQuestion) {
+            self.SecondQuestionList.removeModel(
+                secondQuestion, 
+                function() { self.SecondQuestionIdx(-1); }, 
+                undefined, 
+                true
+            );
+        };        
+        
+        self.saveSecondQuestion = function(secondQuestion, callbackOnSuccess) {
+            //console.log('saveSecondQuestion - ' + secondQuestion.Id());
+            if (secondQuestion.Editing() || secondQuestion.SecondAnswers.Editing()) {
+                secondQuestion.save(
+                    function(data) {
+                        secondQuestion.SecondAnswers().forEach(function(sa) { sa.QuestionId(secondQuestion.Id()); });
+                        self.saveSecondAnswers(secondQuestion.SecondAnswers, callbackOnSuccess);
+                    }
+                );            
+            } else {
+                if (callbackOnSuccess) {
+                    callbackOnSuccess();
                 }
-            );           
+            }
         };
         
         self.saveSecondAnswers = function(secondAnswerList, callbackOnSuccess) {
-            secondAnswerList().forEach(function(secondAnswer) {
-                if (secondAnswer.Editing()) {
-                    secondAnswer.save(
-                        function(data) {
-                            secondAnswer.Locked(true);
-                            self.saveSecondAnswerRel(secondAnswer, callbackOnSuccess);
-                        }
-                    );     
-                };           
-            });              
+            //console.log('saveSecondAnswers');
+            if (secondAnswerList.Editing()) {
+                secondAnswerList().forEach(function(secondAnswer) {
+                    if (secondAnswer.Editing()) {
+                        //console.log('saveSecondAnswer - ' + secondAnswer.Id());
+                        secondAnswer.save(
+                            function(data) {
+                                secondAnswer.Locked(true);
+                                self.saveSecondAnswerRel(secondAnswer, callbackOnSuccess);
+                            }
+                        );     
+                    };           
+                });              
+            } else {
+                if (callbackOnSuccess) {
+                    callbackOnSuccess();
+                }
+            }
         };
         
-        self.saveSecondAnswerRel = function(secondAnswer, callbackOnSuccess) {    
+        self.saveSecondAnswerRel = function(secondAnswer, callbackOnSuccess) {   
+            //console.log('saveSecondAnswerRel - ' + secondAnswer.Id()); 
             var sendMainAnswers = [];
             secondAnswer.MainAnswers().forEach(function(mainAnswer) { sendMainAnswers.push(mainAnswer.pack()); });        
             requestAjaxJson(
                 'POST',
-                apiUrlBase + '/secondaryanswer/' + secondAnswer.Id() + '/link',
+                apiUrlBase + '/secondaryanswer/' + secondAnswer.Id() + '/setrel',
                 sendMainAnswers,
                 function(data) {
                     var mainAnswers = [];
@@ -878,8 +1047,11 @@
                     secondAnswer.MainAnswers(self.MainAnswerList().filter(function(item) {
                         return mainAnswers.some(function(item2) { return item.Id() == item2.Id(); });
                     }));    
-                    secondAnswer.Locked(false);             
-                    callbackOnSuccess();
+                    secondAnswer.Locked(false);      
+                    if (callbackOnSuccess) {    
+                        //console.log('CallBackSuccess SecondAnswer - ' + secondAnswer.Id());    
+                        callbackOnSuccess();
+                    }
                 },
                 function() {
                     secondAnswer.Editing(true);
@@ -937,7 +1109,7 @@
         };        
         
         self.removeMainQuestion = function(mainQuestion) {
-            if (confirm("Действительно желаете удалить подсказку?")) {
+            if (confirm("Удалить подсказку?")) {
                 BaseModel.remove(
                     mainQuestion, 
                     function() {
@@ -1218,21 +1390,34 @@
             }            
         }; 
         
-        target.removeModel = function(baseModel, callbackSuccess, callbackError) {
+        target.removeModel = function(baseModel, callbackSuccess, callbackError, withConfirm) {
+            withConfirm = withConfirm || false;
+            
             if (target.indexOf(baseModel) == -1) {
                 return false;
             } 
             
-            BaseModel.remove(
-                baseModel,
-                function(json, textStatus, jqXHR) {
-                    target.remove(baseModel);
-                    if (callbackSuccess) {
-                        callbackSuccess(json, textStatus, jqXHR);
-                    }
-                }, 
-                callbackError
-            );
+            if (!(withConfirm ? confirm('Удалить объект?') : true)) {
+                return false;
+            }
+            
+            if (baseModel.Id()) {
+                BaseModel.remove(
+                    baseModel,
+                    function(json, textStatus, jqXHR) {
+                        target.remove(baseModel);
+                        if (callbackSuccess) {
+                            callbackSuccess(json, textStatus, jqXHR);
+                        }
+                    }, 
+                    callbackError
+                );
+            } else {
+                target.remove(baseModel);
+                if (callbackSuccess) {
+                    callbackSuccess();
+                }                
+            }
             
             return true;
         };     
@@ -1247,7 +1432,15 @@
                 target().forEach(function(baseModel) { baseModel.Locked(locked); });
             }
             return target().some(function(baseModel) { return baseModel.Locked(); });
-        };          
+        };       
+        
+        target.Editing = function(editing) {
+            if (typeof editing !== 'undefined') {
+                editing = Boolean(editing);
+                target().forEach(function(baseModel) { baseModel.Editing(editing); });
+            }
+            return target().some(function(baseModel) { return baseModel.Editing(); });
+        };            
 
         target.load = function(url, modelConstructor, replaceData, callbackSuccess, callbackError) {
             replaceData = (typeof replaceData === 'undefined') ? true : replaceData;
@@ -1333,7 +1526,6 @@
             $(element).toggle(visible);            
             
             if (visible && !isVisible) {
-                console.log("It worked!");
                 $('body').scrollTo(element, delay, {offset: offset}); 
             }
         }
@@ -1375,7 +1567,16 @@
                             break;
                         }
                     default:
-                        userMessageList.addMessage(new Message("Неопознанная внутренняя ошибка!", MessageType.ERROR));
+                        switch (jqXHR.status) {
+                            case 401: //UNATHORIZED
+                                userMessageList.addMessage(new Message("Вначале войдите на сайт под своим именем или зарегистриуйтесь!", MessageType.ERROR));
+                                break;
+                            case 403: //FORBIDDEN
+                                userMessageList.addMessage(new Message("У вас недостаточно прав на выполнение операции!", MessageType.ERROR));                            
+                                break;
+                            default:
+                                userMessageList.addMessage(new Message("Неопознанная внутренняя ошибка!", MessageType.ERROR));
+                        }                        
                 }
                 if (callbackError) {
                     callbackError(jqXHR, textStatus);    

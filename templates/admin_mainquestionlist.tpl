@@ -31,13 +31,16 @@
 										</div>
 									</div>
 									<div class="col-md-3 text-right">
-										<a href="#" target="_blank" class="btn btn-info btn-block-sm" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
+										<a href="#" target="_blank" class="btn btn-info btn-sm btn-block-sm" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
 											<span class="glyphicon glyphicon-play"></span> Просмотр
 										</a>
-										<button class="btn btn-warning btn-block-sm" data-bind="click: $root.activateMainQuestion, disable: Locked">
+										<button class="btn btn-warning btn-sm btn-block-sm" data-bind="click: $root.activateMainQuestion, disable: Locked">
 											<span class="glyphicon glyphicon-off"></span> <span data-bind="text: Active() ? 'Отключить' : 'Активировать'"></span>
 										</button>	
-										<button class="btn btn-danger btn-block-sm" data-bind="click: $root.removeMainQuestion, disable: Locked">
+										<a href="#" class="btn btn-success btn-sm btn-block-sm" data-bind="attr: { href: '/question/' + Id() + '/edit' }">
+											<span class="glyphicon glyphicon-pencil"></span> Изменить
+										</a>										
+										<button class="btn btn-danger btn-sm btn-block-sm" data-bind="click: $root.removeMainQuestion, disable: Locked">
 											<span class="glyphicon glyphicon-remove"></span> Удалить
 										</button>																	
 									</div>

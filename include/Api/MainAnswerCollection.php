@@ -34,14 +34,21 @@
                 return false;
             }                       
                       
-            //TODO нужна проверка, что человек может добавлять ответы только к своим вопросам!                      
-            /*
-            if (!$this->user->isAdmin()) {
-                $this->setResponseCode(HttpResponseCode::FORBIDDEN);
+            $parentEntity = $this->repositoryFactory
+                ->getMainQuestionRepository()
+                ->getById($entity->questionId);    
+
+            if (empty($parentEntity)) {
+                $this->addResponseMessage('Некорректная ссылка на вопрос!', self::MESS_ERROR);
+                $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);  
                 return false;
             } 
-            */
-            
+                 
+            if ($parentEntity->userId != $this->user->data()->id && !$this->user->isAdmin()) {
+                $this->setResponseCode(HttpResponseCode::FORBIDDEN);
+                return false;
+            }                       
+                                 
             return true;
         }
         

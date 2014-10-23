@@ -175,14 +175,55 @@
                 $this->setResponseCode(HttpResponseCode::UNATHORIZED);
                 return false;
             }                  
+                            
+            $parentEntity = $this->repositoryFactory
+                ->getRepositoryByFpt($entity->parentType)
+                ->getById($entity->parentId);    
+
+            if (empty($parentEntity)) {
+                $this->addResponseMessage('Некорректный родительский элемент!', self::MESS_ERROR);
+                $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);  
+                return false;
+            } 
                  
-            //TODO нужна проверка, что человек может добавлять изображения только к своим вопросам!
-            /* 
-            if ($entity->userId != $this->user->data()->id && !$this->user->isAdmin()) {
+            if ($parentEntity->userId != $this->user->data()->id && !$this->user->isAdmin()) {
                 $this->setResponseCode(HttpResponseCode::FORBIDDEN);
                 return false;
             } 
-            */
+            
+            global $general_s;
+            $maxCnt = 0;
+            
+            switch ($entity->parentType) {
+                case (FileParentType::MAIN_QUESTION):
+                    $maxCnt = $general_s['img_cnt_mq'];
+                    break;
+                case (FileParentType::MAIN_ANSWER):
+                    $maxCnt = $general_s['img_cnt_ma'];
+                    break;
+                case (FileParentType::SECOND_QUESTION):
+                    $maxCnt = $general_s['img_cnt_sq'];
+                    break;
+                case (FileParentType::SECOND_ANSWER):
+                    $maxCnt = $general_s['img_cnt_sa'];
+                    break;                
+            }            
+            
+            $currentCnt = $this->repository
+                ->query()
+                ->addFilterField('parentType', $entity->parentType)
+                ->addFilterField('parentId', $entity->parentId)
+                ->getCount();
+            
+            if ($currentCnt + 1 > $maxCnt) {
+                $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
+                $this->addResponseMessage(
+                    'Достигнуто максимальное количество изображений - ' . $maxCnt,
+                    self::MESS_ERROR
+                );
+                return false;                
+            }
+            
             return true;
         }
         

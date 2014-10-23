@@ -6,6 +6,7 @@
     use Maradik\Testing\AnswerRepository;
     use Maradik\Testing\RelRepository;
     use Maradik\Testing\FileRepository;
+    use Maradik\Testing\FileData;
 
     class RepositoryFactory        
     {
@@ -59,6 +60,33 @@
         }
         
         /**
+         * @param int $fileId
+         * @param Maradik\Testing\FileData $fileEntity
+         *
+         * @return boolean
+         */
+        public function deleteFile($fileId, $fileEntity) 
+        {
+            $uploadDir = pathinfo($_SERVER['SCRIPT_FILENAME'], PATHINFO_DIRNAME) . "/{$this->uploadDir}";
+                       
+            array_map(
+                function($f) {
+                    if (is_file($f)) {
+                        unlink($f);
+                    }
+                },
+                array(
+                    $uploadDir . "/{$fileEntity->fileName}",
+                    $uploadDir . "/thumbnail/{$fileEntity->fileName}",
+                    $uploadDir . "/middle/{$fileEntity->fileName}",
+                    $uploadDir . "/large/{$fileEntity->fileName}"
+                )
+            );
+            
+            return true;           
+        }        
+        
+        /**
          * @param int $parentType
          * @param int $parentId
          *
@@ -66,8 +94,6 @@
          */
         public function deleteRelatedFiles($parentType, $parentId) 
         {
-            $uploadDir = pathinfo($_SERVER['SCRIPT_FILENAME'], PATHINFO_DIRNAME) . "/{$this->uploadDir}";
-            
             $files = $this->getFileRepository()
                 ->query()
                 ->addFilterField('parentType', $parentType)
@@ -77,20 +103,6 @@
                 if (!$this->getFileRepository()->delete($file->id)) {
                     return false;    
                 }
-                
-                array_map(
-                    function($f) {
-                        if (is_file($f)) {
-                            unlink($f);
-                        }
-                    },
-                    array(
-                        $uploadDir . "/{$file->fileName}",
-                        $uploadDir . "/thumbnail/{$file->fileName}",
-                        $uploadDir . "/middle/{$file->fileName}",
-                        $uploadDir . "/large/{$file->fileName}"
-                    )
-                );
             }   
             
             return true;           
@@ -272,7 +284,11 @@
                     $this->db,
                     $this->tableFile,
                     $this->dbPrefix
-                );      
+                );
+                $self = $this;
+                $this->fileRepository->setOnDelete(function($id, $entity = null) use ($self) {
+                    return empty($entity) ? true : $self->deleteFile($id, $entity);
+                });                        
             }
             return $this->fileRepository;                    
         }           

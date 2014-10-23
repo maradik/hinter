@@ -13,7 +13,7 @@
 			<div class="panel-body" data-bind="with: MainQuestion">
 				<h1>{$mainQuestion->title|e:'HTML'}</h1>
 				<div class="row">
-					<div class="col-sm-12" data-bind="css: { 'col-sm-8': Images().length, 'col-sm-12': !Images().length }">		
+					<div class="col-sm-12" data-bind="css: Images().length == 1 ? 'col-sm-8' : 'col-sm-12'">		
 						{if !empty($mainQuestion->description)}
 							<div class="multiline">{$mainQuestion->description|e:'HTML'}</div>
 						{/if}						
@@ -24,10 +24,12 @@
 						</div>									
 					</div>
 					
-					<div class="text-center" data-bind="css: Images().length ? 'col-xs-6 col-sm-4' : '', visible: !Images().count">
-						<!-- ko template: { name: 'thumbnails', foreach: Images } -->
-						<!-- /ko -->
-					</div>		 
+					<!-- ko foreach: Images -->
+						<div class="text-center" data-bind="css: $root.MainQuestion().Images().length == 1 ? 'col-xs-3 col-sm-4' : 'col-xs-3 col-sm-2'">
+							<!-- ko template: { name: 'thumbnails' } -->
+							<!-- /ko -->
+						</div>			
+					<!-- /ko -->					
 				</div>			
 			</div>
 			<div class="panel-footer" data-bind="visible: CurrentSecQuestion() == 0">				
@@ -49,7 +51,7 @@
 			<div class="panel-body" data-bind="with: MainAnswerList()[0]">	
 				<h3 data-bind="text: Title"></h3>
 				<div class="row">
-					<div data-bind="css: Images().length ? 'col-sm-8' : 'col-sm-12'">
+					<div data-bind="css: Images().length == 1 ? 'col-sm-8' : 'col-sm-12'">
 						<div class="multiline" data-bind="text: Description, visible: Description"></div>
 						<div class="top10" data-bind="visible: LinkUrl">
 							<a href="#" class="label label-info" target="_blank" title="Читать подробнее..." data-bind="attr: { href: LinkUrl }">
@@ -58,10 +60,13 @@
 							</a>
 						</div>
 					</div>
-					<div class="text-center" data-bind="css: Images().length ? 'col-xs-6 col-sm-4' : '', visible: !Images().count">
-						<!-- ko template: { name: 'thumbnails', foreach: Images } -->
-						<!-- /ko -->
-					</div>
+					
+					<!-- ko foreach: Images -->
+						<div class="text-center" data-bind="css: $parent.Images().length == 1 ? 'col-xs-3 col-sm-4' : 'col-xs-3 col-sm-2'">
+							<!-- ko template: { name: 'thumbnails' } -->
+							<!-- /ko -->
+						</div>			
+					<!-- /ko -->						
 				</div>
 			</div>
 			<div class="panel-footer">				

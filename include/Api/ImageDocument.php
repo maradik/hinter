@@ -34,11 +34,21 @@
                 return false;
             }              
             
-            if ($entity->userId != $this->user->data()->id && !$this->user->isAdmin()) {
+            $parentEntity = $this->repositoryFactory
+                ->getRepositoryByFpt($entity->parentType)
+                ->getById($entity->parentId);    
+                 
+            if (empty($parentEntity)) {
+                $this->addResponseMessage('Некорректный родительский элемент!', self::MESS_ERROR);
+                $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);  
+                return false;
+            }                  
+                 
+            if ($parentEntity->userId != $this->user->data()->id && !$this->user->isAdmin()) {
                 $this->setResponseCode(HttpResponseCode::FORBIDDEN);
                 return false;
-            }            
-            
+            }             
+
             return true;
         }           
         

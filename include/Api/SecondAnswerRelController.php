@@ -26,6 +26,11 @@
                 if ($this->checkPermission($secondAnswer)) {
                     if (!empty($args)) {
                         $this->repository->transactionBegin();
+                        if (!$this->prepareRel($secondAnswer)) {
+                            $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
+                            $this->repository->transactionRollBack();
+                            return;                            
+                        }                        
                         foreach ($args as $mainAnswerArgs) {
                             $mainAnswer = $this->unpackEntity($mainAnswerArgs);
                             if ($mainAnswer) {
@@ -37,14 +42,9 @@
                                 ->getById($secondAnswer->questionId);                                            
                             
                             if ($mainAnswer && $secondQuestion && $secondQuestion->parentId == $mainAnswer->questionId) {
-                                if ($this->checkPermission($mainAnswer)) {
-                                    if (!$this->updateRel($secondAnswer, $mainAnswer)) {
-                                        $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
-                                        $this->repository->transactionRollBack();
-                                        return;
-                                    }
-                                } else {
-                                    $this->repository->transactionRollBack();                                    
+                                if (!$this->updateRel($secondAnswer, $mainAnswer)) {
+                                    $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);
+                                    $this->repository->transactionRollBack();
                                     return;
                                 }
                             } else {
@@ -90,11 +90,21 @@
                 return false;
             }                       
                       
-            if ($entity->userId != $this->user->data()->id &&
-                !$this->user->isAdmin()) {
-                $this->setResponseCode(HttpResponseCode::FORBIDDEN);
-                return false;
-            } 
+            // check SecondAnswer ONLY!!!!          
+            if ($entity->userId != $this->user->data()->id && !$this->user->isAdmin()) {
+                $parentEntity = $this->repositoryFactory
+                    ->getMainQuestionRepository()
+                    ->query()
+                    ->join($this->repositoryFactory->getSecondQuestionRepository())
+                    ->addLinkFields('id', 'parentId')
+                    ->addFilterField('id', $entity->questionId)
+                    ->getOneEntity();
+    
+                if (empty($parentEntity) || $parentEntity->userId != $this->user->data()->id) {
+                    $this->setResponseCode(HttpResponseCode::FORBIDDEN);
+                    return false;
+                }    
+            }                               
             
             return true;
         }          
@@ -133,6 +143,15 @@
             $ret->id = !empty($data['id']) ? (int) $data['id'] : 0;
             return $ret;
         }            
+        
+        /**
+         * @param AnswerData $secondAnswer
+         * @return boolean
+         */
+        protected function prepareRel(AnswerData $secondAnswer)
+        {
+            return true;    
+        }  
         
         /**
          * @param AnswerData $secondAnswer

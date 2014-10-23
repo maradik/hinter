@@ -36,6 +36,7 @@
         $resManager->register($upx . '/mainquestion/{id}/finish', $ns . 'MainQuestionFinishController');
         $resManager->register($upx . '/secondaryanswer/{id}/link', $ns . 'SecondAnswerLinkController');
         $resManager->register($upx . '/secondaryanswer/{id}/unlink', $ns . 'SecondAnswerUnlinkController');
+        $resManager->register($upx . '/secondaryanswer/{id}/setrel', $ns . 'SecondAnswerSetRelController');
         $resManager->register($upx . '/user/current/register', $ns . 'UserRegisterController');
         $resManager->register($upx . '/user/current/login', $ns . 'UserLoginController');
         $resManager->register($upx . '/user/current/logout', $ns . 'UserLogoutController');
@@ -54,6 +55,7 @@
         $resManager->register('/category/{id}', $ns . 'PageCategory');
         $resManager->register('/question/{id}', $ns . 'PageQuestion');
         $resManager->register('/question/create', $ns . 'PageQuestionCreate');
+        $resManager->register('/question/{id}/edit', $ns . 'PageQuestionEdit');
         $resManager->register('/about', $ns . 'PageAbout');
 
         // User

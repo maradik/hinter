@@ -38,7 +38,7 @@
 											</a>
 										</div>							
 									</div>									
-									<div class="col-sm-7 col-xs-12">
+									<div class="col-lg-8 col-sm-7 col-xs-12">
 										<h3 class="top10" data-bind="text: Title"></h3>
 										<div class="multiline" data-bind="text: Description.truncatedText(300), visible: Description"></div>
 										<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId()), visible: !$root.CategoryId()">
@@ -47,7 +47,7 @@
 											</a>
 										</div>
 									</div>									
-									<div class="col-sm-3 col-xs-12 text-right">
+									<div class="col-lg-2 col-sm-3 col-xs-12 text-right">
 										<div data-bind="visible: !$root.EditMode()">
 											<a href="#" title="" class="btn btn-primary top10" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
 												Узнать ответ!
@@ -58,10 +58,13 @@
 												<span class="glyphicon glyphicon-time text-warning" title="Проверяется модератором" data-bind="visible: !Active()"></span>
 												<span class="glyphicon glyphicon-ok text-success" title="Опубликовано" data-bind="visible: Active()"></span>
 											</span>											
-											<a href="#" target="_blank" class="btn btn-info btn-block-sm" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
+											<a href="#" class="btn btn-info btn-sm btn-block-sm" data-bind="attr: { href: '/question/' + Id(), title: Title() }">
 												<span class="glyphicon glyphicon-play"></span> Просмотр
 											</a>
-											<button class="btn btn-danger btn-block-sm" data-bind="click: $root.removeMainQuestion, disable: Locked">
+											<a href="#" title="Изменить подсказку" class="btn btn-success btn-sm btn-block-sm" data-bind="attr: { href: '/question/' + Id() + '/edit' }">
+												<span class="glyphicon glyphicon-pencil"></span> Изменить
+											</a>
+											<button title="Удалить подсказку" class="btn btn-danger btn-sm btn-block-sm" data-bind="click: $root.removeMainQuestion, disable: Locked">
 												<span class="glyphicon glyphicon-remove"></span> Удалить
 											</button>												
 										</div>										

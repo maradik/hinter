@@ -34,11 +34,22 @@
                 return false;
             }              
             
-            if (!$this->user->isAdmin() &&
-                $entity->userId != $this->user->data()->id) {
-                $this->setResponseCode(HttpResponseCode::FORBIDDEN);
-                return false;
-            }            
+            if ($entity->userId != $this->user->data()->id && !$this->user->isAdmin()) {
+                $parentEntity = $this->repositoryFactory
+                    ->getMainQuestionRepository()
+                    ->getById($entity->questionId);    
+    
+                if (empty($parentEntity)) {
+                    $this->addResponseMessage('Некорректная ссылка на вопрос!', self::MESS_ERROR);
+                    $this->setResponseCode(HttpResponseCode::INTERNAL_SERVER_ERROR);  
+                    return false;
+                } 
+                     
+                if ($parentEntity->userId != $this->user->data()->id) {
+                    $this->setResponseCode(HttpResponseCode::FORBIDDEN);
+                    return false;
+                }     
+            }                           
             
             return true;
         }           
