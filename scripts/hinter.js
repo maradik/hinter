@@ -629,6 +629,15 @@
                     ? $.map(json.data, function (item) { return (new SecondQuestion).unpack(item); }) 
                     : []
                 );
+                // Авто-старт, проверка эффективности 29/10/2014
+                setTimeout(
+                    function() { 
+                        if (self.CurrentSecQuestion() == 0 && !self.Finish()) {
+                            self.start(); 
+                        }
+                    },
+                    5000
+                ); 
             });            
         };      
         
