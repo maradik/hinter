@@ -1188,7 +1188,8 @@
         var self = this;
         
         self.UserData = ko.observable(typeof userData == 'undefined' ? new UserData : (new UserData).unpack(userData)); 
-        self.Messages = ko.observableArray();
+        self.FormLoginVisible = ko.observable(false);
+        self.Messages = ko.observableArray();        
         
         self.bind = function(htmlElementId) {
             ko.applyBindings(self, document.getElementById(htmlElementId || "bs-navbar-collapse-1"/* "page-navbar-user-block"*/));
@@ -1220,6 +1221,7 @@
                 self.UserData().pack(),
                 function (data) {
                     if (data.data) {
+                        self.FormLoginVisible(false);
                         self.UserData((new UserData).unpack(data.data));
                         self.reloadPage();
                     }
@@ -1240,6 +1242,7 @@
                 self.UserData().pack(),
                 function (data) {
                     if (data.data) {
+                        self.FormLoginVisible(false);
                         self.UserData((new UserData).unpack(data.data));
                         self.reloadPage();                        
                     }

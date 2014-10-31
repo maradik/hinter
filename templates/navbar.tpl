@@ -11,7 +11,7 @@
       	<a class="navbar-brand" href="/">
       		<img class="img-responsive" src="/uploads/logo.png" alt="HintOk.RU" title="HintOk.RU" />
       	</a>
-      	<p class="navbar-text hidden-md"><em>Поможем в любом вопросе!</em></p>
+      	<p class="navbar-text hidden-md hidden-sm"><em>Поможем в любом вопросе!</em></p>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -38,7 +38,7 @@
 					{/foreach}     
 	            </ul>
 	        </span>            	
-      	  	<a href="/question/create" class="btn btn-primary" title="Помочь другим людям" data-bind="visible: isRegisteredUser()">
+      	  	<a href="/question/create" class="btn btn-primary" title="Помочь другим людям" data-bind="visible: true || isRegisteredUser()">
       	  		<span class="glyphicon glyphicon-plus"></span> Создать подсказку!
       	  	</a>
           	<a href="/about" class="btn btn-default" title="Зачем нужен HintOk?">
@@ -48,14 +48,19 @@
       <form class="navbar-form navbar-right">
       	  <fieldset data-bind="disable: UserData().Locked()">
 	      	<div data-bind="visible: !isRegisteredUser()">
-		        <div class="form-group">
-		          <input name="login" type="text" size="10" class="form-control" placeholder="Имя" data-bind="value: UserData().Login">
-		        </div>
-		        <div class="form-group">
-		          <input name="password" type="password" size="10" class="form-control" placeholder="Пароль" data-bind="value: UserData().Password">
-		        </div>
-		        <button class="btn btn-primary" title="Войти под своим именем" data-bind="click: login">Войти</button>
-		        <button class="btn btn-danger" title="Быстрая регистрация в один клик!" data-bind="click: register">Новый</button>
+	      		<div data-bind="visible: FormLoginVisible()">
+			        <div class="form-group">
+			          <input name="login" type="text" size="10" class="form-control" placeholder="Имя" data-bind="value: UserData().Login">
+			        </div>
+			        <div class="form-group">
+			          <input name="password" type="password" size="10" class="form-control" placeholder="Пароль" data-bind="value: UserData().Password">
+			        </div>
+			        <button class="btn btn-primary" title="Войти под своим именем" data-bind="click: login">Войти</button>
+			        <button class="btn btn-danger" title="Быстрая регистрация в один клик!" data-bind="click: register">Новый</button>
+			    </div>
+			    <div data-bind="visible: !FormLoginVisible()">
+			    	<button class="btn btn-primary" title="Войти под своим именем" data-bind="click: function(){ FormLoginVisible(true); }"><span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Войти</button>
+			    </div>
 		    </div>
 			<div data-bind="visible: isRegisteredUser()">	    
 		        <div class="form-group">
