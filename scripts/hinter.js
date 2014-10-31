@@ -630,6 +630,10 @@
                     : []
                 );
                 // Авто-старт, проверка эффективности 29/10/2014
+                if (self.CurrentSecQuestion() == 0 && !self.Finish()) {
+                    self.start(); 
+                }                
+                /*
                 setTimeout(
                     function() { 
                         if (self.CurrentSecQuestion() == 0 && !self.Finish()) {
@@ -638,6 +642,7 @@
                     },
                     5000
                 ); 
+                */
             });            
         };      
         

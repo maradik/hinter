@@ -32,6 +32,7 @@
 					<!-- /ko -->					
 				</div>			
 			</div>
+			<!--
 			<div class="panel-footer" data-bind="visible: CurrentSecQuestion() == 0">				
 				<div class="row">
 					<div class="col-md-12">
@@ -42,6 +43,7 @@
 					</div>
 				</div>					
 			</div>
+			-->
 		</div>				
 		
 		<div class="panel panel-success" id="q_best_answer" data-bind="visibleAndScroll: { visible: Finish, offset: '-10' }">
@@ -79,7 +81,7 @@
 			</div>			
 		</div>	
 
-		<div  data-bind="visibleAndScroll: { visible: CurrentSecQuestion() && !Finish(), offset: '-10' }">
+		<div  data-bind="visible: CurrentSecQuestion() && !Finish()">
 			<div class="progress" data-bind="visible: CurrentSecQuestion() && !Finish()">
 				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="" data-bind="text: getProgress() + '%', style: { width: getProgress() + '%' }">				
 				</div>
@@ -96,11 +98,16 @@
 				</div>
 				<div class="col-md-5">
 					<p>Выберите ответ:</p>
-					<div class="list-group" data-bind="foreach: SecondAnswerList">
+					<div class="list-group">
+						<span class="list-group-item" data-bind="visible: !SecondAnswerList().length">
+							<span data-bind="template: { name: 'tpl_loading' }"></span>
+						</span>					
+						<!-- ko foreach: SecondAnswerList -->
 						<a href="#" class="list-group-item" data-bind="click: $root.nextQuestion">
 							<h4 class="list-group-item-heading" data-bind="text: Title"></h4>
 							<p class="list-group-item-text" data-bind="text: Description, visible: Description"></p>
 						</a>
+						<!-- /ko -->
 					</div>
 				</div>				
 			</div>		
@@ -205,6 +212,10 @@
 			<img src="#" data-bind="attr: { src: UrlMiddle, title: Title, alt: Title }">
 		</a>
 	</script>
+	
+	<script type="text/html" id="tpl_loading">
+		<img src="/uploads/loading2.gif" alt="Загрузка..." title="Загрузка..." />
+	</script>	
 {/block}
 
 {block 'scripts'}
