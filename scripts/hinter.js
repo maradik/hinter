@@ -443,8 +443,8 @@
         var self = this;
         ko.utils.extend(self, new BaseModel(id));
         
-        self.Login    = ko.observable(login);
-        self.Password = ko.observable(password);
+        self.Login    = ko.observable(login).extend({ bounds: {minLen: 1, maxLen: 20, required: true} });
+        self.Password = ko.observable(password).extend({ bounds: {minLen: 6, maxLen: 32, required: true} });
         self.Email    = ko.observable(email);
         self.Role     = ko.observable(role);
         
@@ -1367,8 +1367,15 @@
             if (isUrl && !target.hasError() && typeof newValue !== 'undefined' && newValue.length            
                 && (                    
                     typeof newValue !== 'string'
-                    || !isValidUrl(newValue) 
-                    //|| !newValue.match(/^https?:\/\/(www.)?.+\..+/)
+                    || (
+                         !isValidUrl(newValue)
+                      && !( // таким хитрым способом добавляем в начало HTTP://
+                            newValue.substring(0, 4) != 'http' 
+                         && (newValue = 'http://' + newValue) 
+                         && isValidUrl(newValue) 
+                         && (target(newValue) || true)
+                          )  
+                       )
                 )) {
                 target.hasError(true);
                 target.validationMessage("Введите корректный URL-адрес");

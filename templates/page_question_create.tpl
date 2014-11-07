@@ -178,11 +178,11 @@
 														<span class="small text-danger" data-bind="text: LinkUrl.validationMessage(), visible: LinkUrl.validationMessage()"></span>
 													</div>
 												</div>	
-												<div class="form-group" data-bind="visible: LinkUrl(), css: { 'has-error' : LinkTitle.hasError, 'has-success' : !LinkTitle.hasError() && LinkTitle() }">
+												<div class="form-group" data-bind="css: { 'has-error' : LinkTitle.hasError, 'has-success' : !LinkTitle.hasError() && LinkTitle() }">
 													<label class="col-sm-2 control-label">Заголовок ссылки</label>
 													<div class="col-sm-10">
-														<input type="text" class="form-control" placeholder="Кратко текст ссылки" data-bind="value: LinkTitle">
-														<span class="small text-danger" data-bind="text: LinkTitle.validationMessage(), visible: LinkTitle.validationMessage()"></span>
+														<input type="text" class="form-control" placeholder="Кратко текст ссылки" data-bind="value: LinkTitle, disable: !LinkUrl()">
+														<span class="small text-danger" data-bind="text: LinkTitle.validationMessage(), visible: LinkUrl() && LinkTitle.validationMessage()"></span>
 													</div>
 												</div>	
 												<div class="form-group" data-bind="css: { 'has-success' : Images().length }">
