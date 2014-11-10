@@ -138,6 +138,13 @@
 	border-bottom: 1px dashed gray;
 }
 
+h3 a.mqlist-item-head,
+h3 a.mqlist-item-head:hover,
+h3 a.mqlist-item-head:focus,
+h3 a.mqlist-item-head:active {
+	color: #333333;
+}
+
 .panel-default div.underline-dashed {
 	border-color: #63abae;
 }
