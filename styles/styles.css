@@ -122,6 +122,10 @@
 	margin-bottom: 0;
 }
 
+.bottom20 {
+	margin-bottom: 20px;
+}
+
 .navbar-brand {
 	padding-top: 5px;
 }

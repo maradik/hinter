@@ -72,7 +72,7 @@
 				</div>
 			</div>
 			<div class="panel-footer">				
-				<p><small>Не понравился тест? Глупые вопросы? <a href="/question/create">Создай свою подсказку</a> - ее увидят все!</small></p>
+				<p><small>Не понравился тест? Странные вопросы? <a href="/question/create">Создай свою подсказку</a> - ее увидят все!</small></p>
 				<button class="btn btn-success btn-sm" data-bind="click: $root.start">
 					<span class="glyphicon glyphicon-repeat"></span> Повторить
 				</button>	
