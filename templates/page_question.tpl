@@ -17,10 +17,17 @@
 						{if !empty($mainQuestion->description)}
 							<div class="multiline">{$mainQuestion->description|e:'HTML'}</div>
 						{/if}						
-						<div class="top10" data-bind="with: $root.CategoryList.findById(CategoryId())">
-							<a href="#" class="label label-info" data-bind="attr: { href: '/category/' + Id(), title: Description.truncatedText(50) }">
-								<span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;<span data-bind="text: Title"></span>
-							</a>
+						<div class="top10 row">
+							<div class="col-lg-2 col-xs-3">
+								<span class="label label-default" title="Дата создания">
+									<span class="glyphicon glyphicon-file"></span> <span data-bind="text: CreateDate.dateToStr()"></span>
+								</span>
+							</div>							
+							<div class="col-lg-10 col-xs-9" data-bind="with: $root.CategoryList.findById(CategoryId())">
+								<a href="#" class="label label-info" data-bind="attr: { href: '/category/' + Id(), title: Description.truncatedText(50) }">
+									<span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;<span data-bind="text: Title"></span>
+								</a>
+							</div>
 						</div>									
 					</div>
 					

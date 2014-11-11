@@ -257,7 +257,7 @@
         self.Title          = self.Title.extend({ bounds: {minLen: 10, maxLen: 150, required: true}, truncatedText: true });        
         self.Description    = self.Description.extend({ bounds: {maxLen: 1000}, truncatedText: true });
         self.CategoryId     = ko.observable(categoryId).extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
-        self.CreateDate     = ko.observable(createDate);
+        self.CreateDate     = ko.observable(createDate).extend({dateToStr: true});
         self.UserId         = ko.observable(userId);   
         self.Active         = ko.observable(active);                 
         
@@ -286,7 +286,6 @@
             self.CreateDate(    json.createDate);
             self.UserId(        json.userId);
             self.Active(        json.active);
-            //console.log(self.Images().length);
             return self;
         };
         
@@ -321,7 +320,7 @@
         self.Title          = self.Title.extend({ bounds: {minLen: 1, maxLen: 50, required: true}, truncatedText: true });
         self.Description    = self.Description.extend({ bounds: {maxLen: 500}, truncatedText: true });
         self.QuestionId     = ko.observable(questionId);
-        self.CreateDate     = ko.observable(createDate);
+        self.CreateDate     = ko.observable(createDate).extend({dateToStr: true});
         self.UserId         = ko.observable(userId);
         self.LinkUrl        = ko.observable(linkUrl).extend({ bounds: {maxLen: 2000, isUrl: true}});
         self.LinkTitle      = ko.observable(linkTitle).extend({ bounds: {maxLen: 100}, truncatedText: true});        
@@ -366,7 +365,7 @@
         self.Title          = self.Title.extend({ bounds: {minLen: 10, maxLen: 150, required: true}, truncatedText: true });
         self.Description    = self.Description.extend({ bounds: {maxLen: 1000}, truncatedText: true });
         self.ParentId       = ko.observable(parentId);
-        self.CreateDate     = ko.observable(createDate);
+        self.CreateDate     = ko.observable(createDate).extend({dateToStr: true});
         self.UserId         = ko.observable(userId);
         
         self.SecondAnswers  = baseObservableArray(); 
@@ -407,7 +406,7 @@
         self.Title          = self.Title.extend({ bounds: {minLen: 1, maxLen: 50, required: true}, truncatedText: true });
         self.Description    = self.Description.extend({ bounds: {maxLen: 150}, truncatedText: true });
         self.QuestionId     = ko.observable(questionId);
-        self.CreateDate     = ko.observable(createDate);
+        self.CreateDate     = ko.observable(createDate).extend({dateToStr: true});
         self.UserId         = ko.observable(userId);
 
         self.MainAnswers    = baseObservableArray().extend({ bounds: {required: true, requiredMessage: "Выберите значение"} });
@@ -492,7 +491,7 @@
         self.Description    = self.Description.extend({ bounds: {maxLen: 1000}, truncatedText: true });;
         self.ParentType     = ko.observable(parentType);
         self.ParentId       = ko.observable(parentId);
-        self.CreateDate     = ko.observable(createDate);
+        self.CreateDate     = ko.observable(createDate).extend({dateToStr: true});
         self.UserId         = ko.observable(userId);
         self.Size           = ko.observable(size);
         self.FileName       = ko.observable(fileName);
@@ -1386,6 +1385,24 @@
         target.subscribe(validate);
         return target;
     };    
+    
+    ko.extenders.dateToStr = function(target) {
+        target.dateToStr = function(onlyDate) {
+            onlyDate = typeof onlyDate == 'undefined' ? true : onlyDate; 
+            if (!target()) {
+                return '';
+            }            
+            var dateint = target();
+            var date = new Date(dateint * 1000);
+            var month = date.getMonth()+1;
+            var day   = date.getDate();   
+            dateStr = (day < 10 ? '0' : '') + day + '.' 
+                      + (month < 10 ? '0' : '') + month + '.' 
+                      + date.getFullYear();
+            return onlyDate ? dateStr : dateStr + ' ' + date.toLocaleTimeString();
+        };
+        return target;
+    };
     
     ko.extenders.truncatedText = function(target) {
         target.truncatedText = function(maxLen) {
