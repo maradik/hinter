@@ -13,30 +13,41 @@
 			<div class="panel-body" data-bind="with: MainQuestion">
 				<h1>{$mainQuestion->title|e:'HTML'}</h1>
 				<div class="row">
-					<div class="col-sm-12" data-bind="css: Images().length == 1 ? 'col-sm-8' : 'col-sm-12'">		
+					<div class="col-sm-12" data-bind="css: Images().length ? 'col-sm-8' : 'col-sm-12'">		
 						{if !empty($mainQuestion->description)}
 							<div class="multiline">{$mainQuestion->description|e:'HTML'}</div>
 						{/if}						
-						<div class="top10 row">
-							<div class="col-lg-2 col-xs-3">
-								<span class="label label-default" title="Дата создания">
-									<span class="glyphicon glyphicon-file"></span> <span data-bind="text: CreateDate.dateToStr()"></span>
-								</span>
-							</div>							
-							<div class="col-lg-10 col-xs-9" data-bind="with: $root.CategoryList.findById(CategoryId())">
-								<a href="#" class="label label-info" data-bind="attr: { href: '/category/' + Id(), title: Description.truncatedText(50) }">
-									<span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;<span data-bind="text: Title"></span>
-								</a>
+						<div class="row top20">
+							<div class="col-xs-6">
+								<div class="row">
+									<div class="col-lg-4 col-xs-6">
+										<span class="label label-default" title="Дата создания">
+											<span class="glyphicon glyphicon-file"></span> <span data-bind="text: CreateDate.dateToStr()"></span>
+										</span>
+									</div>				
+									<div class="col-xs-12 hidden-lg">&nbsp;</div>			
+									<div class="col-lg-8 col-xs-12" data-bind="with: $root.CategoryList.findById(CategoryId())">
+										<a href="#" class="label label-info" data-bind="attr: { href: '/category/' + Id(), title: Description.truncatedText(50) }">
+											<span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;<span data-bind="text: Title"></span>
+										</a>
+									</div>
+								</div>
 							</div>
+							<!-- ko foreach: Images -->
+								<!-- ko if: $index() < 3 -->
+									<div class="text-center col-xs-3" data-bind="css: { 'visible-xs': $index() < 2, 'visible-sm visible-md visible-lg': $index() != 0 }">
+										<!-- ko template: { name: 'thumbnails' } -->
+										<!-- /ko -->
+									</div>		
+								<!-- /ko -->	
+							<!-- /ko -->	
 						</div>									
 					</div>
 					
-					<!-- ko foreach: Images -->
-						<div class="text-center" data-bind="css: $root.MainQuestion().Images().length == 1 ? 'col-xs-3 col-sm-4' : 'col-xs-3 col-sm-2'">
-							<!-- ko template: { name: 'thumbnails' } -->
-							<!-- /ko -->
-						</div>			
-					<!-- /ko -->					
+					<div class="text-center col-xs-3 col-sm-4 hidden-xs" data-bind="visible: Images().length > 0, with: Images()[0]">
+						<!-- ko template: { name: 'thumbnails' } -->
+						<!-- /ko -->
+					</div>			
 				</div>			
 			</div>
 			<!--
@@ -60,22 +71,32 @@
 			<div class="panel-body" data-bind="with: MainAnswerList()[0]">	
 				<h3 data-bind="text: Title"></h3>
 				<div class="row">
-					<div data-bind="css: Images().length == 1 ? 'col-sm-8' : 'col-sm-12'">
-						<div class="multiline" data-bind="text: Description, visible: Description"></div>
-						<div class="top10" data-bind="visible: LinkUrl">
-							<a href="#" class="label label-info" target="_blank" title="Читать подробнее..." data-bind="attr: { href: LinkUrl }">
-								<span class="glyphicon glyphicon-share"></span>
-								<span data-bind="text: LinkTitle.truncatedText(50)"></span>
-							</a>
-						</div>
+					<div data-bind="css: Images().length ? 'col-sm-8' : 'col-sm-12'">
+						<div class="row">
+							<div class="col-xs-12">
+								<div class="multiline" data-bind="text: Description, visible: Description"></div>
+								<div class="top10" data-bind="visible: LinkUrl">
+									<a href="#" class="label label-info" target="_blank" title="Читать подробнее..." data-bind="attr: { href: LinkUrl }">
+										<span class="glyphicon glyphicon-share"></span>
+										<span data-bind="text: LinkTitle.truncatedText(50)"></span>
+									</a>
+								</div>
+							</div>
+							<!-- ko foreach: Images -->
+								<!-- ko if: $index() < 3 -->
+									<div class="text-center col-xs-4 visible-xs top15" data-bind="css: { 'visible-sm visible-md visible-lg': $index() != 0 }">
+										<!-- ko template: { name: 'thumbnails' } -->
+										<!-- /ko -->
+									</div>		
+								<!-- /ko -->	
+							<!-- /ko -->
+						</div>							
 					</div>
 					
-					<!-- ko foreach: Images -->
-						<div class="text-center" data-bind="css: $parent.Images().length == 1 ? 'col-xs-3 col-sm-4' : 'col-xs-3 col-sm-2'">
-							<!-- ko template: { name: 'thumbnails' } -->
-							<!-- /ko -->
-						</div>			
-					<!-- /ko -->						
+					<div class="text-center col-xs-3 col-sm-4 hidden-xs" data-bind="visible: Images().length > 0, with: Images()[0]">
+						<!-- ko template: { name: 'thumbnails' } -->
+						<!-- /ko -->
+					</div>						
 				</div>
 			</div>
 			<div class="panel-footer">				
@@ -215,7 +236,7 @@
 	<div id="vk_comments"></div>
 	
 	<script type="text/html" id="thumbnails">
-		<a href="#" target="_blank" class="thumbnail top10" data-bind="thumbnail: { src: UrlData, title: Title }">
+		<a href="#" target="_blank" class="thumbnail" data-bind="thumbnail: { src: UrlData, title: Title }">
 			<img src="#" data-bind="attr: { src: UrlMiddle, title: Title, alt: Title }">
 		</a>
 	</script>
