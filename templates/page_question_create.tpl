@@ -144,7 +144,7 @@
 				<table class="table table-striped">								
 					<tbody>
 						<tr data-bind="visible: MainAnswerList.Loading()">
-							<td data-bind="template: { name: 'tpl_loading' }">
+							<td colspan="2" data-bind="template: { name: 'tpl_loading' }">
 							</td>
 						</tr>
 						<!-- ko foreach: MainAnswerList -->							
@@ -402,10 +402,10 @@
 				<p><strong>Всего наводящих вопросов: <span data-bind="text: $root.SecondQuestionList().length"></span></strong></p>
 			</div>			
 			<div data-bind="visible: $root.Step() == 3">
-				<button class="btn btn-primary" data-bind="disable: curSecondQuestion() && (curSecondQuestion().Title.hasError() || curSecondQuestion().Description.hasError() || curSecondQuestion().SecondAnswers().filter(function(item){ return item.Editing(); }).some(function(item){ return item.Title.hasError() || item.Description.hasError() || item.MainAnswers.hasError(); })), click: function(){ applySecondQuestion(curSecondQuestion(), true); }">
+				<button class="btn btn-primary" data-bind="disable: SecondQuestionList.Locked() || (curSecondQuestion() && (curSecondQuestion().Title.hasError() || curSecondQuestion().Description.hasError() || curSecondQuestion().SecondAnswers().filter(function(item){ return item.Editing(); }).some(function(item){ return item.Title.hasError() || item.Description.hasError() || item.MainAnswers.hasError(); }))), click: function(){ applySecondQuestion(curSecondQuestion(), true); }">
 					<span class="glyphicon glyphicon-plus"></span> Добавить наводящий вопрос 
 				</button>
-				<button class="btn btn-success" data-bind="disable: !$root.SecondQuestionList().length || (curSecondQuestion() && (curSecondQuestion().Title.hasError() || curSecondQuestion().Description.hasError() || curSecondQuestion().SecondAnswers().filter(function(item){ return item.Editing(); }).some(function(item){ return item.Title.hasError() || item.Description.hasError() || item.MainAnswers.hasError(); }))), click: function(){ applySecondQuestion(curSecondQuestion()); }">
+				<button class="btn btn-success" data-bind="disable: SecondQuestionList.Locked() || !$root.SecondQuestionList().length || (curSecondQuestion() && (curSecondQuestion().Title.hasError() || curSecondQuestion().Description.hasError() || curSecondQuestion().SecondAnswers().filter(function(item){ return item.Editing(); }).some(function(item){ return item.Title.hasError() || item.Description.hasError() || item.MainAnswers.hasError(); }))), click: function(){ applySecondQuestion(curSecondQuestion()); }">
 					<span class="glyphicon glyphicon-ok"></span> Готово!
 				</button>			
 				<div class="top10" data-bind="visible: !$root.SecondQuestionList.Loading() && (!$root.SecondQuestionList().length || (curSecondQuestion() && (curSecondQuestion().Title.hasError() || curSecondQuestion().Description.hasError() || curSecondQuestion().SecondAnswers().filter(function(item){ return item.Editing(); }).some(function(item){ return item.Title.hasError() || item.Description.hasError() || item.MainAnswers.hasError(); })))), template: { name: 'tpl_haserror' }"></div>			
