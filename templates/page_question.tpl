@@ -69,7 +69,12 @@
 				<h3 class="panel-title"><span class="glyphicon glyphicon-ok-sign"></span> Оптимальный вариант</h3>
 			</div>
 			<div class="panel-body" data-bind="with: MainAnswerList()[0]">	
-				<h3 data-bind="text: Title"></h3>
+				<h3>
+					<span data-bind="text: Title"></span> 
+					<span class="label label-success bottompad0" data-bind="attr: { title: 'Соответствует вашим критериям на ' + Rating() + '%' }">
+						<span class="glyphicon glyphicon-ok-sign"></span> <span data-bind="text: Rating() + '%'"></span>
+					</span>
+				</h3>
 				<div class="row">
 					<div data-bind="css: Images().length ? 'col-sm-8' : 'col-sm-12'">
 						<div class="row">
@@ -111,7 +116,7 @@
 
 		<div  data-bind="visible: CurrentSecQuestion() && !Finish()">
 			<div class="progress" data-bind="visible: CurrentSecQuestion() && !Finish()">
-				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="" data-bind="text: getProgress() + '%', style: { width: getProgress() + '%' }">				
+				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="" data-bind="text: getProgress() ? ('Пройдено ' + getProgress() + '%') : '', style: { width: getProgress() + '%' }">				
 				</div>
 			</div>		
 		</div>	
@@ -164,16 +169,20 @@
 								<div class="col-sm-9 col-xs-11" data-bind="css: { 'col-sm-9': Images().length, 'col-sm-11': !Images().length }">
 									<div data-bind="visible: !Expanded()">
 										<div>
-											<strong data-bind="text: Title.truncatedText(50)"></strong>
+											<strong data-bind="text: Title.truncatedText(50)"></strong> 
+											<!-- ko template: 'tpl_rating' --><!-- /ko -->
+										</div> 
+										<div>
 											<em class="text-muted" data-bind="text: Description.truncatedText(100)"></em>
 										</div>
 										<div class="small">		
-											<a href="#" title="Показать полностью" data-bind="click: expand">Показать <span class="glyphicon glyphicon-download"></span></a>
+											<a href="#" title="Показать полностью" data-bind="click: expand">Показать <span class="glyphicon glyphicon-download"></span></a> 
 										</div>							
 									</div>
 									<div data-bind="visible: Expanded">
 										<div>
-											<strong data-bind="text: Title"></strong>
+											<strong data-bind="text: Title"></strong> 
+											<!-- ko template: 'tpl_rating' --><!-- /ko -->
 										</div>
 										<div class="multiline" data-bind="text: Description, visible: Description()">										
 										</div>
@@ -244,6 +253,12 @@
 	<script type="text/html" id="tpl_loading">
 		<img src="/uploads/loading2.gif" alt="Загрузка..." title="Загрузка..." />
 	</script>	
+	
+	<script type="text/html" id="tpl_rating">
+		<span class="label label-big bottompad0" data-bind="visible: Rating() !== '', attr: { title: 'Соответствует вашим критериям на ' + Rating() + '%' },css: (Rating() > 74 || ($root.Finish() && $index() == 0)) ? 'label-success' : (Rating() < 50 ? 'label-danger' : 'label-warning')">
+			<span class="glyphicon" data-bind="css: (Rating() > 74 || ($root.Finish() && $index() == 0)) ? 'glyphicon-ok-sign' : (Rating() < 50 ? 'glyphicon-remove-circle' : 'glyphicon-question-sign')"></span> <span data-bind="text: Rating() + '%'"></span>
+		</span>
+	</script>
 {/block}
 
 {block 'scripts'}

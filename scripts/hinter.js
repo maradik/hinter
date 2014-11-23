@@ -324,6 +324,13 @@
         self.UserId         = ko.observable(userId);
         self.LinkUrl        = ko.observable(linkUrl).extend({ bounds: {maxLen: 2000, isUrl: true}});
         self.LinkTitle      = ko.observable(linkTitle).extend({ bounds: {maxLen: 100}, truncatedText: true});        
+        self.TotalRating    = ko.observable(0);
+        self.Rating         = ko.computed(function() {
+            if (!Boolean(self.TotalRating()) || self.Order() > 0) {
+                return '';
+            }    
+            return Math.round(100 * Math.abs(self.Order()) / Math.abs(self.TotalRating()));
+        });
         
         var parentUnpack = self.unpack;        
         self.unpack = function(json) {
@@ -657,8 +664,11 @@
         
         self.nextQuestion = function(selectedSecondAnswer) {
             finish = self.CurrentSecQuestion() + 1 > self.SecondQuestionList().length;
-            if (self.CurrentSecQuestion() == 0) {                    
-                self.MainAnswerList().forEach(function(elMa, indMa, arrMa) { elMa.Order(0); elMa.Expanded(false); });
+            var totalRating = self.CurrentSecQuestion();
+            if (self.CurrentSecQuestion() == 0) {       
+                self.MainAnswerList().forEach(function(elMa, indMa, arrMa) { 
+                    elMa.Order(0); elMa.TotalRating(totalRating); elMa.Expanded(false); 
+                });
                 //$('body').scrollTo('.footer', 800, {offset: 0}); // http://plugins.jquery.com/scrollto/                
             }            
             if (selectedSecondAnswer instanceof SecondAnswer) {
@@ -676,12 +686,21 @@
                         //ko.mapping.fromJS(collection, null, self.SecondAnswerList);
                         self.RelMainAnswerList(collection);                      
                         //---
+                        /* old
                         self.RelMainAnswerList().forEach(function(elRel, indRel, arrRel) {
                             self.MainAnswerList().every(function(elMa, indMa, arrMa) {
                                 if (elRel.Id() == elMa.Id()) { elMa.Order(elMa.Order() - 1); return false; }
                                 return true;
                             });                     
                         });
+                        */
+                        self.MainAnswerList().forEach(function(elMa, indMa, arrMa) {
+                            elMa.TotalRating(totalRating);
+                            self.RelMainAnswerList().every(function(elRel, indRel, arrRel) {
+                                if (elRel.Id() == elMa.Id()) { elMa.Order(elMa.Order() - 1); return false; }
+                                return true;
+                            });
+                        });                       
                         self.MainAnswerList.sort(sortQuestionAnswerArray);                         
                         //---       
                         self.Finish(finish);
@@ -689,7 +708,7 @@
                     function() {self.Finish(finish);}
                 );                
             };
-            
+                
             if (finish) {
                 self.MainQuestion().finish();
             } else {

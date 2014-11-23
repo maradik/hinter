@@ -106,6 +106,10 @@
 	color: #00F0FF;
 }
 
+.label-big {
+	font-size: 100%;
+}
+
 .top20 {
 	margin-top: 20px;
 }
@@ -144,6 +148,10 @@
 
 .toppad10 {
 	padding-top: 10px;
+}
+
+.bottompad0 {
+	padding-bottom: 0;
 }
 
 .underline-dashed {
