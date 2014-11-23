@@ -590,6 +590,8 @@
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/mainanswer", null, function (json) {                
                 self.MainAnswerList.unpack(json.data, MainAnswer);
                 self.MainAnswerList.sort(sortQuestionAnswerArray);
+                //auto start
+                tryAutoStart();                
             });
             
 
@@ -614,20 +616,6 @@
                 self.MainQuestionRelList.unpack(json.data, MainQuestion);
                 //self.MainQuestionRelList.sort(sortQuestionAnswerArray);
             });            
-            /*
-            requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/image", null, function (json) {                
-                self.MainQuestionImageList(
-                    json 
-                    ? $.map(json.data, function (item) { return (new Image).unpack(item); }) 
-                    : []
-                );
-                self.MainQuestionImageList.sort(sortQuestionAnswerArray);
-            });            
-            */
-            /*
-            self.MainQuestionImageList((new MainQuestion).unpack(mainQuestion).Images());
-            self.MainQuestionImageList.sort(sortQuestionAnswerArray);
-            */
             
             requestAjaxJson('GET', apiUrlBase + "/mainquestion/" + mainQuestionId + "/secondaryquestion", null, function (json) {                
                 self.SecondQuestionList(
@@ -635,22 +623,18 @@
                     ? $.map(json.data, function (item) { return (new SecondQuestion).unpack(item); }) 
                     : []
                 );
-                // Авто-старт, проверка эффективности 29/10/2014
-                if (self.CurrentSecQuestion() == 0 && !self.Finish()) {
-                    self.start(); 
-                }                
-                /*
-                setTimeout(
-                    function() { 
-                        if (self.CurrentSecQuestion() == 0 && !self.Finish()) {
-                            self.start(); 
-                        }
-                    },
-                    5000
-                ); 
-                */
+                //auto start
+                tryAutoStart();
             });            
         };      
+                
+        var loadedElementsBeforeStart = 0;
+        var tryAutoStart = function() {  
+            loadedElementsBeforeStart++;          
+            if (loadedElementsBeforeStart == 2 && self.CurrentSecQuestion() == 0 && !self.Finish()) {
+                self.start(); 
+            }            
+        };                
         
         self.start = function() {
             self.CurrentSecQuestion(0);
@@ -658,7 +642,7 @@
             self.SecondQuestion(null);
             self.SecondAnswerList([]);
             self.RelMainAnswerList([]);
-            self.MainAnswerList().forEach(function(elMa, indMa, arrMa) { elMa.Order(0); });
+            //self.MainAnswerList().forEach(function(elMa, indMa, arrMa) { elMa.Order(0); });
             self.nextQuestion();            
         };
         
